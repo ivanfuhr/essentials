@@ -72,4 +72,16 @@ return [
         'pg_restore_binary' => env('PG_RESTORE_PATH', 'pg_restore'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | GitHub Issue Logger
+    |--------------------------------------------------------------------------
+    |
+    | Log errors as GitHub issues. Configure via config/loggers/github.php
+    | (publish with: php artisan vendor:publish --tag=essentials-loggers-github-config)
+    |
+    | @see https://github.com/Naoray/laravel-github-monolog (ported into src/Loggers/Github)
+    |
+    */
+
 ];

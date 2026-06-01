@@ -48,6 +48,8 @@ final class EssentialsServiceProvider extends BaseServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/essentials.php', 'essentials');
+
+        $this->app->register(Loggers\Github\GithubLoggerServiceProvider::class);
     }
 
     /**

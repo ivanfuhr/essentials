@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+namespace IvanFuhr\Essentials\Loggers\Github\Tracing;
+
+use Illuminate\Http\Client\Events\ResponseReceived;
+use Illuminate\Support\Facades\Context;
+use IvanFuhr\Essentials\Loggers\Github\Tracing\Contracts\EventDrivenCollectorInterface;
+
+final class OutgoingRequestResponseCollector implements EventDrivenCollectorInterface
+{
+    private const DEFAULT_LIMIT = 5;
+
+    public function __invoke(ResponseReceived $event): void
+    {
+        if (! $this->isEnabled()) {
+            return;
+        }
+
+        $request = $event->request;
+        $response = $event->response;
+        $requestId = spl_object_hash($request);
+
+        $config = config('logging.channels.github.tracing.outgoing_requests', []);
+        $limit = $config['limit'] ?? self::DEFAULT_LIMIT;
+
+        $requestData = Context::getHidden("outgoing_request.{$requestId}") ?? [];
+        $startedAt = $requestData['started_at'] ?? microtime(true);
+        $duration = (microtime(true) - $startedAt) * 1000; // Convert to milliseconds
+
+        $outgoingRequests = Context::getHidden('outgoing_requests') ?? [];
+
+        $outgoingRequests[] = [
+            'url' => $request->url(),
+            'method' => $request->method(),
+            'status' => $response->status(),
+            'duration_ms' => round($duration, 2),
+            'headers' => $requestData['headers'] ?? [],
+        ];
+
+        // Keep only the last N requests
+        if (count($outgoingRequests) > $limit) {
+            $outgoingRequests = array_slice($outgoingRequests, -$limit);
+        }
+
+        Context::addHidden('outgoing_requests', $outgoingRequests);
+        Context::forgetHidden("outgoing_request.{$requestId}");
+    }
+
+    public function isEnabled(): bool
+    {
+        $config = config('logging.channels.github.tracing.outgoing_requests', []);
+
+        return isset($config['enabled']) && $config['enabled'];
+    }
+}

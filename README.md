@@ -49,6 +49,7 @@ php artisan vendor:publish --tag=essentials-config
   - [make:action](#makeaction)
   - [Database Backups](#database-backups)
   - [translations:extract](#translationsextract)
+- [GitHub Issue Logger](#-github-issue-logger)
 
 ### ✅ Strict Models
 
@@ -202,6 +203,30 @@ You may also publish the stubs used by this package:
 php artisan vendor:publish --tag=essentials-stubs
 ```
 
+### 🐙 GitHub Issue Logger
+
+Turn Laravel errors and logs into GitHub issues (with deduplication, comments on repeats, tracing, and customizable Markdown templates). Ported from [naoray/laravel-github-monolog](https://github.com/Naoray/laravel-github-monolog). Lives in `src/Loggers/Github/`.
+
+Publish and configure:
+
+```bash
+php artisan vendor:publish --tag=essentials-loggers-github-config
+```
+
+```env
+GITHUB_MONOLOG_ENABLED=true
+GITHUB_MONOLOG_REPO=your-org/your-repo
+GITHUB_MONOLOG_TOKEN=ghp_...
+```
+
+When enabled, Essentials registers the `github` log channel automatically. Use it as `LOG_CHANNEL`, in a stack, or explicitly:
+
+```php
+Log::channel('github')->error('Something went wrong!');
+```
+
+Optional: publish issue templates with `php artisan vendor:publish --tag=essentials-loggers-github-views`.
+
 ## Roadmap
 
 - Better defaults before each test case
@@ -213,3 +238,5 @@ php artisan vendor:publish --tag=essentials-stubs
 **Essentials** is maintained by **[Ivan Führ](https://github.com/ivanfuhr)** under the **[MIT license](https://opensource.org/licenses/MIT)**.
 
 Based on [nunomaduro/essentials](https://github.com/nunomaduro/essentials) by Nuno Maduro.
+
+GitHub Issue Logger is based on [laravel-loggers.github](https://github.com/Naoray/laravel-loggers.github) by Krishan Koenig (MIT).

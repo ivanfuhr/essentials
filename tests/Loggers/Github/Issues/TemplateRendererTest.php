@@ -1,0 +1,446 @@
+<?php
+
+use IvanFuhr\Essentials\Loggers\Github\Issues\StubLoader;
+use IvanFuhr\Essentials\Loggers\Github\Issues\TemplateRenderer;
+
+beforeEach(function () {
+    $this->stubLoader = new StubLoader;
+    $this->renderer = resolve(TemplateRenderer::class);
+});
+
+test('it renders basic log record', function () {
+    $record = createLogRecord('Test message');
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Level:** ERROR')
+        ->toContain('**Message:** Test message');
+});
+
+test('it renders title without exception', function () {
+    $record = createLogRecord('Test message');
+
+    $title = $this->renderer->renderTitle($record);
+
+    expect($title)->toBe('[ERROR] Test message');
+});
+
+test('it renders title with exception', function () {
+    $record = createLogRecord('Test message', exception: new RuntimeException('Test exception'));
+
+    $title = $this->renderer->renderTitle($record);
+
+    expect($title)->toContain('[ERROR] RuntimeException', 'Test exception');
+});
+
+test('it renders context data', function () {
+    $record = createLogRecord('Test message', ['user_id' => 123]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('<summary>📦 Context</summary>')
+        ->toContain('"user_id": 123');
+});
+
+test('it renders extra data', function () {
+    $record = createLogRecord('Test message', extra: ['request_id' => 'abc123']);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('<summary>➕ Extra Data</summary>')
+        ->toContain('"request_id": "abc123"');
+});
+
+test('it renders previous exceptions', function () {
+    $previous = new RuntimeException('Previous exception');
+    $exception = new RuntimeException('Test exception', previous: $previous);
+    $record = createLogRecord('Test message', exception: $exception);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('Previous Exception #1')
+        ->toContain('Previous exception')
+        ->toContain('[Vendor frames]');
+});
+
+test('it handles nested stack traces in previous exceptions correctly', function () {
+    $previous = new RuntimeException('Previous exception');
+    $exception = new RuntimeException('Test exception', previous: $previous);
+    $record = createLogRecord('Test message', exception: $exception);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    // Verify that the main stack trace section is present
+    expect($rendered)
+        ->toContain('View Complete Stack Trace')
+        // Verify that the previous exceptions section is present
+        ->toContain('View Previous Exceptions');
+});
+
+test('comment template has stack trace details as siblings not nested', function () {
+    $template = $this->stubLoader->load('comment');
+
+    // Verify in the raw template that the stacktrace section contains exactly 2 sibling
+    // <details> blocks (Stack Trace + View Complete Stack Trace), not nested ones.
+    $stackTraceStart = strpos($template, '<!-- stacktrace:start -->');
+    $stackTraceEnd = strpos($template, '<!-- stacktrace:end -->');
+
+    expect($stackTraceStart)->not->toBeFalse();
+    expect($stackTraceEnd)->not->toBeFalse();
+
+    $stackTraceSection = substr($template, $stackTraceStart, $stackTraceEnd - $stackTraceStart + strlen('<!-- stacktrace:end -->'));
+
+    // Count details tags in the stacktrace section - should be 2 sibling blocks
+    preg_match_all('/<details>/', $stackTraceSection, $openTags);
+    preg_match_all('/<\/details>/', $stackTraceSection, $closeTags);
+
+    expect(count($openTags[0]))->toBe(2)
+        ->and(count($closeTags[0]))->toBe(2);
+
+    // The first </details> should appear BEFORE the second <details>,
+    // proving they are siblings, not nested.
+    $firstClose = strpos($stackTraceSection, '</details>');
+    $secondOpen = strpos($stackTraceSection, '<details>', strpos($stackTraceSection, '<details>') + 1);
+    expect($firstClose)->toBeLessThan($secondOpen);
+
+    // Verify previous exceptions section is outside the stacktrace markers
+    $prevStart = strpos($template, '<!-- prev-stacktrace:start -->');
+    expect($prevStart)->toBeGreaterThan($stackTraceEnd);
+});
+
+test('it cleans all empty sections', function () {
+    $record = createLogRecord('');
+
+    $rendered = $this->renderer->render(
+        template: $this->stubLoader->load('comment'),
+        record: $record,
+        signature: 'test',
+    );
+
+    expect($rendered)
+        ->toContain('**Type:** ERROR')
+        ->toContain('<!-- Signature: test -->');
+});
+
+test('it extracts clean message and stack trace when exception is a string in context', function () {
+    // Simulate the scenario where exception is logged as a string
+    $exceptionString = 'The calculation amount [123.45] does not match the expected total [456.78]. in /path/to/app/Calculations/Calculator.php:49
+Stack trace:
+#0 /path/to/app/Services/PaymentService.php(83): App\\Calculations\\Calculator->calculate()
+#1 /vendor/framework/src/Services/TransactionService.php(247): App\\Services\\PaymentService->process()';
+
+    $record = createLogRecord(
+        message: $exceptionString, // The full exception string is in the message
+        context: ['exception' => $exceptionString], // Also in context as string
+    );
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    // Should have clean short message (not the full exception string)
+    // Extract the message line to check it specifically
+    preg_match('/\*\*Message:\*\* (.+?)(?:\n|$)/', $rendered, $messageMatches);
+    $messageValue = $messageMatches[1] ?? '';
+
+    expect($messageValue)
+        ->toBe('The calculation amount [123.45] does not match the expected total [456.78].')
+        ->not->toContain('Stack trace:')
+        ->not->toContain('#0 /path/to/app/Services/PaymentService.php');
+
+    // Should have exception class populated (even if generic)
+    expect($rendered)
+        ->toContain('**Exception:**')
+        ->toMatch('/\*\*Exception:\*\* .+/'); // Exception should have a value
+
+    // Should have stack traces populated
+    expect($rendered)
+        ->toContain('<summary>📋 Stack Trace</summary>')
+        ->toContain('[stacktrace]')
+        ->toContain('App\\Calculations\\Calculator->calculate()');
+});
+
+test('it extracts clean message when stack trace is only in record message', function () {
+    // Simulate the scenario where exception is logged directly as message without exception in context
+    $messageWithStackTrace = 'RuntimeException: Error message in /path/to/file.php:123
+Stack trace:
+#0 /path/to/app/Service.php(45): App\\Service->method()
+#1 /vendor/framework/src/Kernel.php(200): App\\Service->handle()';
+
+    // Create record with stack trace in message but NO exception in context
+    $record = createLogRecord($messageWithStackTrace);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    // Message should be extracted without stack trace
+    preg_match('/\*\*Message:\*\* (.+?)(?:\n|$)/', $rendered, $messageMatches);
+    $messageValue = $messageMatches[1] ?? '';
+
+    expect($messageValue)
+        ->toBe('Error message')
+        ->not->toContain('Stack trace:')
+        ->not->toContain('#0 /path/to/app/Service.php');
+
+    // Stack trace should be in the stack trace sections
+    expect($rendered)
+        ->toContain('<summary>📋 Stack Trace</summary>')
+        ->toContain('[stacktrace]')
+        ->toContain('App\\Service->method()');
+});
+
+test('it formats timestamp placeholder correctly', function () {
+    $record = createLogRecord('Test message');
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Timestamp:**')
+        ->toMatch('/\*\*Timestamp:\*\* \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/');
+});
+
+test('it formats route summary as method and path', function () {
+    $record = createLogRecord('Test message', [
+        'request' => [
+            'method' => 'POST',
+            'url' => 'https://example.com/api/users',
+        ],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Route:** POST /api/users');
+});
+
+test('it returns empty string for route summary when request data is missing', function () {
+    $record = createLogRecord('Test message');
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Route:**');
+});
+
+test('it formats route summary from route context when request url is missing', function () {
+    $record = createLogRecord('Test message', [
+        'request' => [
+            'method' => 'PUT',
+            // url is missing
+        ],
+        'route' => [
+            'methods' => ['PUT'],
+            'uri' => 'nova-api/{resource}/{resourceId}',
+        ],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Route:** PUT /nova-api/{resource}/{resourceId}');
+});
+
+test('it prefers request context over route context for route summary', function () {
+    $record = createLogRecord('Test message', [
+        'request' => [
+            'method' => 'POST',
+            'url' => 'https://example.com/api/users',
+        ],
+        'route' => [
+            'methods' => ['PUT'],
+            'uri' => 'nova-api/{resource}/{resourceId}',
+        ],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Route:** POST /api/users')
+        ->not->toContain('PUT /nova-api');
+});
+
+test('it formats user summary with user id', function () {
+    $record = createLogRecord('Test message', [
+        'user' => [
+            'id' => 123,
+        ],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    // formatUserSummary returns just the ID, not "User ID: {id}"
+    expect($rendered)
+        ->toContain('**User:** 123');
+});
+
+test('it formats user summary as unauthenticated when user data is missing', function () {
+    $record = createLogRecord('Test message');
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**User:** Unauthenticated');
+});
+
+test('it formats user summary as unauthenticated when user id is missing', function () {
+    $record = createLogRecord('Test message', [
+        'user' => [
+            'name' => 'John Doe',
+        ],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**User:** Unauthenticated');
+});
+
+test('it extracts environment name from environment context', function () {
+    $record = createLogRecord('Test message', [
+        'environment' => [
+            'APP_ENV' => 'production',
+        ],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Environment:** production');
+});
+
+test('it extracts environment name from lowercase app_env key', function () {
+    $record = createLogRecord('Test message', [
+        'environment' => [
+            'app_env' => 'staging',
+        ],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Environment:** staging');
+});
+
+test('it returns empty string for environment name when not available', function () {
+    $record = createLogRecord('Test message');
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Environment:**');
+});
+
+test('issue template renders triage header with all fields', function () {
+    $record = createLogRecord('Test message', [
+        'request' => [
+            'method' => 'GET',
+            'url' => 'https://example.com/test',
+            'headers' => ['X-Request-ID' => 'test123'],
+        ],
+        'user' => ['id' => 456],
+        'environment' => ['APP_ENV' => 'testing'],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Level:** ERROR')
+        ->toContain('**Exception:**')
+        ->toContain('**Timestamp:**')
+        ->toContain('**Environment:** testing')
+        ->toContain('**Route:** GET /test')
+        ->toContain('**User:** 456')
+        ->toContain('**Message:** Test message');
+});
+
+test('issue template wraps verbose sections in details blocks', function () {
+    $record = createLogRecord('Test message', [
+        'environment' => ['APP_ENV' => 'testing'],
+        'request' => ['method' => 'GET', 'url' => 'https://example.com'],
+        'user' => ['id' => 123],
+        'custom_context' => 'test',
+    ], extra: ['extra_key' => 'extra_value']);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('<details>')
+        ->toContain('<summary>🌍 Environment</summary>')
+        ->toContain('<summary>📥 Request</summary>')
+        ->toContain('<summary>👤 User Details</summary>')
+        ->toContain('<summary>📦 Context</summary>')
+        ->toContain('<summary>➕ Extra Data</summary>');
+});
+
+test('comment template always includes request section', function () {
+    $record = createLogRecord('Test message', [
+        'request' => [
+            'method' => 'POST',
+            'url' => 'https://example.com/api',
+            'headers' => ['X-Request-ID' => 'req456'],
+        ],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('comment'), $record);
+
+    expect($rendered)
+        ->toContain('<summary>📥 Request</summary>')
+        ->toContain('**Route:** POST /api');
+});
+
+test('comment template does not include environment section', function () {
+    $record = createLogRecord('Test message', [
+        'environment' => ['APP_ENV' => 'production'],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('comment'), $record);
+
+    expect($rendered)
+        ->not->toContain('<summary>🌍 Environment</summary>')
+        ->not->toContain('<!-- environment:start -->');
+});
+
+test('comment template renders occurrence count from extra data', function () {
+    $record = createLogRecord('Test message', extra: ['github_occurrence_count' => 5]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('comment'), $record);
+
+    expect($rendered)->toContain('**Occurrence:** #5');
+});
+
+test('comment template renders occurrence count as 1 when not provided', function () {
+    $record = createLogRecord('Test message');
+
+    $rendered = $this->renderer->render($this->stubLoader->load('comment'), $record);
+
+    expect($rendered)->toContain('**Occurrence:** #1');
+});
+
+test('occurrence count is not leaked into extra data section', function () {
+    $record = createLogRecord('Test message', extra: [
+        'github_occurrence_count' => 3,
+        'request_id' => 'abc123',
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('comment'), $record);
+
+    expect($rendered)
+        ->toContain('**Occurrence:** #3')
+        ->toContain('"request_id": "abc123"')
+        ->not->toContain('"github_occurrence_count"');
+});
+
+test('triage header renders correctly with missing optional data', function () {
+    $record = createLogRecord('Test message');
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)
+        ->toContain('**Level:** ERROR')
+        ->toContain('**Timestamp:**')
+        ->toContain('**Environment:**')
+        ->toContain('**Route:**')
+        ->toContain('**User:** Unauthenticated')
+        ->toContain('**Message:** Test message');
+});
