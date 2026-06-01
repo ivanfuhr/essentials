@@ -17,10 +17,10 @@ beforeEach(function (): void {
     config(['logging.channels.github.tracing.user' => false]);
     config(['logging.channels.github.tracing.session' => false]);
     config(['logging.channels.github.tracing.livewire' => false]);
-    config(['loggers.github.tracing.environment' => false]);
-    config(['loggers.github.tracing.user' => false]);
-    config(['loggers.github.tracing.session' => false]);
-    config(['loggers.github.tracing.livewire' => false]);
+    config(['essentials.loggers.github.tracing.environment' => false]);
+    config(['essentials.loggers.github.tracing.user' => false]);
+    config(['essentials.loggers.github.tracing.session' => false]);
+    config(['essentials.loggers.github.tracing.livewire' => false]);
 });
 
 afterEach(function (): void {

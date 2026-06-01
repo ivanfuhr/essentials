@@ -89,7 +89,7 @@ it('uses config override for git_hash when app.git_commit is set', function (): 
 });
 
 it('skips git detection when git tracing is disabled', function (): void {
-    config(['loggers.github.tracing.git' => false]);
+    config(['essentials.loggers.github.tracing.git' => false]);
 
     $detector = Mockery::mock(GitInfoDetector::class);
     $detector->shouldNotReceive('detect');

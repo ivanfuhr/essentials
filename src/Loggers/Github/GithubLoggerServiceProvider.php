@@ -11,16 +11,16 @@ use IvanFuhr\Essentials\Loggers\Github\Tracing\EventHandler;
 
 final class GithubLoggerServiceProvider extends ServiceProvider
 {
+    private const CONFIG_KEY = 'essentials.loggers.github';
+
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../../../config/loggers/github.php', 'loggers.github');
-
         $this->registerContextDehydration();
     }
 
     public function boot(): void
     {
-        if (! config('loggers.github.enabled', false)) {
+        if (! config(self::CONFIG_KEY.'.enabled', false)) {
             return;
         }
 
@@ -34,16 +34,12 @@ final class GithubLoggerServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../../../resources/loggers/github/views' => resource_path('views/vendor/essentials/github'),
             ], 'essentials-loggers-github-views');
-
-            $this->publishes([
-                __DIR__.'/../../../config/loggers/github.php' => config_path('loggers/github.php'),
-            ], 'essentials-loggers-github-config');
         }
     }
 
     private function shouldEnableTracing(): bool
     {
-        $packageConfig = config('loggers.github.tracing', []);
+        $packageConfig = config(self::CONFIG_KEY.'.tracing', []);
         $channelConfig = config('logging.channels.github.tracing', []);
 
         return (bool) ($packageConfig['enabled'] ?? $channelConfig['enabled'] ?? false);
@@ -51,21 +47,21 @@ final class GithubLoggerServiceProvider extends ServiceProvider
 
     private function registerLoggingChannel(): void
     {
-        if (! config('loggers.github.repo') || ! config('loggers.github.token')) {
+        if (! config(self::CONFIG_KEY.'.repo') || ! config(self::CONFIG_KEY.'.token')) {
             return;
         }
 
         $channel = array_filter([
             'driver' => 'custom',
             'via' => GithubIssueHandlerFactory::class,
-            'repo' => config('loggers.github.repo'),
-            'token' => config('loggers.github.token'),
-            'level' => config('loggers.github.level', 'error'),
-            'labels' => config('loggers.github.labels', []),
-            'deduplication' => config('loggers.github.deduplication'),
-            'buffer' => config('loggers.github.buffer'),
-            'signature_generator' => config('loggers.github.signature_generator'),
-            'tracing' => $this->normalizeTracingConfig(config('loggers.github.tracing', [])),
+            'repo' => config(self::CONFIG_KEY.'.repo'),
+            'token' => config(self::CONFIG_KEY.'.token'),
+            'level' => config(self::CONFIG_KEY.'.level', 'error'),
+            'labels' => config(self::CONFIG_KEY.'.labels', []),
+            'deduplication' => config(self::CONFIG_KEY.'.deduplication'),
+            'buffer' => config(self::CONFIG_KEY.'.buffer'),
+            'signature_generator' => config(self::CONFIG_KEY.'.signature_generator'),
+            'tracing' => $this->normalizeTracingConfig(config(self::CONFIG_KEY.'.tracing', [])),
         ], fn (mixed $value): bool => $value !== null);
 
         config(['logging.channels.github' => $channel]);

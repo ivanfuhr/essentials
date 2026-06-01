@@ -50,6 +50,8 @@ php artisan vendor:publish --tag=essentials-config
   - [Database Backups](#database-backups)
   - [translations:extract](#translationsextract)
 - [GitHub Issue Logger](#-github-issue-logger)
+- [Credits](#credits)
+- [License](#license)
 
 ### ✅ Strict Models
 
@@ -205,13 +207,11 @@ php artisan vendor:publish --tag=essentials-stubs
 
 ### 🐙 GitHub Issue Logger
 
-Turn Laravel errors and logs into GitHub issues (with deduplication, comments on repeats, tracing, and customizable Markdown templates). Ported from [naoray/laravel-github-monolog](https://github.com/Naoray/laravel-github-monolog). Lives in `src/Loggers/Github/`.
+Turn Laravel errors and logs into GitHub issues (with deduplication, comments on repeats, tracing, and customizable Markdown templates). Implemented in `src/Loggers/Github/`.
 
 Publish and configure:
 
-```bash
-php artisan vendor:publish --tag=essentials-loggers-github-config
-```
+Configure in `config/essentials.php` under `loggers.github` (publish with `php artisan vendor:publish --tag=essentials-config` if needed).
 
 ```env
 GITHUB_MONOLOG_ENABLED=true
@@ -233,10 +233,17 @@ Optional: publish issue templates with `php artisan vendor:publish --tag=essenti
 - General cleanup of the skeleton
 - Additional configurables for common Laravel patterns
 
+## Credits
+
+This package is maintained by **[Ivan Führ](https://github.com/ivanfuhr)**.
+
+It builds on ideas and code from these projects:
+
+- **[nunomaduro/essentials](https://github.com/nunomaduro/essentials)** — [Nuno Maduro](https://github.com/nunomaduro)
+- **[laravel-github-monolog](https://github.com/Naoray/laravel-github-monolog)** — Krishan Koenig and [contributors](https://github.com/Naoray/laravel-github-monolog/graphs/contributors)
+
+Thank you to everyone who made the upstream work possible.
+
 ## License
 
-**Essentials** is maintained by **[Ivan Führ](https://github.com/ivanfuhr)** under the **[MIT license](https://opensource.org/licenses/MIT)**.
-
-Based on [nunomaduro/essentials](https://github.com/nunomaduro/essentials) by Nuno Maduro.
-
-GitHub Issue Logger is based on [laravel-loggers.github](https://github.com/Naoray/laravel-loggers.github) by Krishan Koenig (MIT).
+The MIT License (MIT). Please see [LICENSE.md](LICENSE.md) for more information.

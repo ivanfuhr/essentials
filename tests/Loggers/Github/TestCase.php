@@ -12,7 +12,7 @@ class TestCase extends BaseTestCase
     {
         parent::defineEnvironment($app);
 
-        $app['config']->set('loggers.github.enabled', true);
+        $app['config']->set('essentials.loggers.github.enabled', true);
 
         $app['config']->set('cache.default', 'array');
         $app['config']->set('cache.stores.array', [
@@ -27,7 +27,7 @@ class TestCase extends BaseTestCase
             'prefix' => '',
         ]);
 
-        $app['config']->set('loggers.github.tracing', [
+        $app['config']->set('essentials.loggers.github.tracing', [
             'enabled' => true,
         ]);
 

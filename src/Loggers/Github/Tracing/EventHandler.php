@@ -24,7 +24,7 @@ final class EventHandler
     public function subscribe(Dispatcher $events): void
     {
         // Check package config first, then fall back to channel config
-        $packageConfig = config('loggers.github.tracing', []);
+        $packageConfig = config('essentials.loggers.github.tracing', []);
         $channelConfig = config('logging.channels.github.tracing', []);
 
         // Package config takes precedence

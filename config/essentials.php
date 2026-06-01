@@ -77,11 +77,71 @@ return [
     | GitHub Issue Logger
     |--------------------------------------------------------------------------
     |
-    | Log errors as GitHub issues. Configure via config/loggers/github.php
-    | (publish with: php artisan vendor:publish --tag=essentials-loggers-github-config)
-    |
-    | @see https://github.com/Naoray/laravel-github-monolog (ported into src/Loggers/Github)
+    | Log errors as GitHub issues (src/Loggers/Github/). When enabled, registers
+    | the `github` log channel automatically when repo and token are set.
     |
     */
+
+    'loggers' => [
+        'github' => [
+            'enabled' => env('GITHUB_MONOLOG_ENABLED', false),
+            'repo' => env('GITHUB_MONOLOG_REPO'),
+            'token' => env('GITHUB_MONOLOG_TOKEN'),
+            'labels' => [],
+            'level' => env('GITHUB_MONOLOG_LEVEL', 'error'),
+            'deduplication' => [
+                'store' => null,
+                'prefix' => 'github-monolog:',
+                'time' => 3600,
+                'track_occurrences' => true,
+            ],
+            'buffer' => [
+                'limit' => 0,
+                'flush_on_overflow' => true,
+            ],
+            'signature_generator' => IvanFuhr\Essentials\Loggers\Github\Deduplication\DefaultSignatureGenerator::class,
+            'tracing' => [
+                'enabled' => true,
+                'environment' => true,
+                'user' => true,
+                'route' => true,
+                'requests' => true,
+                'session' => true,
+                'queries' => true,
+                'jobs' => true,
+                'commands' => true,
+                'outgoing_requests' => true,
+                'livewire' => true,
+                'inertia' => true,
+                'git' => true,
+                'breadcrumbs' => true,
+                'query_limit' => 50,
+                'breadcrumb_limit' => 40,
+                'outgoing_request_limit' => 20,
+                'redact' => [
+                    'headers' => [
+                        'authorization',
+                        'proxy-authorization',
+                        'cookie',
+                        'x-xsrf-token',
+                    ],
+                    'payload_fields' => [
+                        'password',
+                        'password_confirmation',
+                        '_token',
+                        'token',
+                        'secret',
+                        'api_key',
+                        'api_secret',
+                    ],
+                    'query_bindings' => [
+                        'password',
+                        'secret',
+                        'token',
+                    ],
+                ],
+            ],
+        ],
+    ],
 
 ];

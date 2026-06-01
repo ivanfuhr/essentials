@@ -10,7 +10,7 @@ use IvanFuhr\Essentials\Loggers\Github\Tracing\LivewireDataCollector;
 
 beforeEach(function (): void {
     $this->collector = new LivewireDataCollector;
-    config(['loggers.github.tracing.livewire' => true]);
+    config(['essentials.loggers.github.tracing.livewire' => true]);
     config(['logging.channels.github.tracing.livewire' => true]);
 });
 
@@ -176,11 +176,11 @@ it('handles empty component payload gracefully', function (): void {
 
 it('returns enabled status based on config', function (): void {
     config(['logging.channels.github.tracing.livewire' => true]);
-    config(['loggers.github.tracing.livewire' => null]);
+    config(['essentials.loggers.github.tracing.livewire' => null]);
     expect($this->collector->isEnabled())->toBeTrue();
 
     config(['logging.channels.github.tracing.livewire' => false]);
-    config(['loggers.github.tracing.livewire' => false]);
+    config(['essentials.loggers.github.tracing.livewire' => false]);
     expect($this->collector->isEnabled())->toBeFalse();
 });
 

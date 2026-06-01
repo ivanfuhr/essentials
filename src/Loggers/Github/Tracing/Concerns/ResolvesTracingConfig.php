@@ -9,13 +9,12 @@ trait ResolvesTracingConfig
     /**
      * Get a tracing configuration value.
      *
-     * Checks both loggers.github.tracing and logging.channels.github.tracing
-     * to support both configuration styles. Package config takes precedence.
+     * Checks essentials.loggers.github.tracing and logging.channels.github.tracing.
+     * Package config takes precedence.
      */
     protected function getTracingConfig(string $key, mixed $default = null): mixed
     {
-        // Package config takes precedence
-        $packageValue = config('loggers.github.tracing.'.$key);
+        $packageValue = config('essentials.loggers.github.tracing.'.$key);
         if ($packageValue !== null) {
             return $packageValue;
         }

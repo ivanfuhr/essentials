@@ -10,7 +10,7 @@ use IvanFuhr\Essentials\Loggers\Github\Tracing\InertiaDataCollector;
 
 beforeEach(function (): void {
     $this->collector = new InertiaDataCollector;
-    config(['loggers.github.tracing.inertia' => true]);
+    config(['essentials.loggers.github.tracing.inertia' => true]);
     config(['logging.channels.github.tracing.inertia' => true]);
 });
 
@@ -116,11 +116,11 @@ it('handles response without component in body', function (): void {
 
 it('returns enabled status based on config', function (): void {
     config(['logging.channels.github.tracing.inertia' => true]);
-    config(['loggers.github.tracing.inertia' => null]);
+    config(['essentials.loggers.github.tracing.inertia' => null]);
     expect($this->collector->isEnabled())->toBeTrue();
 
     config(['logging.channels.github.tracing.inertia' => false]);
-    config(['loggers.github.tracing.inertia' => false]);
+    config(['essentials.loggers.github.tracing.inertia' => false]);
     expect($this->collector->isEnabled())->toBeFalse();
 });
 
