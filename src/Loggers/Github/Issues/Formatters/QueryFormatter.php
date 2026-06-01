@@ -8,7 +8,7 @@ final class QueryFormatter
 {
     public function format(?array $queries): string
     {
-        if (empty($queries)) {
+        if ($queries === null || $queries === []) {
             return '';
         }
 
@@ -19,7 +19,7 @@ final class QueryFormatter
             $time = $query['time'] ?? 0;
             $connection = $query['connection'] ?? 'default';
 
-            $output .= "-- Connection: {$connection} (".number_format($time, 1)."ms)\n";
+            $output .= sprintf('-- Connection: %s (', $connection).number_format($time, 1)."ms)\n";
             $output .= $sql;
 
             if (! empty($bindings)) {

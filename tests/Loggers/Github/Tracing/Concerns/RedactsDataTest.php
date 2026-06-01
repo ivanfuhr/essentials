@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Config;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\Concerns\RedactsData;
 use Symfony\Component\HttpFoundation\HeaderBag;
 
-class TestRedactsData
+final class TestRedactsData
 {
     use RedactsData;
 
@@ -24,11 +26,11 @@ class TestRedactsData
     }
 }
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->trait = new TestRedactsData;
 });
 
-it('redacts sensitive headers', function () {
+it('redacts sensitive headers', function (): void {
     $headers = new HeaderBag([
         'authorization' => ['Bearer secret-token'],
         'cookie' => ['session=abc123; remember=xyz'],
@@ -44,7 +46,7 @@ it('redacts sensitive headers', function () {
     expect($result['x-custom'][0])->toBe('value');
 });
 
-it('redacts sensitive payload fields', function () {
+it('redacts sensitive payload fields', function (): void {
     $data = [
         'username' => 'john',
         'password' => 'secret123',
@@ -60,7 +62,7 @@ it('redacts sensitive payload fields', function () {
     expect($result['token'])->toContain('bytes redacted');
 });
 
-it('redacts nested sensitive payload fields', function () {
+it('redacts nested sensitive payload fields', function (): void {
     $data = [
         'user' => [
             'name' => 'John',
@@ -76,7 +78,7 @@ it('redacts nested sensitive payload fields', function () {
     expect($result['api_key'])->toContain('bytes redacted');
 });
 
-it('uses config for sensitive headers', function () {
+it('uses config for sensitive headers', function (): void {
     Config::set('logging.channels.github.tracing.redact.headers', ['x-api-key']);
 
     $headers = new HeaderBag([
@@ -90,7 +92,7 @@ it('uses config for sensitive headers', function () {
     expect($result['x-safe'][0])->toBe('value');
 });
 
-it('redacts query bindings', function () {
+it('redacts query bindings', function (): void {
     // Note: redactBindings checks if binding string matches sensitive key patterns
     // 'password123' doesn't match 'password' pattern, so it won't be redacted
     // This is intentional - bindings are values, not keys
@@ -101,7 +103,7 @@ it('redacts query bindings', function () {
     expect($result[0])->toBe('safe-value');
 });
 
-it('preserves authorization scheme when redacting', function () {
+it('preserves authorization scheme when redacting', function (): void {
     $headers = new HeaderBag([
         'authorization' => ['Bearer secret-token-here'],
     ]);
@@ -113,7 +115,7 @@ it('preserves authorization scheme when redacting', function () {
     expect($result['authorization'][0])->not->toContain('secret-token-here');
 });
 
-it('handles cookie header redaction correctly', function () {
+it('handles cookie header redaction correctly', function (): void {
     $headers = new HeaderBag([
         'cookie' => ['session=abc123; remember=xyz789'],
     ]);
@@ -127,7 +129,7 @@ it('handles cookie header redaction correctly', function () {
     expect($result['cookie'][0])->not->toContain('xyz789');
 });
 
-it('uses config for sensitive payload fields', function () {
+it('uses config for sensitive payload fields', function (): void {
     Config::set('logging.channels.github.tracing.redact.payload_fields', ['custom_secret']);
 
     $data = [
@@ -141,7 +143,7 @@ it('uses config for sensitive payload fields', function () {
     expect($result['public_field'])->toBe('public-value');
 });
 
-it('handles empty arrays', function () {
+it('handles empty arrays', function (): void {
     expect($this->trait->testRedactPayload([]))->toBe([]);
     expect($this->trait->testRedactBindings([]))->toBe([]);
 });

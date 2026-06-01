@@ -1,32 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
-use Monolog\Level;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\ContextProcessor;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\EnvironmentCollector;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\QueryCollector;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\RequestDataCollector;
+use Monolog\Level;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Context::flush();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('collects multiple context types together', function () {
+it('collects multiple context types together', function (): void {
     // Simulate request
     $request = Request::create('https://example.com/test', 'GET');
 
-    $requestEvent = new RequestHandled($request, Mockery::mock('Illuminate\Http\Response'));
+    $requestEvent = new RequestHandled($request, Mockery::mock(Illuminate\Http\Response::class));
     (new RequestDataCollector)($requestEvent);
 
     // Simulate query
-    $connection = Mockery::mock('Illuminate\Database\Connection');
+    $connection = Mockery::mock(Illuminate\Database\Connection::class);
     $connection->shouldReceive('getName')->andReturn('mysql');
 
     $queryEvent = new QueryExecuted(
@@ -57,7 +59,7 @@ it('collects multiple context types together', function () {
     expect($processed->context['environment'])->toHaveKey('app_env');
 });
 
-it('respects configuration when collecting context', function () {
+it('respects configuration when collecting context', function (): void {
     Config::set('logging.channels.github.tracing', [
         'enabled' => true,
         'requests' => false,

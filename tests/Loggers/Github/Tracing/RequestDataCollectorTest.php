@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\RequestDataCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->collector = new RequestDataCollector;
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('collects request data', function () {
+it('collects request data', function (): void {
     // Arrange
     $request = Request::create('https://example.com/test?foo=bar', 'POST', ['key' => 'value']);
     $request->headers->set('accept', 'application/json');
@@ -24,7 +26,7 @@ it('collects request data', function () {
     // Set actual cookies on the request object
     $request->cookies->set('test-cookie', 'test-value');
 
-    $event = new RequestHandled($request, Mockery::mock('Illuminate\Http\Response'));
+    $event = new RequestHandled($request, Mockery::mock(Illuminate\Http\Response::class));
 
     // Act
     ($this->collector)($event);
@@ -37,14 +39,14 @@ it('collects request data', function () {
     expect($requestData['method'])->toBe('POST');
 });
 
-it('filters sensitive headers', function () {
+it('filters sensitive headers', function (): void {
     // Arrange
     $request = Request::create('https://example.com/test', 'GET');
     $request->headers->set('authorization', 'Bearer secret-token');
     $request->headers->set('cookie', 'session=abc123');
     $request->headers->set('safe-header', 'value');
 
-    $event = new RequestHandled($request, Mockery::mock('Illuminate\Http\Response'));
+    $event = new RequestHandled($request, Mockery::mock(Illuminate\Http\Response::class));
 
     // Act
     ($this->collector)($event);
@@ -56,18 +58,18 @@ it('filters sensitive headers', function () {
     expect($requestData['headers']['safe-header'][0])->toBe('value');
 });
 
-it('handles deleted temporary files gracefully', function () {
+it('handles deleted temporary files gracefully', function (): void {
     // Arrange
     $request = Request::create('https://example.com/test', 'POST');
 
     // Create a mock uploaded file that throws RuntimeException when getSize() is called
-    $file = Mockery::mock('Illuminate\Http\UploadedFile');
+    $file = Mockery::mock(UploadedFile::class);
     $file->shouldReceive('getClientOriginalName')->andReturn('test.txt');
     $file->shouldReceive('getMimeType')->andReturn('text/plain');
-    $file->shouldReceive('getSize')->andThrow(new \RuntimeException('stat failed'));
+    $file->shouldReceive('getSize')->andThrow(new RuntimeException('stat failed'));
 
     $request->files->set('file', $file);
-    $event = new RequestHandled($request, Mockery::mock('Illuminate\Http\Response'));
+    $event = new RequestHandled($request, Mockery::mock(Illuminate\Http\Response::class));
 
     // Act & Assert - Should not throw exception
     ($this->collector)($event);
@@ -86,7 +88,7 @@ it('handles deleted temporary files gracefully', function () {
     }
 });
 
-it('collects file upload data using UploadedFile fake', function () {
+it('collects file upload data using UploadedFile fake', function (): void {
     // Arrange
     $request = Request::create('https://example.com/upload', 'POST', [
         'title' => 'Test Document',
@@ -99,7 +101,7 @@ it('collects file upload data using UploadedFile fake', function () {
     $request->files->set('document', $file1);
     $request->files->set('photo', $file2);
 
-    $event = new RequestHandled($request, Mockery::mock('Illuminate\Http\Response'));
+    $event = new RequestHandled($request, Mockery::mock(Illuminate\Http\Response::class));
 
     // Act
     ($this->collector)($event);
@@ -129,7 +131,7 @@ it('collects file upload data using UploadedFile fake', function () {
     expect($requestData['files']['photo']['mime_type'])->toContain('image');
 });
 
-it('handles multiple files with same name using UploadedFile fake', function () {
+it('handles multiple files with same name using UploadedFile fake', function (): void {
     // Arrange
     $request = Request::create('https://example.com/upload', 'POST');
 
@@ -141,7 +143,7 @@ it('handles multiple files with same name using UploadedFile fake', function () 
 
     $request->files->set('files', $files);
 
-    $event = new RequestHandled($request, Mockery::mock('Illuminate\Http\Response'));
+    $event = new RequestHandled($request, Mockery::mock(Illuminate\Http\Response::class));
 
     // Act
     ($this->collector)($event);

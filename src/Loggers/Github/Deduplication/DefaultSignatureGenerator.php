@@ -7,14 +7,14 @@ namespace IvanFuhr\Essentials\Loggers\Github\Deduplication;
 use Monolog\LogRecord;
 use Throwable;
 
-final class DefaultSignatureGenerator implements SignatureGeneratorInterface
+final readonly class DefaultSignatureGenerator implements SignatureGeneratorInterface
 {
     public function __construct(
-        private readonly VendorFrameDetector $vendorFrameDetector = new VendorFrameDetector,
-        private readonly SignatureContextExtractor $contextExtractor = new SignatureContextExtractor,
-        private readonly MessageTemplate $messageTemplate = new MessageTemplate,
-        private readonly int $maxFrames = 5,
-        private readonly int $maxExceptionChainDepth = 3
+        private VendorFrameDetector $vendorFrameDetector = new VendorFrameDetector,
+        private SignatureContextExtractor $contextExtractor = new SignatureContextExtractor,
+        private MessageTemplate $messageTemplate = new MessageTemplate,
+        private int $maxFrames = 5,
+        private int $maxExceptionChainDepth = 3
     ) {}
 
     /**
@@ -89,6 +89,7 @@ final class DefaultSignatureGenerator implements SignatureGeneratorInterface
         if ($firstVendorFrame !== null) {
             $allFrames[] = $firstVendorFrame;
         }
+
         $allFrames = array_merge($allFrames, $frames);
 
         $payload = [
@@ -98,7 +99,7 @@ final class DefaultSignatureGenerator implements SignatureGeneratorInterface
             'origin' => [
                 'ex_chain' => $this->exceptionChainSignature($exception, $this->maxExceptionChainDepth),
                 'frames' => array_map(
-                    fn (array $frame) => $this->frameSignature($frame),
+                    $this->frameSignature(...),
                     $allFrames
                 ),
                 'culprit' => $allFrames[0] ? $this->frameSignature($allFrames[0]) : null,
@@ -184,11 +185,7 @@ final class DefaultSignatureGenerator implements SignatureGeneratorInterface
 
         // Normalize vendor frames to class name only (without method) to group errors
         // from the same vendor class that occur through different methods
-        if ($this->vendorFrameDetector->isVendorFrame($frame) && $class !== '') {
-            $func = $class;
-        } else {
-            $func = $class.$type.$function;
-        }
+        $func = $this->vendorFrameDetector->isVendorFrame($frame) && $class !== '' ? $class : $class.$type.$function;
 
         // Intentionally avoid line numbers; they change frequently and cause under-grouping.
         return [

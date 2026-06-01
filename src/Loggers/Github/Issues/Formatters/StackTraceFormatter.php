@@ -8,19 +8,19 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\VendorFrameDetector;
 
-final class StackTraceFormatter
+final readonly class StackTraceFormatter
 {
-    private const VENDOR_FRAME_PLACEHOLDER = '[Vendor frames]';
+    private const string VENDOR_FRAME_PLACEHOLDER = '[Vendor frames]';
 
     public function __construct(
-        private readonly VendorFrameDetector $vendorFrameDetector = new VendorFrameDetector
+        private VendorFrameDetector $vendorFrameDetector = new VendorFrameDetector
     ) {}
 
     public function format(string $stackTrace, bool $collapseVendorFrames = true): string
     {
         return collect(explode("\n", $stackTrace))
-            ->filter(fn ($line) => ! empty(mb_trim($line)))
-            ->flatMap(function ($line) use ($collapseVendorFrames) {
+            ->filter(fn ($line): bool => ! in_array(mb_trim($line), ['', '0'], true))
+            ->flatMap(function ($line) use ($collapseVendorFrames): array {
                 /** @var string $line */
                 if (mb_trim($line) === '"}') {
                     return [''];
@@ -30,7 +30,7 @@ final class StackTraceFormatter
                     return $this->formatInitialException($line);
                 }
 
-                if (! Str::isMatch('/#[0-9]+ /', $line)) {
+                if (! Str::isMatch('/#\d+ /', $line)) {
                     return [$line];
                 }
 
@@ -80,7 +80,7 @@ final class StackTraceFormatter
     {
         $hasVendorFrame = false;
 
-        return $lines->filter(function ($line) use (&$hasVendorFrame) {
+        return $lines->filter(function ($line) use (&$hasVendorFrame): bool {
             $isVendorFrame = $this->isVendorFrame($line);
 
             if ($isVendorFrame) {

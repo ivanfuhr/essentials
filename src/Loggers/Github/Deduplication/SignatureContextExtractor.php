@@ -100,7 +100,7 @@ final class SignatureContextExtractor
             ?? null;
         if (is_string($controller) && $controller !== '') {
             // Extract class name if it's a full action string like "App\Http\Controllers\UserController@index"
-            [$controller] = Str::parseCallback($controller, null);
+            [$controller] = Str::parseCallback($controller);
             $data['controller'] = $controller;
         }
 

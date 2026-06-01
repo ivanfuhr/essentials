@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 
 final class SectionMapping
 {
-    private const SECTION_MAPPINGS = [
+    private const array SECTION_MAPPINGS = [
         '{simplified_stack_trace}' => 'stacktrace',
         '{full_stack_trace}' => 'stacktrace',
         '{previous_exceptions}' => 'prev-stacktrace',
@@ -33,13 +33,11 @@ final class SectionMapping
     public static function getSectionsToRemove(array $replacements): array
     {
         return collect(self::SECTION_MAPPINGS)
-            ->when(empty($replacements), fn (Collection $collection) => $collection->values()->unique())
-            ->when(! empty($replacements), function (Collection $collection) use ($replacements) {
-                return $collection
-                    ->filter(fn (string $_, string $placeholder) => isset($replacements[$placeholder]) && empty($replacements[$placeholder]))
-                    ->values()
-                    ->unique();
-            })
+            ->when($replacements === [], fn (Collection $collection) => $collection->values()->unique())
+            ->when($replacements !== [], fn (Collection $collection) => $collection
+                ->filter(fn (string $_, string $placeholder): bool => isset($replacements[$placeholder]) && empty($replacements[$placeholder]))
+                ->values()
+                ->unique())
             ->values()
             ->toArray();
     }
@@ -60,7 +58,7 @@ final class SectionMapping
             return "/<!-- {$section}:start -->.*?<!-- {$section}:end -->\n?/s";
         }
 
-        return "/<!-- {$section}:start -->\s*(.*?)\s*<!-- {$section}:end -->/s";
+        return sprintf('/<!-- %s:start -->\s*(.*?)\s*<!-- %s:end -->/s', $section, $section);
     }
 
     public static function getStandaloneFlagPattern(): string

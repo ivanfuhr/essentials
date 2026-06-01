@@ -1,13 +1,15 @@
 <?php
 
-use Monolog\Level;
-use IvanFuhr\Essentials\Loggers\Github\Deduplication\DefaultSignatureGenerator;
+declare(strict_types=1);
 
-beforeEach(function () {
+use IvanFuhr\Essentials\Loggers\Github\Deduplication\DefaultSignatureGenerator;
+use Monolog\Level;
+
+beforeEach(function (): void {
     $this->generator = new DefaultSignatureGenerator;
 });
 
-test('generates signature from message', function () {
+test('generates signature from message', function (): void {
     $record = createLogRecord('Test message', ['foo' => 'bar']);
 
     $signature1 = $this->generator->generate($record);
@@ -29,31 +31,30 @@ test('generates signature from message', function () {
     expect($signature4)->not->toBe($signature1);
 });
 
-test('generates signature from exception', function () {
-    $exception = new \Exception('Test exception');
+test('generates signature from exception', function (): void {
+    $exception = new Exception('Test exception');
     $record = createLogRecord('Test message', exception: $exception);
 
     $signature1 = $this->generator->generate($record);
     expect($signature1)->toBeString();
 
     // Same exception should generate same signature (regardless of message or level)
-    $record2 = createLogRecord('Different message', exception: $exception, level: Level::Warning);
+    $record2 = createLogRecord('Different message', level: Level::Warning, exception: $exception);
     $signature2 = $this->generator->generate($record2);
     expect($signature2)->toBe($signature1);
 
     // Different exception class should generate different signature
-    $differentException = new \RuntimeException('Different exception');
+    $differentException = new RuntimeException('Different exception');
     $record3 = createLogRecord('Test message', exception: $differentException);
     $signature3 = $this->generator->generate($record3);
     expect($signature3)->not->toBe($signature1);
 });
 
-test('signature is stable across deploys - same exception at different line numbers produces same signature', function () {
+test('signature is stable across deploys - same exception at different line numbers produces same signature', function (): void {
     // Create an exception with a custom trace that simulates different line numbers
-    $exception1 = new \Exception('Test exception');
-    $reflection = new \ReflectionClass($exception1);
+    $exception1 = new Exception('Test exception');
+    $reflection = new ReflectionClass($exception1);
     $traceProperty = $reflection->getProperty('trace');
-    $traceProperty->setAccessible(true);
 
     // Set trace with line 25
     $traceProperty->setValue($exception1, [[
@@ -67,10 +68,9 @@ test('signature is stable across deploys - same exception at different line numb
     $signature1 = $this->generator->generate($record1);
 
     // Create same exception but with different line number (simulating code change)
-    $exception2 = new \Exception('Test exception');
-    $reflection2 = new \ReflectionClass($exception2);
+    $exception2 = new Exception('Test exception');
+    $reflection2 = new ReflectionClass($exception2);
     $traceProperty2 = $reflection2->getProperty('trace');
-    $traceProperty2->setAccessible(true);
 
     // Set trace with line 30 (different line number)
     $traceProperty2->setValue($exception2, [[
@@ -87,17 +87,16 @@ test('signature is stable across deploys - same exception at different line numb
     expect($signature2)->toBe($signature1);
 });
 
-test('prefers in-app frame over vendor frame for exception signatures', function () {
+test('prefers in-app frame over vendor frame for exception signatures', function (): void {
     // Create exception with vendor frame first, then app frame
     // This simulates an exception thrown from vendor code but originating from app code
-    $exception = new \Exception('Test exception');
-    $reflection = new \ReflectionClass($exception);
+    $exception = new Exception('Test exception');
+    $reflection = new ReflectionClass($exception);
     $traceProperty = $reflection->getProperty('trace');
-    $traceProperty->setAccessible(true);
+
     $fileProperty = $reflection->getProperty('file');
-    $fileProperty->setAccessible(true);
+
     $lineProperty = $reflection->getProperty('line');
-    $lineProperty->setAccessible(true);
 
     // Set exception file and line to vendor (where exception was actually thrown)
     $fileProperty->setValue($exception, base_path('vendor/laravel/framework/src/SomeClass.php'));
@@ -136,7 +135,7 @@ test('prefers in-app frame over vendor frame for exception signatures', function
     // when vendor frames are present before app frames
 });
 
-test('normalizes messages with UUIDs to produce same signature', function () {
+test('normalizes messages with UUIDs to produce same signature', function (): void {
     $record1 = createLogRecord('User 550e8400-e29b-41d4-a716-446655440000 failed to login');
     $signature1 = $this->generator->generate($record1);
 
@@ -147,7 +146,7 @@ test('normalizes messages with UUIDs to produce same signature', function () {
     expect($signature2)->toBe($signature1);
 });
 
-test('normalizes messages with large numbers to produce same signature', function () {
+test('normalizes messages with large numbers to produce same signature', function (): void {
     $record1 = createLogRecord('Order 123456789 processed successfully');
     $signature1 = $this->generator->generate($record1);
 
@@ -158,7 +157,7 @@ test('normalizes messages with large numbers to produce same signature', functio
     expect($signature2)->toBe($signature1);
 });
 
-test('context stability - same message with different request IDs produces same signature', function () {
+test('context stability - same message with different request IDs produces same signature', function (): void {
     $record1 = createLogRecord('Request failed', [
         'request_id' => 'req-123',
         'user_id' => 456,
@@ -178,7 +177,7 @@ test('context stability - same message with different request IDs produces same 
     expect($signature2)->toBe($signature1);
 });
 
-test('includes route in signature when available', function () {
+test('includes route in signature when available', function (): void {
     $record1 = createLogRecord('Test error', [
         'request' => ['route' => 'api.users.index'],
     ]);
@@ -194,7 +193,7 @@ test('includes route in signature when available', function () {
     expect($signature2)->not->toBe($signature1);
 });
 
-test('includes job class in signature when available', function () {
+test('includes job class in signature when available', function (): void {
     $record1 = createLogRecord('Job failed', [
         'job' => ['class' => 'App\\Jobs\\ProcessOrder'],
     ]);
@@ -210,7 +209,7 @@ test('includes job class in signature when available', function () {
     expect($signature2)->not->toBe($signature1);
 });
 
-test('includes command name in signature when available', function () {
+test('includes command name in signature when available', function (): void {
     $record1 = createLogRecord('Command failed', [
         'command' => ['name' => 'import:users'],
     ]);
@@ -226,11 +225,10 @@ test('includes command name in signature when available', function () {
     expect($signature2)->not->toBe($signature1);
 });
 
-test('falls back gracefully when no in-app frame exists', function () {
-    $exception = new \Exception('Test exception');
-    $reflection = new \ReflectionClass($exception);
+test('falls back gracefully when no in-app frame exists', function (): void {
+    $exception = new Exception('Test exception');
+    $reflection = new ReflectionClass($exception);
     $traceProperty = $reflection->getProperty('trace');
-    $traceProperty->setAccessible(true);
 
     // Set trace with only vendor frames
     $traceProperty->setValue($exception, [
@@ -255,7 +253,7 @@ test('falls back gracefully when no in-app frame exists', function () {
     expect($signature)->toBeString()->not->toBeEmpty();
 });
 
-test('uses sha256 hash algorithm instead of md5', function () {
+test('uses sha256 hash algorithm instead of md5', function (): void {
     $record = createLogRecord('Test message');
     $signature = $this->generator->generate($record);
 
@@ -263,11 +261,10 @@ test('uses sha256 hash algorithm instead of md5', function () {
     expect($signature)->toMatch('/^[a-f0-9]{64}$/');
 });
 
-test('normalizes paths by stripping base path', function () {
-    $exception = new \Exception('Test exception');
-    $reflection = new \ReflectionClass($exception);
+test('normalizes paths by stripping base path', function (): void {
+    $exception = new Exception('Test exception');
+    $reflection = new ReflectionClass($exception);
     $traceProperty = $reflection->getProperty('trace');
-    $traceProperty->setAccessible(true);
 
     // Set trace with full path
     $traceProperty->setValue($exception, [[
@@ -281,10 +278,9 @@ test('normalizes paths by stripping base path', function () {
     $signature1 = $this->generator->generate($record1);
 
     // Create exception with same relative path but different line number
-    $exception2 = new \Exception('Test exception');
-    $reflection2 = new \ReflectionClass($exception2);
+    $exception2 = new Exception('Test exception');
+    $reflection2 = new ReflectionClass($exception2);
     $traceProperty2 = $reflection2->getProperty('trace');
-    $traceProperty2->setAccessible(true);
 
     // Same file, different line number (should produce same signature after normalization)
     $traceProperty2->setValue($exception2, [[
@@ -301,9 +297,9 @@ test('normalizes paths by stripping base path', function () {
     expect($signature2)->toBe($signature1);
 });
 
-test('same exception with different tmp file paths produces same signature', function () {
-    $exception1 = new \Exception('Failed to move file from /tmp/phpABC123');
-    $exception2 = new \Exception('Failed to move file from /tmp/phpXYZ789');
+test('same exception with different tmp file paths produces same signature', function (): void {
+    $exception1 = new Exception('Failed to move file from /tmp/phpABC123');
+    $exception2 = new Exception('Failed to move file from /tmp/phpXYZ789');
 
     $record1 = createLogRecord('Test', exception: $exception1);
     $record2 = createLogRecord('Test', exception: $exception2);
@@ -315,11 +311,10 @@ test('same exception with different tmp file paths produces same signature', fun
     expect($signature2)->toBe($signature1);
 });
 
-test('same stack trace but different route produces different signature', function () {
-    $exception = new \Exception('Test exception');
-    $reflection = new \ReflectionClass($exception);
+test('same stack trace but different route produces different signature', function (): void {
+    $exception = new Exception('Test exception');
+    $reflection = new ReflectionClass($exception);
     $traceProperty = $reflection->getProperty('trace');
-    $traceProperty->setAccessible(true);
 
     $traceProperty->setValue($exception, [[
         'file' => base_path('app/Http/Controllers/UserController.php'),
@@ -350,11 +345,10 @@ test('same stack trace but different route produces different signature', functi
     expect($signature2)->not->toBe($signature1);
 });
 
-test('same exception with different HTTP methods produces different signature', function () {
-    $exception = new \Exception('Test exception');
-    $reflection = new \ReflectionClass($exception);
+test('same exception with different HTTP methods produces different signature', function (): void {
+    $exception = new Exception('Test exception');
+    $reflection = new ReflectionClass($exception);
     $traceProperty = $reflection->getProperty('trace');
-    $traceProperty->setAccessible(true);
 
     $traceProperty->setValue($exception, [[
         'file' => base_path('app/Http/Controllers/UserController.php'),
@@ -385,9 +379,9 @@ test('same exception with different HTTP methods produces different signature', 
     expect($signature2)->not->toBe($signature1);
 });
 
-test('same exception message template produces same signature regardless of actual values', function () {
-    $exception1 = new \Exception('User 550e8400-e29b-41d4-a716-446655440000 failed to login');
-    $exception2 = new \Exception('User 123e4567-e89b-12d3-a456-426614174000 failed to login');
+test('same exception message template produces same signature regardless of actual values', function (): void {
+    $exception1 = new Exception('User 550e8400-e29b-41d4-a716-446655440000 failed to login');
+    $exception2 = new Exception('User 123e4567-e89b-12d3-a456-426614174000 failed to login');
 
     $record1 = createLogRecord('Test', exception: $exception1);
     $record2 = createLogRecord('Test', exception: $exception2);
@@ -399,18 +393,17 @@ test('same exception message template produces same signature regardless of actu
     expect($signature2)->toBe($signature1);
 });
 
-test('groups errors from same vendor class with different methods', function () {
+test('groups errors from same vendor class with different methods', function (): void {
     // Simulate errors from the same vendor class (DefaultFileRemover) but different methods
     // This tests that vendor frames are normalized to class name only
 
-    $exception1 = new \Exception('Disk [tracks] does not have a configured driver.');
-    $reflection1 = new \ReflectionClass($exception1);
+    $exception1 = new Exception('Disk [tracks] does not have a configured driver.');
+    $reflection1 = new ReflectionClass($exception1);
     $traceProperty1 = $reflection1->getProperty('trace');
-    $traceProperty1->setAccessible(true);
+
     $fileProperty1 = $reflection1->getProperty('file');
-    $fileProperty1->setAccessible(true);
+
     $lineProperty1 = $reflection1->getProperty('line');
-    $lineProperty1->setAccessible(true);
 
     // Set exception file and line
     $fileProperty1->setValue($exception1, base_path('vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemManager.php'));
@@ -434,14 +427,13 @@ test('groups errors from same vendor class with different methods', function () 
         ],
     ]);
 
-    $exception2 = new \Exception('Disk [tracks] does not have a configured driver.');
-    $reflection2 = new \ReflectionClass($exception2);
+    $exception2 = new Exception('Disk [tracks] does not have a configured driver.');
+    $reflection2 = new ReflectionClass($exception2);
     $traceProperty2 = $reflection2->getProperty('trace');
-    $traceProperty2->setAccessible(true);
+
     $fileProperty2 = $reflection2->getProperty('file');
-    $fileProperty2->setAccessible(true);
+
     $lineProperty2 = $reflection2->getProperty('line');
-    $lineProperty2->setAccessible(true);
 
     // Set exception file and line
     $fileProperty2->setValue($exception2, base_path('vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemManager.php'));
@@ -465,14 +457,13 @@ test('groups errors from same vendor class with different methods', function () 
         ],
     ]);
 
-    $exception3 = new \Exception('Disk [tracks] does not have a configured driver.');
-    $reflection3 = new \ReflectionClass($exception3);
+    $exception3 = new Exception('Disk [tracks] does not have a configured driver.');
+    $reflection3 = new ReflectionClass($exception3);
     $traceProperty3 = $reflection3->getProperty('trace');
-    $traceProperty3->setAccessible(true);
+
     $fileProperty3 = $reflection3->getProperty('file');
-    $fileProperty3->setAccessible(true);
+
     $lineProperty3 = $reflection3->getProperty('line');
-    $lineProperty3->setAccessible(true);
 
     // Set exception file and line
     $fileProperty3->setValue($exception3, base_path('vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemManager.php'));

@@ -1,0 +1,1507 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: src/Loggers/Github/Deduplication/CacheManager.php
+
+		-
+			message: '#^Property IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\CacheManager\:\:\$store \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Loggers/Github/Deduplication/CacheManager.php
+
+		-
+			message: '#^Parameter \#1 \$records of method Monolog\\Handler\\HandlerInterface\:\:handleBatch\(\) expects array\<Monolog\\LogRecord\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Deduplication/DeduplicationHandler.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 6
+			path: src/Loggers/Github/Deduplication/DefaultSignatureGenerator.php
+
+		-
+			message: '#^Parameter \#2 \$data of function hash expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Deduplication/DefaultSignatureGenerator.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\SignatureContextExtractor\:\:extractCommandData\(\) should return array\{command\: string\} but returns array\{\}\|array\{command\: non\-empty\-string\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Deduplication/SignatureContextExtractor.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\SignatureContextExtractor\:\:extractHttpData\(\) should return array\{method\?\: string, route\?\: string, controller\?\: string\} but returns array\{\}\|array\{method\?\: non\-empty\-string, route\?\: non\-empty\-string, controller\?\: string\|null\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Deduplication/SignatureContextExtractor.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\SignatureContextExtractor\:\:extractJobData\(\) should return array\{job\: string, queue\?\: string\} but returns array\{\}\|array\{job\?\: non\-empty\-string, queue\?\: non\-empty\-string\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Deduplication/SignatureContextExtractor.php
+
+		-
+			message: '#^Binary operation "\." between mixed and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Loggers/Github/Deduplication/VendorFrameDetector.php
+
+		-
+			message: '#^Binary operation "\." between string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Loggers/Github/Deduplication/VendorFrameDetector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\GithubIssueHandlerFactory\:\:__invoke\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\GithubIssueHandlerFactory\:\:createBaseHandler\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\GithubIssueHandlerFactory\:\:getDeduplicationTime\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\GithubIssueHandlerFactory\:\:validateConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\GithubIssueHandlerFactory\:\:wrapWithDeduplication\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \#1 \$array of static method Illuminate\\Support\\Arr\:\:get\(\) expects array\|ArrayAccess, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \#1 \$object_or_class of function is_subclass_of expects object\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$bubble of class IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler constructor expects bool, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$bufferLimit of class IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\DeduplicationHandler constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$flushOnOverflow of class IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\DeduplicationHandler constructor expects bool, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$labels of class IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler constructor expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$level of class IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\DeduplicationHandler constructor expects 100\|200\|250\|300\|400\|500\|550\|600\|''ALERT''\|''alert''\|''CRITICAL''\|''critical''\|''DEBUG''\|''debug''\|''EMERGENCY''\|''emergency''\|''ERROR''\|''error''\|''INFO''\|''info''\|''NOTICE''\|''notice''\|''WARNING''\|''warning''\|Monolog\\Level, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$level of class IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler constructor expects int\|Monolog\\Level\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$prefix of class IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\DeduplicationHandler constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$repo of class IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$store of class IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\DeduplicationHandler constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$token of class IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Parameter \$trackOccurrences of class IvanFuhr\\Essentials\\Loggers\\Github\\Deduplication\\DeduplicationHandler constructor expects bool, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubIssueHandlerFactory.php
+
+		-
+			message: '#^Cannot access offset ''enabled'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Loggers/Github/GithubLoggerServiceProvider.php
+
+		-
+			message: '#^Cannot call method all\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Loggers/Github/GithubLoggerServiceProvider.php
+
+		-
+			message: '#^Cannot call method forget\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Loggers/Github/GithubLoggerServiceProvider.php
+
+		-
+			message: '#^Cannot call method has\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Loggers/Github/GithubLoggerServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_keys expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubLoggerServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_starts_with expects string, int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubLoggerServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$tracing of method IvanFuhr\\Essentials\\Loggers\\Github\\GithubLoggerServiceProvider\:\:normalizeTracingConfig\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/GithubLoggerServiceProvider.php
+
+		-
+			message: '#^Parameter \#3 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/BreadcrumbFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\ContextFormatter\:\:format\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/ContextFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\ContextFormatter\:\:format\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/ContextFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\ExceptionFormatter\:\:format\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/ExceptionFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\ExceptionFormatter\:\:formatBatch\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/ExceptionFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\ExceptionFormatter\:\:formatExceptionString\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/ExceptionFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\ExtraFormatter\:\:format\(\) has parameter \$extra with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/ExtraFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\ExtraFormatter\:\:format\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/ExtraFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\IssueFormatter\:\:formatBatch\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/IssueFormatter.php
+
+		-
+			message: '#^Parameter \#3 \$signature of method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\TemplateRenderer\:\:render\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/IssueFormatter.php
+
+		-
+			message: '#^Binary operation "\." between '' → '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/OutgoingRequestFormatter.php
+
+		-
+			message: '#^Cannot access offset ''duration_ms'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/OutgoingRequestFormatter.php
+
+		-
+			message: '#^Cannot access offset ''method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/OutgoingRequestFormatter.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/OutgoingRequestFormatter.php
+
+		-
+			message: '#^Cannot access offset ''url'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/OutgoingRequestFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\OutgoingRequestFormatter\:\:format\(\) has parameter \$requests with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/OutgoingRequestFormatter.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Issues/Formatters/OutgoingRequestFormatter.php
+
+		-
+			message: '#^Parameter \#3 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/OutgoingRequestFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\PreviousExceptionFormatter\:\:getException\(\) should return Throwable\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/PreviousExceptionFormatter.php
+
+		-
+			message: '#^Parameter \#2 \$replace of method Illuminate\\Support\\Stringable\:\:replace\(\) expects iterable\<string\>\|string, array\<int, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/PreviousExceptionFormatter.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/PreviousExceptionFormatter.php
+
+		-
+			message: '#^Binary operation "\.\=" between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: assignOp.invalid
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/QueryFormatter.php
+
+		-
+			message: '#^Cannot access offset ''bindings'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/QueryFormatter.php
+
+		-
+			message: '#^Cannot access offset ''connection'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/QueryFormatter.php
+
+		-
+			message: '#^Cannot access offset ''sql'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/QueryFormatter.php
+
+		-
+			message: '#^Cannot access offset ''time'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/QueryFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\QueryFormatter\:\:format\(\) has parameter \$queries with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/QueryFormatter.php
+
+		-
+			message: '#^Parameter \#1 \$num of function number_format expects float, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/QueryFormatter.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/QueryFormatter.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Loggers/Github/Issues/Formatters/StackTraceFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\StackTraceFormatter\:\:collapseVendorFrames\(\) has parameter \$lines with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/StackTraceFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\StackTraceFormatter\:\:collapseVendorFrames\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/StackTraceFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\StackTraceFormatter\:\:format\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/StackTraceFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\StackTraceFormatter\:\:formatInitialException\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/StackTraceFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\StackTraceFormatter\:\:isVendorFrame\(\) has parameter \$line with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/StackTraceFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\StructuredDataFormatter\:\:format\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Formatters/StructuredDataFormatter.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler\:\:__construct\(\) has parameter \$labels with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Handler.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler\:\:findExistingIssue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/Handler.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler\:\:findExistingIssue\(\) should return array\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Issues/Handler.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Handler.php
+
+		-
+			message: '#^Parameter \#1 \$issueNumber of method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Handler\:\:commentOnIssue\(\) expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Handler.php
+
+		-
+			message: '#^Parameter \#1 \$level of method Monolog\\Handler\\AbstractHandler\:\:__construct\(\) expects 100\|200\|250\|300\|400\|500\|550\|600\|''ALERT''\|''alert''\|''CRITICAL''\|''critical''\|''DEBUG''\|''debug''\|''EMERGENCY''\|''emergency''\|''ERROR''\|''error''\|''INFO''\|''info''\|''NOTICE''\|''notice''\|''WARNING''\|''warning''\|Monolog\\Level, int\|Monolog\\Level\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Handler.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/Handler.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\SectionMapping\:\:getRemainingSections\(\) has parameter \$sectionsToRemove with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/SectionMapping.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\SectionMapping\:\:getRemainingSections\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/SectionMapping.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\SectionMapping\:\:getSectionsToRemove\(\) has parameter \$replacements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/SectionMapping.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\SectionMapping\:\:getSectionsToRemove\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/SectionMapping.php
+
+		-
+			message: '#^Parameter \#1 \$items of method Illuminate\\Support\\Collection\<int,string\>\:\:diff\(\) expects Illuminate\\Contracts\\Support\\Arrayable\<\(int\|string\), string\>\|iterable\<\(int\|string\), string\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/SectionMapping.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 5
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\TemplateRenderer\:\:buildReplacements\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\TemplateRenderer\:\:extractEnvironmentName\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\TemplateRenderer\:\:extractMethodFromRequest\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\TemplateRenderer\:\:getException\(\) should return Throwable\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$breadcrumbs of method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\BreadcrumbFormatter\:\:format\(\) expects array\<int, array\{timestamp\: string, category\: string, message\: string, metadata\: array\<string, mixed\>\}\>\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\StructuredDataFormatter\:\:format\(\) expects array\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 9
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$queries of method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\QueryFormatter\:\:format\(\) expects array\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$requests of method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\Formatters\\OutgoingRequestFormatter\:\:format\(\) expects array\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateRenderer.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\TemplateSectionCleaner\:\:clean\(\) has parameter \$replacements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateSectionCleaner.php
+
+		-
+			message: '#^Parameter \#1 \$section of static method IvanFuhr\\Essentials\\Loggers\\Github\\Issues\\SectionMapping\:\:getSectionPattern\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Issues/TemplateSectionCleaner.php
+
+		-
+			message: '#^Parameter \#2 \$replace of method Illuminate\\Support\\Stringable\:\:replace\(\) expects iterable\<string\>\|string, list given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Issues/TemplateSectionCleaner.php
+
+		-
+			message: '#^Parameter \#2 \$offset of function array_slice expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/BreadcrumbCollector.php
+
+		-
+			message: '#^Unary operation "\-" on mixed results in an error\.$#'
+			identifier: unaryOp.invalid
+			count: 1
+			path: src/Loggers/Github/Tracing/BreadcrumbCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:getDefaultSensitiveBindingFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:getDefaultSensitiveHeaders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:getDefaultSensitivePayloadFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:isSensitiveHeader\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:matchesSensitiveKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:redactHeaders\(\) should return array\<string, array\<string\>\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:redactArrayRecursive\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:redactPayload\(\) expects array\<string, mixed\>, array\<array\|bool\|float\|int\|string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of static method Illuminate\\Support\\Str\:\:is\(\) expects iterable\<string\>\|string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Parameter \#2 \$values of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\CommandContextCollector\:\:redactHeaderValue\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/CommandContextCollector.php
+
+		-
+			message: '#^Cannot call method detect\(\) on IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\GitInfoDetector\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Loggers/Github/Tracing/EnvironmentCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\EnvironmentCollector\:\:collectGitInfo\(\) should return array\<string, bool\|string\|null\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Loggers/Github/Tracing/EnvironmentCollector.php
+
+		-
+			message: '#^Cannot access offset ''enabled'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Loggers/Github/Tracing/EventHandler.php
+
+		-
+			message: '#^Trying to invoke IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\Contracts\\EventDrivenCollectorInterface but it might not be a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: src/Loggers/Github/Tracing/EventHandler.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:extractComponentFromResponse\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:getDefaultSensitiveBindingFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:getDefaultSensitiveHeaders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:getDefaultSensitivePayloadFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:isSensitiveHeader\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:matchesSensitiveKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:redactHeaders\(\) should return array\<string, array\<string\>\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:redactArrayRecursive\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$keys of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:parsePartialKeys\(\) expects string\|null, array\|string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of static method Illuminate\\Support\\Str\:\:is\(\) expects iterable\<string\>\|string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Parameter \#2 \$values of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\InertiaDataCollector\:\:redactHeaderValue\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/InertiaDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:getDefaultSensitiveBindingFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:getDefaultSensitiveHeaders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:getDefaultSensitivePayloadFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:isSensitiveHeader\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:matchesSensitiveKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:redactHeaders\(\) should return array\<string, array\<string\>\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:redactArrayRecursive\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:truncateSerializedValues\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of static method Illuminate\\Support\\Str\:\:is\(\) expects iterable\<string\>\|string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Parameter \#1 \$payload of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:cleanPayload\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Parameter \#2 \$values of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\JobContextCollector\:\:redactHeaderValue\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/JobContextCollector.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''calls'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''data'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''memo'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''params'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''path'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''snapshot'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''updates'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:decodeSnapshot\(\) should return array\<string, mixed\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:extractComponents\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:getDefaultSensitiveBindingFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:getDefaultSensitiveHeaders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:getDefaultSensitivePayloadFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:isSensitiveHeader\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:matchesSensitiveKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:redactHeaders\(\) should return array\<string, array\<string\>\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:resolveOriginatingPage\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:resolveOriginatingPage\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:redactArrayRecursive\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of static method Illuminate\\Support\\Str\:\:is\(\) expects iterable\<string\>\|string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$state of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:truncateState\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$url of function parse_url expects string, array\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$value of function collect expects Illuminate\\Contracts\\Support\\Arrayable\<\(int\|string\), mixed\>\|iterable\<\(int\|string\), mixed\>\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Parameter \#2 \$values of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\LivewireDataCollector\:\:redactHeaderValue\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Loggers/Github/Tracing/LivewireDataCollector.php
+
+		-
+			message: '#^Binary operation "\-" between float and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Cannot access an offset on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Cannot access offset ''enabled'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Cannot access offset ''headers'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Cannot access offset ''limit'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Cannot access offset ''started_at'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_slice expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Parameter \#2 \$offset of function array_slice expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Unary operation "\-" on mixed results in an error\.$#'
+			identifier: unaryOp.invalid
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestResponseCollector.php
+
+		-
+			message: '#^Cannot access offset ''enabled'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:getDefaultSensitiveBindingFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:getDefaultSensitiveHeaders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:getDefaultSensitivePayloadFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:isSensitiveHeader\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:matchesSensitiveKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:redactHeaders\(\) should return array\<string, array\<string\>\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:redactArrayRecursive\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:redactPayload\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of static method Illuminate\\Support\\Str\:\:is\(\) expects iterable\<string\>\|string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Parameter \#2 \$values of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\OutgoingRequestSendingCollector\:\:redactHeaderValue\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/OutgoingRequestSendingCollector.php
+
+		-
+			message: '#^Cannot access an offset on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Cannot access offset ''enabled'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Cannot access offset ''limit'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\QueryCollector\:\:getDefaultSensitiveBindingFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\QueryCollector\:\:getDefaultSensitiveHeaders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\QueryCollector\:\:getDefaultSensitivePayloadFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\QueryCollector\:\:isSensitiveHeader\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\QueryCollector\:\:matchesSensitiveKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\QueryCollector\:\:redactHeaders\(\) should return array\<string, array\<string\>\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_slice expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\QueryCollector\:\:redactArrayRecursive\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of static method Illuminate\\Support\\Str\:\:is\(\) expects iterable\<string\>\|string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Parameter \#2 \$offset of function array_slice expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Parameter \#2 \$values of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\QueryCollector\:\:redactHeaderValue\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Unary operation "\-" on mixed results in an error\.$#'
+			identifier: unaryOp.invalid
+			count: 1
+			path: src/Loggers/Github/Tracing/QueryCollector.php
+
+		-
+			message: '#^Cannot access offset ''requests'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:formatFiles\(\) has parameter \$files with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:getDefaultSensitiveBindingFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:getDefaultSensitiveHeaders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:getDefaultSensitivePayloadFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:isSensitiveHeader\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:matchesSensitiveKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:redactHeaders\(\) should return array\<string, array\<string\>\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:redactArrayRecursive\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:redactPayload\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$files of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:formatFiles\(\) expects array\<string, array\|Illuminate\\Http\\UploadedFile\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of static method Illuminate\\Support\\Str\:\:is\(\) expects iterable\<string\>\|string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Parameter \#2 \$values of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RequestDataCollector\:\:redactHeaderValue\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/RequestDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''controller'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/RouteDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\RouteDataCollector\:\:buildRouteSummary\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RouteDataCollector.php
+
+		-
+			message: '#^Parameter \#1 \$url of function parse_url expects string, array\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/RouteDataCollector.php
+
+		-
+			message: '#^Cannot access offset ''session'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:getDefaultSensitiveBindingFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:getDefaultSensitiveHeaders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:getDefaultSensitivePayloadFields\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:isSensitiveHeader\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:matchesSensitiveKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:redactHeaders\(\) should return array\<string, array\<string\>\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:redactArrayRecursive\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Parameter \#1 \$data of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:redactPayload\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of static method Illuminate\\Support\\Str\:\:is\(\) expects iterable\<string\>\|string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Parameter \#2 \$values of method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\SessionCollector\:\:redactHeaderValue\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Loggers/Github/Tracing/SessionCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\UserDataCollector\:\:getUserDataResolver\(\) should return callable\(\)\: mixed but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/UserDataCollector.php
+
+		-
+			message: '#^Method IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\UserDataCollector\:\:resolveUserDetails\(\) should return array\<string, mixed\> but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Loggers/Github/Tracing/UserDataCollector.php
+
+		-
+			message: '#^Only iterables can be unpacked, mixed given\.$#'
+			identifier: arrayUnpacking.nonIterable
+			count: 1
+			path: src/Loggers/Github/Tracing/UserDataCollector.php
+
+		-
+			message: '#^Property IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\UserDataCollector\:\:\$userDataResolver has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Loggers/Github/Tracing/UserDataCollector.php
+
+		-
+			message: '#^Static property IvanFuhr\\Essentials\\Loggers\\Github\\Tracing\\UserDataCollector\:\:\$resolvedDetails \(array\<string, mixed\>\|null\) does not accept array\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Loggers/Github/Tracing/UserDataCollector.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: src/Loggers/Github/Tracing/UserDataCollector.php

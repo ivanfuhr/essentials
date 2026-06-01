@@ -8,22 +8,22 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
-final class CacheManager
+final readonly class CacheManager
 {
-    private const KEY_PREFIX = 'github-monolog';
+    private const string KEY_PREFIX = 'github-monolog';
 
-    private const KEY_SEPARATOR = ':';
+    private const string KEY_SEPARATOR = ':';
 
-    private const OCCURRENCE_KEY_SEGMENT = 'count';
+    private const string OCCURRENCE_KEY_SEGMENT = 'count';
 
-    private readonly string $store;
+    private string $store;
 
-    private readonly Repository $cache;
+    private Repository $cache;
 
     public function __construct(
         ?string $store = null,
-        private readonly string $prefix = 'dedup',
-        private readonly int $ttl = 60
+        private string $prefix = 'dedup',
+        private int $ttl = 60
     ) {
         $this->store = $store ?? config('cache.default');
         $this->cache = Cache::store($this->store);

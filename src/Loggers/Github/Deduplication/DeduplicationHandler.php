@@ -12,11 +12,11 @@ use Monolog\LogRecord;
 
 final class DeduplicationHandler extends BufferHandler
 {
-    private CacheManager $cache;
+    private readonly CacheManager $cache;
 
     public function __construct(
         HandlerInterface $handler,
-        protected SignatureGeneratorInterface $signatureGenerator,
+        private readonly SignatureGeneratorInterface $signatureGenerator,
         ?string $store = 'default',
         string $prefix = 'github-monolog:dedup:',
         int $ttl = 60,
@@ -24,7 +24,7 @@ final class DeduplicationHandler extends BufferHandler
         int $bufferLimit = 0,
         bool $bubble = true,
         bool $flushOnOverflow = false,
-        private bool $trackOccurrences = true,
+        private readonly bool $trackOccurrences = true,
     ) {
         parent::__construct(
             handler: $handler,
@@ -44,7 +44,7 @@ final class DeduplicationHandler extends BufferHandler
         }
 
         collect($this->buffer)
-            ->map(function (LogRecord $record) {
+            ->map(function (LogRecord $record): ?LogRecord {
                 $signature = $this->signatureGenerator->generate($record);
 
                 $extra = ['github_issue_signature' => $signature] + $record->extra;

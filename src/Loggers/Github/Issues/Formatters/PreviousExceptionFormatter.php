@@ -14,7 +14,7 @@ final class PreviousExceptionFormatter
 {
     use InteractsWithLogRecord;
 
-    private const MAX_PREVIOUS_EXCEPTIONS = 3;
+    private const int MAX_PREVIOUS_EXCEPTIONS = 3;
 
     private string $previousExceptionStub;
 
@@ -33,14 +33,14 @@ final class PreviousExceptionFormatter
             return '';
         }
 
-        if (! $previous = $exception->getPrevious()) {
+        if (! ($previous = $exception->getPrevious()) instanceof Throwable) {
             return '';
         }
 
         $exceptions = collect()
             ->range(1, self::MAX_PREVIOUS_EXCEPTIONS)
             ->map(function ($count) use (&$previous, $record) {
-                if (! $previous) {
+                if (! $previous instanceof Throwable) {
                     return null;
                 }
 
@@ -68,7 +68,7 @@ final class PreviousExceptionFormatter
             return '';
         }
 
-        if ($previous) {
+        if ($previous instanceof Throwable) {
             $exceptions .= "\n\n> Note: Additional previous exceptions were truncated\n";
         }
 

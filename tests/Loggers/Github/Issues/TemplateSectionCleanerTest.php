@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\TemplateSectionCleaner;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->cleaner = new TemplateSectionCleaner;
 });
 
-test('it replaces template variables', function () {
+test('it replaces template variables', function (): void {
     $template = 'Hello {name}!';
     $replacements = ['{name}' => 'World'];
 
@@ -15,7 +17,7 @@ test('it replaces template variables', function () {
     expect($result)->toBe('Hello World!');
 });
 
-test('it removes empty stacktrace section', function () {
+test('it removes empty stacktrace section', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- stacktrace:start -->
@@ -31,7 +33,7 @@ More content
 EOT);
 });
 
-test('it removes empty previous stacktrace section', function () {
+test('it removes empty previous stacktrace section', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- prev-stacktrace:start -->
@@ -47,7 +49,7 @@ More content
 EOT);
 });
 
-test('it removes empty context section', function () {
+test('it removes empty context section', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- context:start -->
@@ -63,7 +65,7 @@ More content
 EOT);
 });
 
-test('it removes empty extra section', function () {
+test('it removes empty extra section', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- extra:start -->
@@ -79,7 +81,7 @@ More content
 EOT);
 });
 
-test('it removes empty previous exception section', function () {
+test('it removes empty previous exception section', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- prev-exception:start -->
@@ -95,7 +97,7 @@ More content
 EOT);
 });
 
-test('it removes empty previous stacktrace section when previous_exceptions is empty', function () {
+test('it removes empty previous stacktrace section when previous_exceptions is empty', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- prev-stacktrace:start -->
@@ -124,7 +126,7 @@ EOT;
         ->toContain('More content');
 });
 
-test('it preserves previous stacktrace section when previous_exceptions has content', function () {
+test('it preserves previous stacktrace section when previous_exceptions has content', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- prev-stacktrace:start -->
@@ -154,7 +156,7 @@ EOT;
         ->toContain('More content');
 });
 
-test('it normalizes multiple newlines before signature', function () {
+test('it normalizes multiple newlines before signature', function (): void {
     $template = <<<'EOT'
 Some content
 
@@ -172,7 +174,7 @@ Some content
 EOT);
 });
 
-test('it removes standalone section flags', function () {
+test('it removes standalone section flags', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- stacktrace:start -->
@@ -191,7 +193,7 @@ More content
 EOT);
 });
 
-test('it preserves content while removing section flags', function () {
+test('it preserves content while removing section flags', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- stacktrace:start -->
@@ -223,7 +225,7 @@ More content
 EOT);
 });
 
-test('it removes empty sections even when wrapped in details blocks', function () {
+test('it removes empty sections even when wrapped in details blocks', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- context:start -->
@@ -245,7 +247,7 @@ EOT;
         ->toContain('More content');
 });
 
-test('it preserves section content when wrapped in details blocks', function () {
+test('it preserves section content when wrapped in details blocks', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- context:start -->
@@ -273,7 +275,7 @@ EOT;
         ->toContain('More content');
 });
 
-test('it handles nested details blocks correctly', function () {
+test('it handles nested details blocks correctly', function (): void {
     $template = <<<'EOT'
 Some content
 <!-- stacktrace:start -->

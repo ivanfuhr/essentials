@@ -15,13 +15,13 @@ trait ResolvesTracingConfig
     protected function getTracingConfig(string $key, mixed $default = null): mixed
     {
         // Package config takes precedence
-        $packageValue = config("loggers.github.tracing.{$key}");
+        $packageValue = config('loggers.github.tracing.'.$key);
         if ($packageValue !== null) {
             return $packageValue;
         }
 
         // Fall back to channel config
-        return config("logging.channels.github.tracing.{$key}", $default);
+        return config('logging.channels.github.tracing.'.$key, $default);
     }
 
     /**

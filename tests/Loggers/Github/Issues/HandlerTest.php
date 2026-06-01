@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Issues;
 
+use DateTimeImmutable;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
-use Monolog\Level;
-use Monolog\LogRecord;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\IssueFormatter;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Handler;
+use Monolog\Level;
+use Monolog\LogRecord;
 
 function createHandler(): Handler
 {
@@ -28,7 +31,7 @@ function createHandler(): Handler
 function createRecord(): LogRecord
 {
     return new LogRecord(
-        datetime: new \DateTimeImmutable,
+        datetime: new DateTimeImmutable,
         channel: 'test',
         level: Level::Error,
         message: 'Test message',
@@ -37,11 +40,11 @@ function createRecord(): LogRecord
     );
 }
 
-beforeEach(function () {
+beforeEach(function (): void {
     Http::preventStrayRequests();
 });
 
-test('it creates new github issue when no duplicate exists', function () {
+test('it creates new github issue when no duplicate exists', function (): void {
     Http::fake([
         'github.com/search/issues*' => Http::response(['items' => []]),
         'github.com/repos/test/repo/issues' => Http::response(['number' => 1]),
@@ -52,12 +55,10 @@ test('it creates new github issue when no duplicate exists', function () {
 
     $handler->handle($record);
 
-    Http::assertSent(function (Request $request) {
-        return str($request->url())->endsWith('/repos/test/repo/issues');
-    });
+    Http::assertSent(fn (Request $request) => str($request->url())->endsWith('/repos/test/repo/issues'));
 });
 
-test('it comments on existing github issue', function () {
+test('it comments on existing github issue', function (): void {
     Http::fake([
         'github.com/search/issues*' => Http::response(['items' => [['number' => 1]]]),
         'github.com/repos/test/repo/issues/1/comments' => Http::response(['id' => 1]),
@@ -68,12 +69,10 @@ test('it comments on existing github issue', function () {
 
     $handler->handle($record);
 
-    Http::assertSent(function ($request) {
-        return str($request->url())->endsWith('/issues/1/comments');
-    });
+    Http::assertSent(fn ($request) => str($request->url())->endsWith('/issues/1/comments'));
 });
 
-test('it includes signature in issue search', function () {
+test('it includes signature in issue search', function (): void {
     Http::fake([
         'github.com/search/issues*' => Http::response(['items' => []]),
         'github.com/repos/test/repo/issues' => Http::response(['number' => 1]),
@@ -84,13 +83,11 @@ test('it includes signature in issue search', function () {
 
     $handler->handle($record);
 
-    Http::assertSent(function ($request) {
-        return str($request->url())->contains('/search/issues')
-            && str_contains($request->data()['q'], 'test-signature');
-    });
+    Http::assertSent(fn ($request): bool => str($request->url())->contains('/search/issues')
+        && str_contains((string) $request->data()['q'], 'test-signature'));
 });
 
-test('it throws exception when issue search fails', function () {
+test('it throws exception when issue search fails', function (): void {
     Http::fake([
         'github.com/search/issues*' => Http::response(['error' => 'Failed'], 500),
     ]);
@@ -101,7 +98,7 @@ test('it throws exception when issue search fails', function () {
     $handler->handle($record);
 })->throws(RequestException::class, exceptionCode: 500);
 
-test('it throws exception when issue creation fails', function () {
+test('it throws exception when issue creation fails', function (): void {
     Http::fake([
         'github.com/search/issues*' => Http::response(['items' => []]),
         'github.com/repos/test/repo/issues' => Http::response(['error' => 'Failed'], 500),
@@ -113,7 +110,7 @@ test('it throws exception when issue creation fails', function () {
     $handler->handle($record);
 })->throws(RequestException::class, exceptionCode: 500);
 
-test('it throws exception when comment creation fails', function () {
+test('it throws exception when comment creation fails', function (): void {
     Http::fake([
         'github.com/search/issues*' => Http::response(['items' => [['number' => 1]]]),
         'github.com/repos/test/repo/issues/1/comments' => Http::response(['error' => 'Failed'], 500),
@@ -125,7 +122,7 @@ test('it throws exception when comment creation fails', function () {
     $handler->handle($record);
 })->throws(RequestException::class, exceptionCode: 500);
 
-test('it creates fallback issue when 4xx error occurs', function () {
+test('it creates fallback issue when 4xx error occurs', function (): void {
     $errorMessage = 'Validation failed for the issue';
 
     Http::fake([
@@ -140,15 +137,11 @@ test('it creates fallback issue when 4xx error occurs', function () {
 
     $handler->handle($record);
 
-    Http::assertSent(function ($request) {
-        return str($request->url())->endsWith('/repos/test/repo/issues')
-            && ! str_contains($request->data()['title'], '[GitHub Monolog Error]');
-    });
+    Http::assertSent(fn ($request): bool => str($request->url())->endsWith('/repos/test/repo/issues')
+        && ! str_contains((string) $request->data()['title'], '[GitHub Monolog Error]'));
 
-    Http::assertSent(function ($request) use ($errorMessage) {
-        return str($request->url())->endsWith('/repos/test/repo/issues')
-            && str_contains($request->data()['title'], '[GitHub Monolog Error]')
-            && str_contains($request->data()['body'], $errorMessage)
-            && in_array('monolog-integration-error', $request->data()['labels']);
-    });
+    Http::assertSent(fn ($request): bool => str($request->url())->endsWith('/repos/test/repo/issues')
+        && str_contains((string) $request->data()['title'], '[GitHub Monolog Error]')
+        && str_contains((string) $request->data()['body'], $errorMessage)
+        && in_array('monolog-integration-error', $request->data()['labels']));
 });

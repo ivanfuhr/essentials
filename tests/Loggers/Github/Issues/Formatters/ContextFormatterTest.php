@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\ContextFormatter;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->formatter = new ContextFormatter;
 });
 
-it('returns empty string for empty context', function () {
+it('returns empty string for empty context', function (): void {
     expect($this->formatter->format([]))->toBe('');
 });
 
-it('excludes exception from formatted context', function () {
+it('excludes exception from formatted context', function (): void {
     $context = [
         'exception' => new RuntimeException('Test'),
         'custom_key' => 'custom_value',
@@ -24,7 +26,7 @@ it('excludes exception from formatted context', function () {
         ->toContain('custom_value');
 });
 
-it('excludes separate sections from formatted context', function () {
+it('excludes separate sections from formatted context', function (): void {
     $context = [
         'environment' => ['app_env' => 'testing'],
         'request' => ['url' => 'https://example.com'],
@@ -60,7 +62,7 @@ it('excludes separate sections from formatted context', function () {
         ->toContain('custom_value');
 });
 
-it('formats remaining context as JSON', function () {
+it('formats remaining context as JSON', function (): void {
     $context = [
         'key1' => 'value1',
         'key2' => ['nested' => 'data'],

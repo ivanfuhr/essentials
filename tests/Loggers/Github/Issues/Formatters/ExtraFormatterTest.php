@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\ExtraFormatter;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->formatter = new ExtraFormatter;
 });
 
-it('returns empty string for empty extra', function () {
+it('returns empty string for empty extra', function (): void {
     expect($this->formatter->format([]))->toBe('');
 });
 
-it('formats extra data as JSON', function () {
+it('formats extra data as JSON', function (): void {
     $extra = [
         'key1' => 'value1',
         'key2' => ['nested' => 'data'],
@@ -24,7 +26,7 @@ it('formats extra data as JSON', function () {
         ->toContain('"nested": "data"');
 });
 
-it('formats complex extra data', function () {
+it('formats complex extra data', function (): void {
     $extra = [
         'channel' => 'test',
         'level' => 400,
@@ -39,7 +41,7 @@ it('formats complex extra data', function () {
         ->toContain('"datetime": "2024-01-01 12:00:00"');
 });
 
-it('excludes keys that have dedicated sections', function () {
+it('excludes keys that have dedicated sections', function (): void {
     $extra = [
         'exception' => ['class' => 'RuntimeException'],
         'environment' => ['app_env' => 'testing'],
@@ -78,7 +80,7 @@ it('excludes keys that have dedicated sections', function () {
         ->toContain('custom_value');
 });
 
-it('returns empty string when all keys are excluded', function () {
+it('returns empty string when all keys are excluded', function (): void {
     $extra = [
         'environment' => ['app_env' => 'testing'],
         'user' => ['id' => 123],

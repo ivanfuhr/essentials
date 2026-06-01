@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Cache;
-use Monolog\Handler\TestHandler;
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\DeduplicationHandler;
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\DefaultSignatureGenerator;
+use Monolog\Handler\TestHandler;
 
 use function Pest\Laravel\travel;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->testHandler = new TestHandler;
     Cache::store('array')->clear();
 });
 
-test('deduplication respects time window', function () {
+test('deduplication respects time window', function (): void {
     $handler = new DeduplicationHandler(
         handler: $this->testHandler,
         signatureGenerator: new DefaultSignatureGenerator,
@@ -24,16 +26,18 @@ test('deduplication respects time window', function () {
 
     $handler->handle($record);
     $handler->flush();
+
     expect($this->testHandler->getRecords())->toHaveCount(1);
 
     travel(2)->seconds();
 
     $handler->handle($record);
     $handler->flush();
+
     expect($this->testHandler->getRecords())->toHaveCount(2);
 });
 
-test('deduplicates records with same signature', function () {
+test('deduplicates records with same signature', function (): void {
     $handler = new DeduplicationHandler(
         handler: $this->testHandler,
         signatureGenerator: new DefaultSignatureGenerator,
@@ -45,10 +49,11 @@ test('deduplicates records with same signature', function () {
     $handler->handle($record);
     $handler->handle($record);
     $handler->flush();
+
     expect($this->testHandler->getRecords())->toHaveCount(1);
 });
 
-test('different messages create different signatures', function () {
+test('different messages create different signatures', function (): void {
     $handler = new DeduplicationHandler(
         handler: $this->testHandler,
         signatureGenerator: new DefaultSignatureGenerator,
@@ -61,10 +66,11 @@ test('different messages create different signatures', function () {
     $handler->handle($record1);
     $handler->handle($record2);
     $handler->flush();
+
     expect($this->testHandler->getRecords())->toHaveCount(2);
 });
 
-test('first occurrence has count of 1', function () {
+test('first occurrence has count of 1', function (): void {
     $handler = new DeduplicationHandler(
         handler: $this->testHandler,
         signatureGenerator: new DefaultSignatureGenerator,
@@ -81,7 +87,7 @@ test('first occurrence has count of 1', function () {
     expect($records[0]->extra['github_occurrence_count'])->toBe(1);
 });
 
-test('occurrence count increments for duplicate records within ttl window', function () {
+test('occurrence count increments for duplicate records within ttl window', function (): void {
     $handler = new DeduplicationHandler(
         handler: $this->testHandler,
         signatureGenerator: new DefaultSignatureGenerator,
@@ -95,6 +101,7 @@ test('occurrence count increments for duplicate records within ttl window', func
     // First occurrence
     $handler->handle($record);
     $handler->flush();
+
     expect($this->testHandler->getRecords())->toHaveCount(1);
     expect($this->testHandler->getRecords()[0]->extra['github_occurrence_count'])->toBe(1);
 
@@ -107,10 +114,11 @@ test('occurrence count increments for duplicate records within ttl window', func
     // Third occurrence within TTL - also deduplicated, count now 3
     $handler->handle($record);
     $handler->flush();
+
     expect($this->testHandler->getRecords())->toHaveCount(1);
 });
 
-test('occurrence count resets after ttl expires', function () {
+test('occurrence count resets after ttl expires', function (): void {
     $handler = new DeduplicationHandler(
         handler: $this->testHandler,
         signatureGenerator: new DefaultSignatureGenerator,
@@ -124,6 +132,7 @@ test('occurrence count resets after ttl expires', function () {
     // First occurrence
     $handler->handle($record);
     $handler->flush();
+
     expect($this->testHandler->getRecords())->toHaveCount(1);
     expect($this->testHandler->getRecords()[0]->extra['github_occurrence_count'])->toBe(1);
 
@@ -133,11 +142,12 @@ test('occurrence count resets after ttl expires', function () {
     // After TTL expiry, both dedup and count are reset
     $handler->handle($record);
     $handler->flush();
+
     expect($this->testHandler->getRecords())->toHaveCount(2);
     expect($this->testHandler->getRecords()[1]->extra['github_occurrence_count'])->toBe(1);
 });
 
-test('occurrence count is not added when tracking is disabled', function () {
+test('occurrence count is not added when tracking is disabled', function (): void {
     $handler = new DeduplicationHandler(
         handler: $this->testHandler,
         signatureGenerator: new DefaultSignatureGenerator,

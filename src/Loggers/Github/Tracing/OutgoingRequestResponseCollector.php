@@ -10,7 +10,7 @@ use IvanFuhr\Essentials\Loggers\Github\Tracing\Contracts\EventDrivenCollectorInt
 
 final class OutgoingRequestResponseCollector implements EventDrivenCollectorInterface
 {
-    private const DEFAULT_LIMIT = 5;
+    private const int DEFAULT_LIMIT = 5;
 
     public function __invoke(ResponseReceived $event): void
     {
@@ -25,7 +25,7 @@ final class OutgoingRequestResponseCollector implements EventDrivenCollectorInte
         $config = config('logging.channels.github.tracing.outgoing_requests', []);
         $limit = $config['limit'] ?? self::DEFAULT_LIMIT;
 
-        $requestData = Context::getHidden("outgoing_request.{$requestId}") ?? [];
+        $requestData = Context::getHidden('outgoing_request.'.$requestId) ?? [];
         $startedAt = $requestData['started_at'] ?? microtime(true);
         $duration = (microtime(true) - $startedAt) * 1000; // Convert to milliseconds
 
@@ -45,7 +45,7 @@ final class OutgoingRequestResponseCollector implements EventDrivenCollectorInte
         }
 
         Context::addHidden('outgoing_requests', $outgoingRequests);
-        Context::forgetHidden("outgoing_request.{$requestId}");
+        Context::forgetHidden('outgoing_request.'.$requestId);
     }
 
     public function isEnabled(): bool

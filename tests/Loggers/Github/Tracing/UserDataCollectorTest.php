@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -7,24 +9,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\UserDataCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->collector = new UserDataCollector;
     UserDataCollector::flush();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     // Reset to default resolver
     UserDataCollector::setUserDataResolver(null);
     UserDataCollector::flush();
     Context::flush();
 });
 
-it('collects default user data', function () {
+it('collects default user data', function (): void {
     // Arrange
     $user = Mockery::mock(Authenticatable::class);
     $user->shouldReceive('getAuthIdentifier')->andReturn(1);
     $user->name = 'John Doe';
     $user->email = 'john@example.com';
+
     $event = new Authenticated('web', $user);
 
     // Act
@@ -40,13 +43,13 @@ it('collects default user data', function () {
     expect($userData['email'])->toBe('john@example.com');
 });
 
-it('uses custom user data resolver', function () {
+it('uses custom user data resolver', function (): void {
     // Arrange
     $user = Mockery::mock(Authenticatable::class);
     $user->shouldReceive('getAuthIdentifier')->andReturn(1);
     $event = new Authenticated('web', $user);
 
-    UserDataCollector::setUserDataResolver(fn ($user) => ['custom' => 'data']);
+    UserDataCollector::setUserDataResolver(fn ($user): array => ['custom' => 'data']);
 
     // Act
     ($this->collector)($event);
@@ -59,7 +62,7 @@ it('uses custom user data resolver', function () {
     expect($userData['id'])->toBe(1);
 });
 
-it('collects user data on demand when not authenticated', function () {
+it('collects user data on demand when not authenticated', function (): void {
     Auth::shouldReceive('check')->once()->andReturn(false);
 
     $this->collector->collect();
@@ -68,7 +71,7 @@ it('collects user data on demand when not authenticated', function () {
     expect($userData)->toBe(['authenticated' => false]);
 });
 
-it('remembers user on authenticated event', function () {
+it('remembers user on authenticated event', function (): void {
     $user = Mockery::mock(Authenticatable::class);
     $user->shouldReceive('getAuthIdentifier')->andReturn(42);
     $user->name = null;
@@ -82,7 +85,7 @@ it('remembers user on authenticated event', function () {
     expect($userData['id'])->toBe(42);
 });
 
-it('remembers user on logout for exception context', function () {
+it('remembers user on logout for exception context', function (): void {
     $user = Mockery::mock(Authenticatable::class);
     $user->shouldReceive('getAuthIdentifier')->andReturn(99);
     $user->name = 'Logging Out User';
@@ -101,7 +104,7 @@ it('remembers user on logout for exception context', function () {
     expect($userData['name'])->toBe('Logging Out User');
 });
 
-it('flushes remembered user data', function () {
+it('flushes remembered user data', function (): void {
     $user = Mockery::mock(Authenticatable::class);
     $user->shouldReceive('getAuthIdentifier')->andReturn(1);
     $user->name = 'Test';
@@ -118,7 +121,7 @@ it('flushes remembered user data', function () {
     expect($userData)->toBe(['authenticated' => false]);
 });
 
-it('handles exceptions during user resolution gracefully', function () {
+it('handles exceptions during user resolution gracefully', function (): void {
     $user = Mockery::mock(Authenticatable::class);
     $user->shouldReceive('getAuthIdentifier')->andThrow(new Exception('Database error'));
 
@@ -132,7 +135,7 @@ it('handles exceptions during user resolution gracefully', function () {
     expect($userData['id'])->toBeNull();
 });
 
-it('caches resolved user details', function () {
+it('caches resolved user details', function (): void {
     $user = Mockery::mock(Authenticatable::class);
     // getAuthIdentifier should only be called once due to caching
     $user->shouldReceive('getAuthIdentifier')->once()->andReturn(1);

@@ -9,10 +9,10 @@ use Monolog\Formatter\FormatterInterface;
 use Monolog\LogRecord;
 use RuntimeException;
 
-final class IssueFormatter implements FormatterInterface
+final readonly class IssueFormatter implements FormatterInterface
 {
     public function __construct(
-        private readonly TemplateRenderer $templateRenderer,
+        private TemplateRenderer $templateRenderer,
     ) {}
 
     public function format(LogRecord $record): Formatted
@@ -24,12 +24,12 @@ final class IssueFormatter implements FormatterInterface
         return new Formatted(
             title: $this->templateRenderer->renderTitle($record),
             body: $this->templateRenderer->render($this->templateRenderer->getIssueStub(), $record, $record->extra['github_issue_signature']),
-            comment: $this->templateRenderer->render($this->templateRenderer->getCommentStub(), $record, null),
+            comment: $this->templateRenderer->render($this->templateRenderer->getCommentStub(), $record),
         );
     }
 
     public function formatBatch(array $records): array
     {
-        return array_map([$this, 'format'], $records);
+        return array_map($this->format(...), $records);
     }
 }

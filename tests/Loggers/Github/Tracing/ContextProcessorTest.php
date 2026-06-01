@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Context;
-use Monolog\Level;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\ContextProcessor;
+use Monolog\Level;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->processor = new ContextProcessor;
     Context::flush();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('merges context data into log record context', function () {
+it('merges context data into log record context', function (): void {
     // Arrange
     Context::add('user', ['id' => 123, 'name' => 'John']);
     Context::addHidden('request', ['url' => 'https://example.com', 'method' => 'GET']);
@@ -40,7 +42,7 @@ it('merges context data into log record context', function () {
         ->and($processed->context['existing'])->toBe('data');
 });
 
-it('preserves existing context when no context data exists', function () {
+it('preserves existing context when no context data exists', function (): void {
     // Arrange
     Config::set('logging.channels.github.tracing', [
         'enabled' => true,
@@ -67,7 +69,7 @@ it('preserves existing context when no context data exists', function () {
         ->and($processed->context)->not->toHaveKey('request');
 });
 
-it('overrides existing context keys with context data', function () {
+it('overrides existing context keys with context data', function (): void {
     // Arrange
     Context::add('user', ['id' => 123]);
 
@@ -85,7 +87,7 @@ it('overrides existing context keys with context data', function () {
     expect($processed->context['user'])->toBe(['id' => 123]);
 });
 
-it('collects environment data when enabled', function () {
+it('collects environment data when enabled', function (): void {
     Config::set('logging.channels.github.tracing.environment', true);
 
     $record = createLogRecord('Test message', [], [], Level::Error);
@@ -96,10 +98,10 @@ it('collects environment data when enabled', function () {
     expect($processed->context['environment'])->toHaveKeys(['app_env', 'laravel_version', 'php_version']);
 });
 
-it('collects user data on demand when enabled', function () {
+it('collects user data on demand when enabled', function (): void {
     Config::set('logging.channels.github.tracing.user', true);
     Auth::shouldReceive('check')->once()->andReturn(true);
-    Auth::shouldReceive('user')->once()->andReturn(Mockery::mock('Illuminate\Contracts\Auth\Authenticatable', function ($mock) {
+    Auth::shouldReceive('user')->once()->andReturn(Mockery::mock(Illuminate\Contracts\Auth\Authenticatable::class, function ($mock): void {
         $mock->shouldReceive('getAuthIdentifier')->andReturn(1);
     }));
 

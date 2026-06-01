@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\OutgoingRequestFormatter;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->formatter = new OutgoingRequestFormatter;
 });
 
-it('returns empty string for null requests', function () {
+it('returns empty string for null requests', function (): void {
     expect($this->formatter->format(null))->toBe('');
 });
 
-it('returns empty string for empty array', function () {
+it('returns empty string for empty array', function (): void {
     expect($this->formatter->format([]))->toBe('');
 });
 
-it('formats single request correctly', function () {
+it('formats single request correctly', function (): void {
     $requests = [
         [
             'method' => 'GET',
@@ -33,7 +35,7 @@ it('formats single request correctly', function () {
         ->toContain('150.5ms');
 });
 
-it('formats request without status', function () {
+it('formats request without status', function (): void {
     $requests = [
         [
             'method' => 'POST',
@@ -50,7 +52,7 @@ it('formats request without status', function () {
         ->not->toContain('→');
 });
 
-it('formats request without duration', function () {
+it('formats request without duration', function (): void {
     $requests = [
         [
             'method' => 'GET',
@@ -67,7 +69,7 @@ it('formats request without duration', function () {
         ->not->toContain('ms');
 });
 
-it('formats multiple requests correctly', function () {
+it('formats multiple requests correctly', function (): void {
     $requests = [
         [
             'method' => 'GET',
@@ -94,7 +96,7 @@ it('formats multiple requests correctly', function () {
         ->toContain('250.5');
 });
 
-it('uses default method when not provided', function () {
+it('uses default method when not provided', function (): void {
     $requests = [
         [
             'url' => 'https://api.example.com/test',

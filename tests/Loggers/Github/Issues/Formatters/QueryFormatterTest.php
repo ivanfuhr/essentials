@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\QueryFormatter;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->formatter = new QueryFormatter;
 });
 
-it('returns empty string for null queries', function () {
+it('returns empty string for null queries', function (): void {
     expect($this->formatter->format(null))->toBe('');
 });
 
-it('returns empty string for empty array', function () {
+it('returns empty string for empty array', function (): void {
     expect($this->formatter->format([]))->toBe('');
 });
 
-it('formats single query correctly', function () {
+it('formats single query correctly', function (): void {
     $queries = [
         [
             'sql' => 'SELECT * FROM users',
@@ -34,7 +36,7 @@ it('formats single query correctly', function () {
         ->toContain('```');
 });
 
-it('formats query with bindings', function () {
+it('formats query with bindings', function (): void {
     $queries = [
         [
             'sql' => 'SELECT * FROM users WHERE id = ?',
@@ -52,7 +54,7 @@ it('formats query with bindings', function () {
         ->toContain('1');
 });
 
-it('formats multiple queries correctly', function () {
+it('formats multiple queries correctly', function (): void {
     $queries = [
         [
             'sql' => 'SELECT * FROM users',
@@ -77,7 +79,7 @@ it('formats multiple queries correctly', function () {
         ->toContain('12.3ms');
 });
 
-it('uses default connection when not provided', function () {
+it('uses default connection when not provided', function (): void {
     $queries = [
         [
             'sql' => 'SELECT * FROM users',

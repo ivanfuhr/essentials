@@ -1,12 +1,14 @@
 <?php
 
-use Monolog\Level;
-use Monolog\Logger;
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\DeduplicationHandler;
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\DefaultSignatureGenerator;
 use IvanFuhr\Essentials\Loggers\Github\GithubIssueHandlerFactory;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\IssueFormatter;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Handler;
+use Monolog\Level;
+use Monolog\Logger;
 
 function getWrappedHandler(DeduplicationHandler $handler): Handler
 {
@@ -29,7 +31,7 @@ function getSignatureGenerator(DeduplicationHandler $handler): mixed
     return $reflection->getValue($handler);
 }
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->config = [
         'repo' => 'test/repo',
         'token' => 'test-token',
@@ -40,7 +42,7 @@ beforeEach(function () {
     $this->factory = app()->make(GithubIssueHandlerFactory::class);
 });
 
-test('it creates a logger with deduplication handler', function () {
+test('it creates a logger with deduplication handler', function (): void {
     $logger = ($this->factory)($this->config);
 
     expect($logger)
@@ -49,7 +51,7 @@ test('it creates a logger with deduplication handler', function () {
         ->toBeInstanceOf(DeduplicationHandler::class);
 });
 
-test('it configures handler correctly', function () {
+test('it configures handler correctly', function (): void {
     $logger = ($this->factory)($this->config);
 
     /** @var DeduplicationHandler $handler */
@@ -64,13 +66,13 @@ test('it configures handler correctly', function () {
         ->toBeInstanceOf(IssueFormatter::class);
 });
 
-test('it throws exception when required config is missing', function () {
-    expect(fn () => ($this->factory)([]))->toThrow(\InvalidArgumentException::class);
-    expect(fn () => ($this->factory)(['repo' => 'test/repo']))->toThrow(\InvalidArgumentException::class);
-    expect(fn () => ($this->factory)(['token' => 'test-token']))->toThrow(\InvalidArgumentException::class);
+test('it throws exception when required config is missing', function (): void {
+    expect(fn () => ($this->factory)([]))->toThrow(InvalidArgumentException::class);
+    expect(fn () => ($this->factory)(['repo' => 'test/repo']))->toThrow(InvalidArgumentException::class);
+    expect(fn () => ($this->factory)(['token' => 'test-token']))->toThrow(InvalidArgumentException::class);
 });
 
-test('it configures buffer settings correctly', function () {
+test('it configures buffer settings correctly', function (): void {
     $this->config['buffer'] = [
         'limit' => 50,
         'flush_on_overflow' => false,
@@ -87,7 +89,7 @@ test('it configures buffer settings correctly', function () {
         ->and($flushOnOverflow)->toBeFalse();
 });
 
-test('it uses configured cache store', function () {
+test('it uses configured cache store', function (): void {
     $logger = ($this->factory)([
         ...$this->config,
         'deduplication' => [
@@ -109,7 +111,7 @@ test('it uses configured cache store', function () {
         ->and($ttl)->toBe(120);
 });
 
-test('it uses default cache configuration', function () {
+test('it uses default cache configuration', function (): void {
     $logger = ($this->factory)($this->config);
 
     /** @var DeduplicationHandler $handler */
@@ -124,13 +126,13 @@ test('it uses default cache configuration', function () {
         ->and($ttl)->toBe(60);
 });
 
-test('it uses same signature generator across components', function () {
+test('it uses same signature generator across components', function (): void {
     $logger = ($this->factory)([
         'repo' => 'test/repo',
         'token' => 'test-token',
     ]);
 
-    /** @var \IvanFuhr\Essentials\Loggers\Github\Deduplication\DeduplicationHandler $deduplicationHandler */
+    /** @var DeduplicationHandler $deduplicationHandler */
     $deduplicationHandler = $logger->getHandlers()[0];
     $handler = getWrappedHandler($deduplicationHandler);
     $formatter = $handler->getFormatter();
@@ -142,7 +144,7 @@ test('it uses same signature generator across components', function () {
         ->toBeInstanceOf(DefaultSignatureGenerator::class);
 });
 
-test('it enables occurrence tracking by default', function () {
+test('it enables occurrence tracking by default', function (): void {
     $logger = ($this->factory)($this->config);
 
     /** @var DeduplicationHandler $handler */
@@ -152,7 +154,7 @@ test('it enables occurrence tracking by default', function () {
     expect($trackOccurrences)->toBeTrue();
 });
 
-test('it respects track_occurrences config', function () {
+test('it respects track_occurrences config', function (): void {
     $logger = ($this->factory)([
         ...$this->config,
         'deduplication' => [
@@ -167,18 +169,18 @@ test('it respects track_occurrences config', function () {
     expect($trackOccurrences)->toBeFalse();
 });
 
-test('it throws exception for invalid deduplication time', function () {
+test('it throws exception for invalid deduplication time', function (): void {
     expect(fn () => ($this->factory)([
         ...$this->config,
         'deduplication' => [
             'time' => -1,
         ],
-    ]))->toThrow(\InvalidArgumentException::class, 'Deduplication time must be a positive integer');
+    ]))->toThrow(InvalidArgumentException::class, 'Deduplication time must be a positive integer');
 
     expect(fn () => ($this->factory)([
         ...$this->config,
         'deduplication' => [
             'time' => 'invalid',
         ],
-    ]))->toThrow(\InvalidArgumentException::class, 'Deduplication time must be a positive integer');
+    ]))->toThrow(InvalidArgumentException::class, 'Deduplication time must be a positive integer');
 });

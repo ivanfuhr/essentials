@@ -26,12 +26,12 @@ final class LivewireDataCollector implements EventDrivenCollectorInterface
     /**
      * Maximum number of keys to include from component state.
      */
-    protected const MAX_STATE_KEYS = 50;
+    private const int MAX_STATE_KEYS = 50;
 
     /**
      * Maximum serialized size (in bytes) for component state.
      */
-    protected const MAX_STATE_SIZE = 8192;
+    private const int MAX_STATE_SIZE = 8192;
 
     public function __invoke(RequestHandled $event): void
     {
@@ -50,7 +50,7 @@ final class LivewireDataCollector implements EventDrivenCollectorInterface
     /**
      * Detect if the current request is a Livewire request.
      */
-    protected function isLivewireRequest(Request $request): bool
+    private function isLivewireRequest(Request $request): bool
     {
         // Livewire 3+ sends X-Livewire header
         if ($request->hasHeader('X-Livewire')) {
@@ -67,12 +67,12 @@ final class LivewireDataCollector implements EventDrivenCollectorInterface
     /**
      * Capture Livewire component data from the request.
      */
-    protected function captureFromRequest(Request $request): void
+    private function captureFromRequest(Request $request): void
     {
         $payload = $request->json()->all();
         $components = $this->extractComponents($payload);
 
-        if (empty($components)) {
+        if ($components === []) {
             return;
         }
 
@@ -96,7 +96,7 @@ final class LivewireDataCollector implements EventDrivenCollectorInterface
      *
      * @return array<int, array<string, mixed>>
      */
-    protected function extractComponents(array $payload): array
+    private function extractComponents(array $payload): array
     {
         $components = [];
 
@@ -124,8 +124,8 @@ final class LivewireDataCollector implements EventDrivenCollectorInterface
             $calls = $component['calls'] ?? [];
             if (! empty($calls)) {
                 $componentData['methods'] = collect($calls)
-                    ->filter(fn ($call) => isset($call['method']))
-                    ->map(fn ($call) => [
+                    ->filter(fn ($call): bool => isset($call['method']))
+                    ->map(fn ($call): array => [
                         'method' => $call['method'],
                         'params' => $call['params'] ?? [],
                     ])
@@ -153,7 +153,7 @@ final class LivewireDataCollector implements EventDrivenCollectorInterface
      * @param  array<string, mixed>  $state
      * @return array<string, mixed>
      */
-    protected function truncateState(array $state): array
+    private function truncateState(array $state): array
     {
         $totalKeys = count($state);
 
@@ -193,7 +193,7 @@ final class LivewireDataCollector implements EventDrivenCollectorInterface
      *
      * @return array<string, mixed>
      */
-    protected function decodeSnapshot(string $snapshot): array
+    private function decodeSnapshot(string $snapshot): array
     {
         $decoded = json_decode($snapshot, true);
 
@@ -203,7 +203,7 @@ final class LivewireDataCollector implements EventDrivenCollectorInterface
     /**
      * Resolve the originating page the user was on.
      */
-    protected function resolveOriginatingPage(array $payload, Request $request): ?string
+    private function resolveOriginatingPage(array $payload, Request $request): ?string
     {
         // Try to get path from first component's snapshot
         $firstComponent = $payload['components'][0] ?? null;

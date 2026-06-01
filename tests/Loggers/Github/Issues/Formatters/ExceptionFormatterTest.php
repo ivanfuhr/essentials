@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\ExceptionFormatter;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\StackTraceFormatter;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->formatter = resolve(ExceptionFormatter::class);
 });
 
-test('it formats exception details', function () {
+test('it formats exception details', function (): void {
     $exception = new RuntimeException('Test exception');
     $record = createLogRecord('Test message', exception: $exception);
 
@@ -15,7 +17,7 @@ test('it formats exception details', function () {
 
     // Pad the stack trace lines to not mess up the test assertions
     $exceptionTrace = collect(explode("\n", $exception->getTraceAsString()))
-        ->map(fn ($line) => (new StackTraceFormatter)->padStackTraceLine($line))
+        ->map(fn (string $line): string => (new StackTraceFormatter)->padStackTraceLine($line))
         ->join("\n");
 
     expect($result)
@@ -26,13 +28,13 @@ test('it formats exception details', function () {
         ->and($result['full_stack_trace'])->toContain($exceptionTrace);
 });
 
-test('it returns empty array for non-exception records', function () {
+test('it returns empty array for non-exception records', function (): void {
     $record = createLogRecord('Test message');
 
     expect($this->formatter->format($record))->toBeArray()->toBeEmpty();
 });
 
-test('it formats exception title', function () {
+test('it formats exception title', function (): void {
     $exception = new RuntimeException('Test exception');
 
     $title = $this->formatter->formatTitle($exception, 'ERROR');
@@ -43,7 +45,7 @@ test('it formats exception title', function () {
         ->toContain('Test exception');
 });
 
-test('it truncates long exception messages in title', function () {
+test('it truncates long exception messages in title', function (): void {
     $longMessage = str_repeat('a', 150);
     $exception = new RuntimeException($longMessage);
 
@@ -57,7 +59,7 @@ test('it truncates long exception messages in title', function () {
         ->toContain('...');
 });
 
-test('it properly formats exception with stack trace in message', function () {
+test('it properly formats exception with stack trace in message', function (): void {
     // Create a custom exception class that mimics our problematic behavior
     $exception = new class('Error message') extends Exception
     {
@@ -83,7 +85,7 @@ Stack trace:
         ->and($result['simplified_stack_trace'])->toContain('App\\Calculations\\Calculator->calculate()');
 });
 
-test('it handles exceptions with string in context', function () {
+test('it handles exceptions with string in context', function (): void {
     // Create a generic exception string
     $exceptionString = 'The calculation amount [123.45] does not match the expected total [456.78]. in /path/to/app/Calculations/Calculator.php:49
 Stack trace:
@@ -104,7 +106,7 @@ Stack trace:
         ->and($result['simplified_stack_trace'])->toContain('App\\Calculations\\Calculator->calculate()');
 });
 
-test('it creates different simplified and full stack traces', function () {
+test('it creates different simplified and full stack traces', function (): void {
     // Create a string exception with vendor frames
     // Use paths that will be detected as vendor frames after base_path() replacement
     $exceptionString = 'Test exception message
@@ -137,7 +139,7 @@ Stack trace:
     expect($result['simplified_stack_trace'])->not->toBe($result['full_stack_trace']);
 });
 
-test('it strips stack trace prefix from string exceptions', function () {
+test('it strips stack trace prefix from string exceptions', function (): void {
     $exceptionString = 'Error message
 Stack trace:
 #0 /app/Services/Service.php(25): App\\Services\\Service->handle()

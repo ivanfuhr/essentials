@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\SignatureContextExtractor;
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\SignatureContextKind;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->extractor = new SignatureContextExtractor;
 });
 
-test('detects HTTP context from request.route array', function () {
+test('detects HTTP context from request.route array', function (): void {
     $record = createLogRecord('Test', [
         'request' => [
             'route' => ['name' => 'api.users.index', 'uri' => 'api/users'],
@@ -22,7 +24,7 @@ test('detects HTTP context from request.route array', function () {
     expect($context['data'])->toHaveKey('route', 'api.users.index');
 });
 
-test('detects HTTP context from route array', function () {
+test('detects HTTP context from route array', function (): void {
     $record = createLogRecord('Test', [
         'route' => ['name' => 'api.posts.index', 'uri' => 'api/posts'],
         'request' => ['method' => 'POST'],
@@ -35,7 +37,7 @@ test('detects HTTP context from route array', function () {
     expect($context['data'])->toHaveKey('route', 'api.posts.index');
 });
 
-test('detects HTTP context from request.method only', function () {
+test('detects HTTP context from request.method only', function (): void {
     $record = createLogRecord('Test', [
         'request' => ['method' => 'PUT'],
     ]);
@@ -46,7 +48,7 @@ test('detects HTTP context from request.method only', function () {
     expect($context['data'])->toHaveKey('method', 'PUT');
 });
 
-test('detects HTTP context from http.method', function () {
+test('detects HTTP context from http.method', function (): void {
     $record = createLogRecord('Test', [
         'http' => ['method' => 'DELETE'],
     ]);
@@ -57,7 +59,7 @@ test('detects HTTP context from http.method', function () {
     expect($context['data'])->toHaveKey('method', 'DELETE');
 });
 
-test('prefers route name over uri template', function () {
+test('prefers route name over uri template', function (): void {
     $record = createLogRecord('Test', [
         'route' => [
             'name' => 'api.users.show',
@@ -71,7 +73,7 @@ test('prefers route name over uri template', function () {
     expect($context['data']['route'])->toBe('api.users.show');
 });
 
-test('falls back to uri template when route name is missing', function () {
+test('falls back to uri template when route name is missing', function (): void {
     $record = createLogRecord('Test', [
         'route' => [
             'uri' => 'api/users/{id}',
@@ -84,7 +86,7 @@ test('falls back to uri template when route name is missing', function () {
     expect($context['data']['route'])->toBe('api/users/{id}');
 });
 
-test('includes controller in HTTP context when available', function () {
+test('includes controller in HTTP context when available', function (): void {
     $record = createLogRecord('Test', [
         'route' => [
             'name' => 'api.users.index',
@@ -98,7 +100,7 @@ test('includes controller in HTTP context when available', function () {
     expect($context['data'])->toHaveKey('controller', 'App\\Http\\Controllers\\UserController');
 });
 
-test('extracts controller class from action string', function () {
+test('extracts controller class from action string', function (): void {
     $record = createLogRecord('Test', [
         'route' => [
             'name' => 'api.users.index',
@@ -112,7 +114,7 @@ test('extracts controller class from action string', function () {
     expect($context['data'])->toHaveKey('controller', 'App\\Http\\Controllers\\UserController');
 });
 
-test('detects Job context from job.class', function () {
+test('detects Job context from job.class', function (): void {
     $record = createLogRecord('Test', [
         'job' => ['class' => 'App\\Jobs\\ProcessOrder'],
     ]);
@@ -123,7 +125,7 @@ test('detects Job context from job.class', function () {
     expect($context['data'])->toHaveKey('job', 'App\\Jobs\\ProcessOrder');
 });
 
-test('includes queue name in Job context when available', function () {
+test('includes queue name in Job context when available', function (): void {
     $record = createLogRecord('Test', [
         'job' => [
             'class' => 'App\\Jobs\\ProcessOrder',
@@ -136,7 +138,7 @@ test('includes queue name in Job context when available', function () {
     expect($context['data'])->toHaveKey('queue', 'high-priority');
 });
 
-test('detects Command context from command.name', function () {
+test('detects Command context from command.name', function (): void {
     $record = createLogRecord('Test', [
         'command' => ['name' => 'import:users'],
     ]);
@@ -147,7 +149,7 @@ test('detects Command context from command.name', function () {
     expect($context['data'])->toHaveKey('command', 'import:users');
 });
 
-test('detects Other context when no specific context is present', function () {
+test('detects Other context when no specific context is present', function (): void {
     $record = createLogRecord('Test', []);
 
     $context = $this->extractor->extract($record);
@@ -157,8 +159,8 @@ test('detects Other context when no specific context is present', function () {
     expect($context['data'])->toHaveKey('level');
 });
 
-test('excludes level from Other context when exception is present', function () {
-    $record = createLogRecord('Test', [], exception: new \Exception('Test exception'));
+test('excludes level from Other context when exception is present', function (): void {
+    $record = createLogRecord('Test', [], exception: new Exception('Test exception'));
 
     $context = $this->extractor->extract($record);
 
@@ -167,7 +169,7 @@ test('excludes level from Other context when exception is present', function () 
     expect($context['data'])->not->toHaveKey('level');
 });
 
-test('prioritizes HTTP over Job', function () {
+test('prioritizes HTTP over Job', function (): void {
     $record = createLogRecord('Test', [
         'request' => ['method' => 'GET'],
         'job' => ['class' => 'App\\Jobs\\ProcessOrder'],
@@ -178,7 +180,7 @@ test('prioritizes HTTP over Job', function () {
     expect($context['kind'])->toBe(SignatureContextKind::Http->value);
 });
 
-test('prioritizes Job over Command', function () {
+test('prioritizes Job over Command', function (): void {
     $record = createLogRecord('Test', [
         'job' => ['class' => 'App\\Jobs\\ProcessOrder'],
         'command' => ['name' => 'import:users'],
@@ -189,7 +191,7 @@ test('prioritizes Job over Command', function () {
     expect($context['kind'])->toBe(SignatureContextKind::Job->value);
 });
 
-test('prioritizes Command over Other', function () {
+test('prioritizes Command over Other', function (): void {
     $record = createLogRecord('Test', [
         'command' => ['name' => 'import:users'],
     ]);
@@ -199,7 +201,7 @@ test('prioritizes Command over Other', function () {
     expect($context['kind'])->toBe(SignatureContextKind::Command->value);
 });
 
-test('uppercases HTTP method', function () {
+test('uppercases HTTP method', function (): void {
     $record = createLogRecord('Test', [
         'request' => ['method' => 'post'],
     ]);

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\CacheManager;
 
 use function Pest\Laravel\travel;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->store = 'array';
     $this->prefix = 'test:';
     $this->ttl = 60;
@@ -20,12 +22,12 @@ beforeEach(function () {
     Cache::store($this->store)->clear();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Carbon::setTestNow();
     Cache::store($this->store)->clear();
 });
 
-test('it can add and check signatures', function () {
+test('it can add and check signatures', function (): void {
     $signature = 'test-signature';
 
     expect($this->manager->has($signature))->toBeFalse();
@@ -35,7 +37,7 @@ test('it can add and check signatures', function () {
     expect($this->manager->has($signature))->toBeTrue();
 });
 
-test('it expires old entries', function () {
+test('it expires old entries', function (): void {
     $signature = 'test-signature';
     $this->manager->add($signature);
 
@@ -45,7 +47,7 @@ test('it expires old entries', function () {
     expect($this->manager->has($signature))->toBeFalse();
 });
 
-test('it keeps valid entries', function () {
+test('it keeps valid entries', function (): void {
     $signature = 'test-signature';
     $this->manager->add($signature);
 
@@ -55,7 +57,7 @@ test('it keeps valid entries', function () {
     expect($this->manager->has($signature))->toBeTrue();
 });
 
-test('it increments occurrence count', function () {
+test('it increments occurrence count', function (): void {
     $signature = 'test-signature';
 
     expect($this->manager->getOccurrenceCount($signature))->toBe(0);
@@ -72,7 +74,7 @@ test('it increments occurrence count', function () {
     expect($this->manager->getOccurrenceCount($signature))->toBe(3);
 });
 
-test('occurrence count uses separate cache key from dedup signature', function () {
+test('occurrence count uses separate cache key from dedup signature', function (): void {
     $signature = 'test-signature';
 
     $this->manager->add($signature);
@@ -92,7 +94,7 @@ test('occurrence count uses separate cache key from dedup signature', function (
     expect($this->manager->getOccurrenceCount($signature))->toBe(0);
 });
 
-test('occurrence count tracks different signatures independently', function () {
+test('occurrence count tracks different signatures independently', function (): void {
     $sig1 = 'signature-one';
     $sig2 = 'signature-two';
 

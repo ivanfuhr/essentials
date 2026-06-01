@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\MessageTemplate;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->template = new MessageTemplate;
 });
 
-test('replaces UUIDs with placeholder', function () {
+test('replaces UUIDs with placeholder', function (): void {
     $msg1 = 'User 550e8400-e29b-41d4-a716-446655440000 failed to login';
     $msg2 = 'User 123e4567-e89b-12d3-a456-426614174000 failed to login';
 
@@ -15,7 +17,7 @@ test('replaces UUIDs with placeholder', function () {
     expect($this->template->template($msg1))->toBe($this->template->template($msg2));
 });
 
-test('replaces emails with placeholder', function () {
+test('replaces emails with placeholder', function (): void {
     $msg1 = 'Failed to send email to user@example.com';
     $msg2 = 'Failed to send email to admin@test.org';
 
@@ -24,7 +26,7 @@ test('replaces emails with placeholder', function () {
     expect($this->template->template($msg1))->toBe($this->template->template($msg2));
 });
 
-test('replaces IPv4 addresses with placeholder', function () {
+test('replaces IPv4 addresses with placeholder', function (): void {
     $msg1 = 'Connection failed from 192.168.1.1';
     $msg2 = 'Connection failed from 10.0.0.1';
 
@@ -33,7 +35,7 @@ test('replaces IPv4 addresses with placeholder', function () {
     expect($this->template->template($msg1))->toBe($this->template->template($msg2));
 });
 
-test('replaces long hex tokens with placeholder', function () {
+test('replaces long hex tokens with placeholder', function (): void {
     $msg1 = 'Token abcdef1234567890abcdef1234567890 is invalid';
     $msg2 = 'Token 0123456789abcdef0123456789abcdef is invalid';
 
@@ -42,7 +44,7 @@ test('replaces long hex tokens with placeholder', function () {
     expect($this->template->template($msg1))->toBe($this->template->template($msg2));
 });
 
-test('replaces long numbers with placeholder', function () {
+test('replaces long numbers with placeholder', function (): void {
     $msg1 = 'Order 123456789 processed successfully';
     $msg2 = 'Order 987654321 processed successfully';
 
@@ -51,7 +53,7 @@ test('replaces long numbers with placeholder', function () {
     expect($this->template->template($msg1))->toBe($this->template->template($msg2));
 });
 
-test('replaces PHP upload tmp paths', function () {
+test('replaces PHP upload tmp paths', function (): void {
     $msg1 = 'Failed to move file from /tmp/phpABC123';
     $msg2 = 'Failed to move file from /tmp/phpXYZ789';
 
@@ -60,7 +62,7 @@ test('replaces PHP upload tmp paths', function () {
     expect($this->template->template($msg1))->toBe($this->template->template($msg2));
 });
 
-test('replaces var tmp PHP upload paths', function () {
+test('replaces var tmp PHP upload paths', function (): void {
     $msg1 = 'Failed to move file from /var/tmp/phpABC123';
     $msg2 = 'Failed to move file from /var/tmp/phpXYZ789';
 
@@ -69,7 +71,7 @@ test('replaces var tmp PHP upload paths', function () {
     expect($this->template->template($msg1))->toBe($this->template->template($msg2));
 });
 
-test('replaces private var tmp PHP upload paths', function () {
+test('replaces private var tmp PHP upload paths', function (): void {
     $msg1 = 'Failed to move file from /private/var/tmp/phpABC123';
     $msg2 = 'Failed to move file from /private/var/tmp/phpXYZ789';
 
@@ -78,12 +80,12 @@ test('replaces private var tmp PHP upload paths', function () {
     expect($this->template->template($msg1))->toBe($this->template->template($msg2));
 });
 
-test('preserves non-entropy text unchanged', function () {
+test('preserves non-entropy text unchanged', function (): void {
     $msg = 'User authentication failed';
     expect($this->template->template($msg))->toBe($msg);
 });
 
-test('handles multiple replacements in same message', function () {
+test('handles multiple replacements in same message', function (): void {
     $msg = 'User user@example.com (ID: 123456789) from 192.168.1.1 with token abcdef1234567890abcdef1234567890 failed';
     $result = $this->template->template($msg);
 
@@ -97,12 +99,12 @@ test('handles multiple replacements in same message', function () {
     expect($result)->not->toContain('abcdef1234567890abcdef1234567890');
 });
 
-test('does not replace short hex strings', function () {
+test('does not replace short hex strings', function (): void {
     $msg = 'Error code 0x123';
     expect($this->template->template($msg))->toBe($msg);
 });
 
-test('does not replace short numbers', function () {
+test('does not replace short numbers', function (): void {
     $msg = 'Error code 12345';
     expect($this->template->template($msg))->toBe($msg);
 });

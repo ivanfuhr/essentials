@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\JobContextCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->collector = new JobContextCollector;
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('collects job context', function () {
-    $job = Mockery::mock('Illuminate\Contracts\Queue\Job');
+it('collects job context', function (): void {
+    $job = Mockery::mock(Illuminate\Contracts\Queue\Job::class);
     $job->shouldReceive('getName')->andReturn('App\Jobs\TestJob');
     $job->shouldReceive('getQueue')->andReturn('default');
     $job->shouldReceive('getConnectionName')->andReturn('redis');
@@ -23,7 +25,7 @@ it('collects job context', function () {
         'data' => ['key' => 'value'],
     ]);
 
-    $event = new JobExceptionOccurred('redis', $job, new \RuntimeException('Test exception'));
+    $event = new JobExceptionOccurred('redis', $job, new RuntimeException('Test exception'));
 
     ($this->collector)($event);
 
@@ -36,10 +38,10 @@ it('collects job context', function () {
     expect($jobContext['attempts'])->toBe(2);
 });
 
-it('truncates long serialized command strings in payload', function () {
+it('truncates long serialized command strings in payload', function (): void {
     $longSerializedCommand = str_repeat('O:32:"App\\Jobs\\TestJob":3:{s:6:"tries";', 50);
 
-    $job = Mockery::mock('Illuminate\Contracts\Queue\Job');
+    $job = Mockery::mock(Illuminate\Contracts\Queue\Job::class);
     $job->shouldReceive('getName')->andReturn('App\Jobs\TestJob');
     $job->shouldReceive('getQueue')->andReturn('default');
     $job->shouldReceive('getConnectionName')->andReturn('redis');
@@ -56,7 +58,7 @@ it('truncates long serialized command strings in payload', function () {
         ],
     ]);
 
-    $event = new JobExceptionOccurred('redis', $job, new \RuntimeException('Test exception'));
+    $event = new JobExceptionOccurred('redis', $job, new RuntimeException('Test exception'));
 
     ($this->collector)($event);
 
@@ -64,10 +66,10 @@ it('truncates long serialized command strings in payload', function () {
     $payload = $jobContext['payload'];
 
     // The command field should be truncated
-    expect(strlen($payload['data']['command']))->toBeLessThan(strlen($longSerializedCommand));
+    expect(mb_strlen((string) $payload['data']['command']))->toBeLessThan(mb_strlen($longSerializedCommand));
     expect($payload['data']['command'])->toEndWith('... [truncated]');
     // Truncated to 500 chars + the "... [truncated]" marker
-    expect(strlen($payload['data']['command']))->toBe(500 + strlen('... [truncated]'));
+    expect(mb_strlen((string) $payload['data']['command']))->toBe(500 + mb_strlen('... [truncated]'));
 
     // Other payload fields should be preserved as-is
     expect($payload['displayName'])->toBe('App\Jobs\TestJob');
@@ -78,8 +80,8 @@ it('truncates long serialized command strings in payload', function () {
     expect($payload['data']['commandName'])->toBe('App\Jobs\TestJob');
 });
 
-it('does not truncate short string values in payload', function () {
-    $job = Mockery::mock('Illuminate\Contracts\Queue\Job');
+it('does not truncate short string values in payload', function (): void {
+    $job = Mockery::mock(Illuminate\Contracts\Queue\Job::class);
     $job->shouldReceive('getName')->andReturn('App\Jobs\TestJob');
     $job->shouldReceive('getQueue')->andReturn('default');
     $job->shouldReceive('getConnectionName')->andReturn('redis');
@@ -93,7 +95,7 @@ it('does not truncate short string values in payload', function () {
         ],
     ]);
 
-    $event = new JobExceptionOccurred('redis', $job, new \RuntimeException('Test exception'));
+    $event = new JobExceptionOccurred('redis', $job, new RuntimeException('Test exception'));
 
     ($this->collector)($event);
 
@@ -105,8 +107,8 @@ it('does not truncate short string values in payload', function () {
     expect($payload['displayName'])->toBe('App\Jobs\TestJob');
 });
 
-it('preserves non-string values in payload during truncation', function () {
-    $job = Mockery::mock('Illuminate\Contracts\Queue\Job');
+it('preserves non-string values in payload during truncation', function (): void {
+    $job = Mockery::mock(Illuminate\Contracts\Queue\Job::class);
     $job->shouldReceive('getName')->andReturn('App\Jobs\TestJob');
     $job->shouldReceive('getQueue')->andReturn('default');
     $job->shouldReceive('getConnectionName')->andReturn('redis');
@@ -122,7 +124,7 @@ it('preserves non-string values in payload during truncation', function () {
         ],
     ]);
 
-    $event = new JobExceptionOccurred('redis', $job, new \RuntimeException('Test exception'));
+    $event = new JobExceptionOccurred('redis', $job, new RuntimeException('Test exception'));
 
     ($this->collector)($event);
 

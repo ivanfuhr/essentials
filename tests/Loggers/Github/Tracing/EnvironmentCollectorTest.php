@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\EnvironmentCollector;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\GitInfoDetector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     GitInfoDetector::resetCache();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
     GitInfoDetector::resetCache();
 });
 
-it('collects environment data', function () {
+it('collects environment data', function (): void {
     $collector = new EnvironmentCollector;
     $collector->collect();
 
@@ -26,7 +28,7 @@ it('collects environment data', function () {
     expect($environment['php_os'])->toBe(PHP_OS);
 });
 
-it('includes git data when available', function () {
+it('includes git data when available', function (): void {
     $detector = Mockery::mock(GitInfoDetector::class);
     $detector->shouldReceive('detect')->once()->andReturn([
         'git_hash' => 'abc1234',
@@ -48,7 +50,7 @@ it('includes git data when available', function () {
         ->toHaveKey('git_commit', 'abc1234');
 });
 
-it('falls back gracefully when git is not available', function () {
+it('falls back gracefully when git is not available', function (): void {
     $detector = Mockery::mock(GitInfoDetector::class);
     $detector->shouldReceive('detect')->once()->andReturn([]);
 
@@ -66,7 +68,7 @@ it('falls back gracefully when git is not available', function () {
     expect($environment)->not->toHaveKey('git_branch');
 });
 
-it('uses config override for git_hash when app.git_commit is set', function () {
+it('uses config override for git_hash when app.git_commit is set', function (): void {
     config(['app.git_commit' => 'config-hash-override']);
 
     $detector = Mockery::mock(GitInfoDetector::class);
@@ -86,7 +88,7 @@ it('uses config override for git_hash when app.git_commit is set', function () {
         ->toHaveKey('git_branch', 'main');
 });
 
-it('skips git detection when git tracing is disabled', function () {
+it('skips git detection when git tracing is disabled', function (): void {
     config(['loggers.github.tracing.git' => false]);
 
     $detector = Mockery::mock(GitInfoDetector::class);
@@ -104,7 +106,7 @@ it('skips git detection when git tracing is disabled', function () {
     expect($environment)->not->toHaveKey('git_dirty');
 });
 
-it('sets git_commit from git_hash when config override is not set', function () {
+it('sets git_commit from git_hash when config override is not set', function (): void {
     config(['app.git_commit' => null]);
 
     $detector = Mockery::mock(GitInfoDetector::class);
@@ -122,7 +124,7 @@ it('sets git_commit from git_hash when config override is not set', function () 
         ->toHaveKey('git_commit', 'detected-abc');
 });
 
-it('enables git tracing by default', function () {
+it('enables git tracing by default', function (): void {
     $detector = Mockery::mock(GitInfoDetector::class);
     $detector->shouldReceive('detect')->once()->andReturn([
         'git_hash' => 'abc1234',

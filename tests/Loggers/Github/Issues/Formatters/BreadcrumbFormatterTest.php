@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\BreadcrumbFormatter;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->formatter = new BreadcrumbFormatter;
 });
 
-it('returns empty string for null breadcrumbs', function () {
+it('returns empty string for null breadcrumbs', function (): void {
     expect($this->formatter->format(null))->toBe('');
 });
 
-it('returns empty string for empty array', function () {
+it('returns empty string for empty array', function (): void {
     expect($this->formatter->format([]))->toBe('');
 });
 
-it('formats single breadcrumb as markdown table', function () {
+it('formats single breadcrumb as markdown table', function (): void {
     $breadcrumbs = [
         [
             'timestamp' => '14:30:15.123',
@@ -32,7 +34,7 @@ it('formats single breadcrumb as markdown table', function () {
         ->toContain('| 14:30:15.123 | log | [info] User logged in |  |');
 });
 
-it('formats breadcrumb with metadata', function () {
+it('formats breadcrumb with metadata', function (): void {
     $breadcrumbs = [
         [
             'timestamp' => '14:30:15.123',
@@ -48,7 +50,7 @@ it('formats breadcrumb with metadata', function () {
         ->toContain('| 14:30:15.123 | cache | Cache hit: user.123 | store: redis |');
 });
 
-it('formats multiple breadcrumbs correctly', function () {
+it('formats multiple breadcrumbs correctly', function (): void {
     $breadcrumbs = [
         [
             'timestamp' => '14:30:15.100',
@@ -72,7 +74,7 @@ it('formats multiple breadcrumbs correctly', function () {
 
     $result = $this->formatter->format($breadcrumbs);
 
-    $lines = explode("\n", $result);
+    $lines = explode("\n", (string) $result);
 
     // Header + separator + 3 data rows
     expect($lines)->toHaveCount(5);
@@ -81,7 +83,7 @@ it('formats multiple breadcrumbs correctly', function () {
     expect($lines[4])->toContain('Slow query detected');
 });
 
-it('escapes pipe characters in messages', function () {
+it('escapes pipe characters in messages', function (): void {
     $breadcrumbs = [
         [
             'timestamp' => '14:30:15.123',
@@ -98,7 +100,7 @@ it('escapes pipe characters in messages', function () {
         ->not->toMatch('/A\|B\|C[^\\\\]/');
 });
 
-it('formats multiple metadata entries', function () {
+it('formats multiple metadata entries', function (): void {
     $breadcrumbs = [
         [
             'timestamp' => '14:30:15.123',

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Issues\StubLoader;
 use IvanFuhr\Essentials\Loggers\Github\Issues\TemplateRenderer;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\ContextProcessor;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->stubLoader = new StubLoader;
     $this->renderer = resolve(TemplateRenderer::class);
     $this->processor = new ContextProcessor;
@@ -21,11 +23,11 @@ beforeEach(function () {
     config(['loggers.github.tracing.livewire' => false]);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('renders environment section when environment data exists', function () {
+it('renders environment section when environment data exists', function (): void {
     Context::add('environment', [
         'app_env' => 'testing',
         'laravel_version' => '11.0.0',
@@ -44,7 +46,7 @@ it('renders environment section when environment data exists', function () {
         ->toContain('"php_version": "8.2.0"');
 });
 
-it('renders request section when request data exists', function () {
+it('renders request section when request data exists', function (): void {
     Context::add('request', [
         'url' => 'https://example.com/test',
         'method' => 'POST',
@@ -67,7 +69,7 @@ it('renders request section when request data exists', function () {
         ->toContain('"method": "POST"');
 });
 
-it('renders route section when route data exists', function () {
+it('renders route section when route data exists', function (): void {
     Context::add('route', [
         'name' => 'users.show',
         'uri' => 'users/{id}',
@@ -87,7 +89,7 @@ it('renders route section when route data exists', function () {
         ->toContain('middleware');
 });
 
-it('renders user section when user data exists', function () {
+it('renders user section when user data exists', function (): void {
     Context::add('user', [
         'id' => 123,
         'email' => 'user@example.com',
@@ -106,7 +108,7 @@ it('renders user section when user data exists', function () {
         ->toContain('"authenticated": true');
 });
 
-it('renders queries section when queries exist', function () {
+it('renders queries section when queries exist', function (): void {
     Context::add('queries', [
         [
             'sql' => 'SELECT * FROM users WHERE id = ?',
@@ -128,7 +130,7 @@ it('renders queries section when queries exist', function () {
         ->toContain('10.5');
 });
 
-it('renders job section when job data exists', function () {
+it('renders job section when job data exists', function (): void {
     Context::add('job', [
         'name' => 'App\Jobs\ProcessOrder',
         'queue' => 'default',
@@ -147,7 +149,7 @@ it('renders job section when job data exists', function () {
         ->toContain('2');
 });
 
-it('renders command section when command data exists', function () {
+it('renders command section when command data exists', function (): void {
     Context::add('command', [
         'name' => 'test:command',
         'arguments' => ['arg1' => 'value1'],
@@ -166,7 +168,7 @@ it('renders command section when command data exists', function () {
         ->toContain('"options"');
 });
 
-it('renders outgoing requests section when outgoing requests exist', function () {
+it('renders outgoing requests section when outgoing requests exist', function (): void {
     Context::add('outgoing_requests', [
         [
             'url' => 'https://api.example.com/test',
@@ -188,7 +190,7 @@ it('renders outgoing requests section when outgoing requests exist', function ()
         ->toContain('150.5');
 });
 
-it('renders session section when session data exists', function () {
+it('renders session section when session data exists', function (): void {
     Context::add('session', [
         'data' => ['key' => 'value'],
         'flash' => ['old' => [], 'new' => []],
@@ -205,7 +207,7 @@ it('renders session section when session data exists', function () {
         ->toContain('"flash"');
 });
 
-it('removes empty sections from rendered template', function () {
+it('removes empty sections from rendered template', function (): void {
     $record = createLogRecord('Test message');
     $record = ($this->processor)($record);
 
@@ -223,7 +225,7 @@ it('removes empty sections from rendered template', function () {
         ->not->toContain('<!-- session:start -->');
 });
 
-it('formats multiple queries correctly', function () {
+it('formats multiple queries correctly', function (): void {
     Context::add('queries', [
         [
             'sql' => 'SELECT * FROM users',
@@ -251,7 +253,7 @@ it('formats multiple queries correctly', function () {
         ->toContain('12.3ms');
 });
 
-it('formats multiple outgoing requests correctly', function () {
+it('formats multiple outgoing requests correctly', function (): void {
     Context::add('outgoing_requests', [
         [
             'url' => 'https://api.example.com/users',
@@ -281,7 +283,7 @@ it('formats multiple outgoing requests correctly', function () {
         ->toContain('250.5');
 });
 
-it('renders breadcrumbs section when breadcrumbs exist', function () {
+it('renders breadcrumbs section when breadcrumbs exist', function (): void {
     Context::addHidden('breadcrumbs', [
         [
             'timestamp' => '14:30:15.100',
@@ -317,7 +319,7 @@ it('renders breadcrumbs section when breadcrumbs exist', function () {
         ->toContain('Deprecated method called');
 });
 
-it('renders breadcrumbs in comment template', function () {
+it('renders breadcrumbs in comment template', function (): void {
     Context::addHidden('breadcrumbs', [
         [
             'timestamp' => '14:30:15.100',

@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\StubLoader;
 use IvanFuhr\Essentials\Loggers\Github\Issues\TemplateRenderer;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->stubLoader = new StubLoader;
     $this->renderer = resolve(TemplateRenderer::class);
 });
 
-test('it renders basic log record', function () {
+test('it renders basic log record', function (): void {
     $record = createLogRecord('Test message');
 
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
@@ -18,7 +20,7 @@ test('it renders basic log record', function () {
         ->toContain('**Message:** Test message');
 });
 
-test('it renders title without exception', function () {
+test('it renders title without exception', function (): void {
     $record = createLogRecord('Test message');
 
     $title = $this->renderer->renderTitle($record);
@@ -26,7 +28,7 @@ test('it renders title without exception', function () {
     expect($title)->toBe('[ERROR] Test message');
 });
 
-test('it renders title with exception', function () {
+test('it renders title with exception', function (): void {
     $record = createLogRecord('Test message', exception: new RuntimeException('Test exception'));
 
     $title = $this->renderer->renderTitle($record);
@@ -34,7 +36,7 @@ test('it renders title with exception', function () {
     expect($title)->toContain('[ERROR] RuntimeException', 'Test exception');
 });
 
-test('it renders context data', function () {
+test('it renders context data', function (): void {
     $record = createLogRecord('Test message', ['user_id' => 123]);
 
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
@@ -44,7 +46,7 @@ test('it renders context data', function () {
         ->toContain('"user_id": 123');
 });
 
-test('it renders extra data', function () {
+test('it renders extra data', function (): void {
     $record = createLogRecord('Test message', extra: ['request_id' => 'abc123']);
 
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
@@ -54,7 +56,7 @@ test('it renders extra data', function () {
         ->toContain('"request_id": "abc123"');
 });
 
-test('it renders previous exceptions', function () {
+test('it renders previous exceptions', function (): void {
     $previous = new RuntimeException('Previous exception');
     $exception = new RuntimeException('Test exception', previous: $previous);
     $record = createLogRecord('Test message', exception: $exception);
@@ -67,7 +69,7 @@ test('it renders previous exceptions', function () {
         ->toContain('[Vendor frames]');
 });
 
-test('it handles nested stack traces in previous exceptions correctly', function () {
+test('it handles nested stack traces in previous exceptions correctly', function (): void {
     $previous = new RuntimeException('Previous exception');
     $exception = new RuntimeException('Test exception', previous: $previous);
     $record = createLogRecord('Test message', exception: $exception);
@@ -81,18 +83,18 @@ test('it handles nested stack traces in previous exceptions correctly', function
         ->toContain('View Previous Exceptions');
 });
 
-test('comment template has stack trace details as siblings not nested', function () {
+test('comment template has stack trace details as siblings not nested', function (): void {
     $template = $this->stubLoader->load('comment');
 
     // Verify in the raw template that the stacktrace section contains exactly 2 sibling
     // <details> blocks (Stack Trace + View Complete Stack Trace), not nested ones.
-    $stackTraceStart = strpos($template, '<!-- stacktrace:start -->');
-    $stackTraceEnd = strpos($template, '<!-- stacktrace:end -->');
+    $stackTraceStart = mb_strpos((string) $template, '<!-- stacktrace:start -->');
+    $stackTraceEnd = mb_strpos((string) $template, '<!-- stacktrace:end -->');
 
     expect($stackTraceStart)->not->toBeFalse();
     expect($stackTraceEnd)->not->toBeFalse();
 
-    $stackTraceSection = substr($template, $stackTraceStart, $stackTraceEnd - $stackTraceStart + strlen('<!-- stacktrace:end -->'));
+    $stackTraceSection = mb_substr((string) $template, $stackTraceStart, $stackTraceEnd - $stackTraceStart + mb_strlen('<!-- stacktrace:end -->'));
 
     // Count details tags in the stacktrace section - should be 2 sibling blocks
     preg_match_all('/<details>/', $stackTraceSection, $openTags);
@@ -103,16 +105,16 @@ test('comment template has stack trace details as siblings not nested', function
 
     // The first </details> should appear BEFORE the second <details>,
     // proving they are siblings, not nested.
-    $firstClose = strpos($stackTraceSection, '</details>');
-    $secondOpen = strpos($stackTraceSection, '<details>', strpos($stackTraceSection, '<details>') + 1);
+    $firstClose = mb_strpos($stackTraceSection, '</details>');
+    $secondOpen = mb_strpos($stackTraceSection, '<details>', mb_strpos($stackTraceSection, '<details>') + 1);
     expect($firstClose)->toBeLessThan($secondOpen);
 
     // Verify previous exceptions section is outside the stacktrace markers
-    $prevStart = strpos($template, '<!-- prev-stacktrace:start -->');
+    $prevStart = mb_strpos((string) $template, '<!-- prev-stacktrace:start -->');
     expect($prevStart)->toBeGreaterThan($stackTraceEnd);
 });
 
-test('it cleans all empty sections', function () {
+test('it cleans all empty sections', function (): void {
     $record = createLogRecord('');
 
     $rendered = $this->renderer->render(
@@ -126,7 +128,7 @@ test('it cleans all empty sections', function () {
         ->toContain('<!-- Signature: test -->');
 });
 
-test('it extracts clean message and stack trace when exception is a string in context', function () {
+test('it extracts clean message and stack trace when exception is a string in context', function (): void {
     // Simulate the scenario where exception is logged as a string
     $exceptionString = 'The calculation amount [123.45] does not match the expected total [456.78]. in /path/to/app/Calculations/Calculator.php:49
 Stack trace:
@@ -142,7 +144,7 @@ Stack trace:
 
     // Should have clean short message (not the full exception string)
     // Extract the message line to check it specifically
-    preg_match('/\*\*Message:\*\* (.+?)(?:\n|$)/', $rendered, $messageMatches);
+    preg_match('/\*\*Message:\*\* (.+?)(?:\n|$)/', (string) $rendered, $messageMatches);
     $messageValue = $messageMatches[1] ?? '';
 
     expect($messageValue)
@@ -162,7 +164,7 @@ Stack trace:
         ->toContain('App\\Calculations\\Calculator->calculate()');
 });
 
-test('it extracts clean message when stack trace is only in record message', function () {
+test('it extracts clean message when stack trace is only in record message', function (): void {
     // Simulate the scenario where exception is logged directly as message without exception in context
     $messageWithStackTrace = 'RuntimeException: Error message in /path/to/file.php:123
 Stack trace:
@@ -175,7 +177,7 @@ Stack trace:
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
 
     // Message should be extracted without stack trace
-    preg_match('/\*\*Message:\*\* (.+?)(?:\n|$)/', $rendered, $messageMatches);
+    preg_match('/\*\*Message:\*\* (.+?)(?:\n|$)/', (string) $rendered, $messageMatches);
     $messageValue = $messageMatches[1] ?? '';
 
     expect($messageValue)
@@ -190,7 +192,7 @@ Stack trace:
         ->toContain('App\\Service->method()');
 });
 
-test('it formats timestamp placeholder correctly', function () {
+test('it formats timestamp placeholder correctly', function (): void {
     $record = createLogRecord('Test message');
 
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
@@ -200,7 +202,7 @@ test('it formats timestamp placeholder correctly', function () {
         ->toMatch('/\*\*Timestamp:\*\* \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/');
 });
 
-test('it formats route summary as method and path', function () {
+test('it formats route summary as method and path', function (): void {
     $record = createLogRecord('Test message', [
         'request' => [
             'method' => 'POST',
@@ -214,7 +216,7 @@ test('it formats route summary as method and path', function () {
         ->toContain('**Route:** POST /api/users');
 });
 
-test('it returns empty string for route summary when request data is missing', function () {
+test('it returns empty string for route summary when request data is missing', function (): void {
     $record = createLogRecord('Test message');
 
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
@@ -223,7 +225,7 @@ test('it returns empty string for route summary when request data is missing', f
         ->toContain('**Route:**');
 });
 
-test('it formats route summary from route context when request url is missing', function () {
+test('it formats route summary from route context when request url is missing', function (): void {
     $record = createLogRecord('Test message', [
         'request' => [
             'method' => 'PUT',
@@ -241,7 +243,7 @@ test('it formats route summary from route context when request url is missing', 
         ->toContain('**Route:** PUT /nova-api/{resource}/{resourceId}');
 });
 
-test('it prefers request context over route context for route summary', function () {
+test('it prefers request context over route context for route summary', function (): void {
     $record = createLogRecord('Test message', [
         'request' => [
             'method' => 'POST',
@@ -260,7 +262,7 @@ test('it prefers request context over route context for route summary', function
         ->not->toContain('PUT /nova-api');
 });
 
-test('it formats user summary with user id', function () {
+test('it formats user summary with user id', function (): void {
     $record = createLogRecord('Test message', [
         'user' => [
             'id' => 123,
@@ -274,7 +276,7 @@ test('it formats user summary with user id', function () {
         ->toContain('**User:** 123');
 });
 
-test('it formats user summary as unauthenticated when user data is missing', function () {
+test('it formats user summary as unauthenticated when user data is missing', function (): void {
     $record = createLogRecord('Test message');
 
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
@@ -283,7 +285,7 @@ test('it formats user summary as unauthenticated when user data is missing', fun
         ->toContain('**User:** Unauthenticated');
 });
 
-test('it formats user summary as unauthenticated when user id is missing', function () {
+test('it formats user summary as unauthenticated when user id is missing', function (): void {
     $record = createLogRecord('Test message', [
         'user' => [
             'name' => 'John Doe',
@@ -296,7 +298,7 @@ test('it formats user summary as unauthenticated when user id is missing', funct
         ->toContain('**User:** Unauthenticated');
 });
 
-test('it extracts environment name from environment context', function () {
+test('it extracts environment name from environment context', function (): void {
     $record = createLogRecord('Test message', [
         'environment' => [
             'APP_ENV' => 'production',
@@ -309,7 +311,7 @@ test('it extracts environment name from environment context', function () {
         ->toContain('**Environment:** production');
 });
 
-test('it extracts environment name from lowercase app_env key', function () {
+test('it extracts environment name from lowercase app_env key', function (): void {
     $record = createLogRecord('Test message', [
         'environment' => [
             'app_env' => 'staging',
@@ -322,7 +324,7 @@ test('it extracts environment name from lowercase app_env key', function () {
         ->toContain('**Environment:** staging');
 });
 
-test('it returns empty string for environment name when not available', function () {
+test('it returns empty string for environment name when not available', function (): void {
     $record = createLogRecord('Test message');
 
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
@@ -331,7 +333,7 @@ test('it returns empty string for environment name when not available', function
         ->toContain('**Environment:**');
 });
 
-test('issue template renders triage header with all fields', function () {
+test('issue template renders triage header with all fields', function (): void {
     $record = createLogRecord('Test message', [
         'request' => [
             'method' => 'GET',
@@ -354,7 +356,7 @@ test('issue template renders triage header with all fields', function () {
         ->toContain('**Message:** Test message');
 });
 
-test('issue template wraps verbose sections in details blocks', function () {
+test('issue template wraps verbose sections in details blocks', function (): void {
     $record = createLogRecord('Test message', [
         'environment' => ['APP_ENV' => 'testing'],
         'request' => ['method' => 'GET', 'url' => 'https://example.com'],
@@ -373,7 +375,7 @@ test('issue template wraps verbose sections in details blocks', function () {
         ->toContain('<summary>➕ Extra Data</summary>');
 });
 
-test('comment template always includes request section', function () {
+test('comment template always includes request section', function (): void {
     $record = createLogRecord('Test message', [
         'request' => [
             'method' => 'POST',
@@ -389,7 +391,7 @@ test('comment template always includes request section', function () {
         ->toContain('**Route:** POST /api');
 });
 
-test('comment template does not include environment section', function () {
+test('comment template does not include environment section', function (): void {
     $record = createLogRecord('Test message', [
         'environment' => ['APP_ENV' => 'production'],
     ]);
@@ -401,7 +403,7 @@ test('comment template does not include environment section', function () {
         ->not->toContain('<!-- environment:start -->');
 });
 
-test('comment template renders occurrence count from extra data', function () {
+test('comment template renders occurrence count from extra data', function (): void {
     $record = createLogRecord('Test message', extra: ['github_occurrence_count' => 5]);
 
     $rendered = $this->renderer->render($this->stubLoader->load('comment'), $record);
@@ -409,7 +411,7 @@ test('comment template renders occurrence count from extra data', function () {
     expect($rendered)->toContain('**Occurrence:** #5');
 });
 
-test('comment template renders occurrence count as 1 when not provided', function () {
+test('comment template renders occurrence count as 1 when not provided', function (): void {
     $record = createLogRecord('Test message');
 
     $rendered = $this->renderer->render($this->stubLoader->load('comment'), $record);
@@ -417,7 +419,7 @@ test('comment template renders occurrence count as 1 when not provided', functio
     expect($rendered)->toContain('**Occurrence:** #1');
 });
 
-test('occurrence count is not leaked into extra data section', function () {
+test('occurrence count is not leaked into extra data section', function (): void {
     $record = createLogRecord('Test message', extra: [
         'github_occurrence_count' => 3,
         'request_id' => 'abc123',
@@ -431,7 +433,7 @@ test('occurrence count is not leaked into extra data section', function () {
         ->not->toContain('"github_occurrence_count"');
 });
 
-test('triage header renders correctly with missing optional data', function () {
+test('triage header renders correctly with missing optional data', function (): void {
     $record = createLogRecord('Test message');
 
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);

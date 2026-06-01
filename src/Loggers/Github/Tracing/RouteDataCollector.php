@@ -18,7 +18,7 @@ final class RouteDataCollector implements EventDrivenCollectorInterface
      *
      * @var array<string>
      */
-    protected static array $livewireRoutePatterns = [
+    private static array $livewireRoutePatterns = [
         'livewire/message/*',
         'livewire/upload-file',
         'livewire/preview-file/*',
@@ -55,7 +55,7 @@ final class RouteDataCollector implements EventDrivenCollectorInterface
      *
      * For Livewire internal routes, this returns the originating page instead.
      */
-    protected function buildRouteSummary(\Illuminate\Routing\Route $route, string $uri): string
+    private function buildRouteSummary(\Illuminate\Routing\Route $route, string $uri): string
     {
         // Check if this is a Livewire internal route
         if ($this->isLivewireRoute($uri)) {
@@ -84,7 +84,7 @@ final class RouteDataCollector implements EventDrivenCollectorInterface
     /**
      * Check if the given URI is a Livewire internal route.
      */
-    protected function isLivewireRoute(string $uri): bool
+    private function isLivewireRoute(string $uri): bool
     {
         foreach (self::$livewireRoutePatterns as $pattern) {
             if (fnmatch($pattern, $uri)) {

@@ -19,7 +19,7 @@ final class JobContextCollector implements EventDrivenCollectorInterface
     /**
      * Maximum length for serialized string values in the payload before truncation.
      */
-    protected const MAX_SERIALIZED_LENGTH = 500;
+    private const int MAX_SERIALIZED_LENGTH = 500;
 
     public function __invoke(JobExceptionOccurred $event): void
     {
@@ -46,7 +46,7 @@ final class JobContextCollector implements EventDrivenCollectorInterface
      * @param  array<string, mixed>  $payload
      * @return array<string, mixed>
      */
-    protected function cleanPayload(array $payload): array
+    private function cleanPayload(array $payload): array
     {
         $payload = $this->redactPayload($payload);
 
@@ -63,7 +63,7 @@ final class JobContextCollector implements EventDrivenCollectorInterface
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
-    protected function truncateSerializedValues(array $data): array
+    private function truncateSerializedValues(array $data): array
     {
         $result = [];
 

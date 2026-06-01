@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Session;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\SessionCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->collector = new SessionCollector;
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
     Session::flush();
 });
 
-it('collects session data when session is started', function () {
+it('collects session data when session is started', function (): void {
     Session::start();
     Session::put('key', 'value');
     Session::put('password', 'secret');
@@ -27,13 +29,13 @@ it('collects session data when session is started', function () {
     expect($session['data']['password'])->toContain('bytes redacted');
 });
 
-it('does not collect when session is not started', function () {
+it('does not collect when session is not started', function (): void {
     $this->collector->collect();
 
     expect(Context::hasHidden('session'))->toBeFalse();
 });
 
-it('strips empty flash data from session', function () {
+it('strips empty flash data from session', function (): void {
     Session::start();
     Session::put('key', 'value');
 
@@ -45,7 +47,7 @@ it('strips empty flash data from session', function () {
     expect($session['data'])->not->toHaveKey('_flash');
 });
 
-it('preserves non-empty flash data', function () {
+it('preserves non-empty flash data', function (): void {
     Session::start();
     Session::put('key', 'value');
     Session::flash('message', 'Hello World');
@@ -58,7 +60,7 @@ it('preserves non-empty flash data', function () {
     expect($session['flash']['new'])->toContain('message');
 });
 
-it('strips _token from session data', function () {
+it('strips _token from session data', function (): void {
     Session::start();
     Session::put('key', 'value');
     Session::put('_token', 'csrf-token-value');

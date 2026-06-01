@@ -1,22 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\QueryCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Context::flush();
     $this->collector = new QueryCollector;
     Config::set('logging.channels.github.tracing.queries', ['enabled' => true, 'limit' => 10]);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('collects query data', function () {
-    $connection = Mockery::mock('Illuminate\Database\Connection');
+it('collects query data', function (): void {
+    $connection = Mockery::mock(Illuminate\Database\Connection::class);
     $connection->shouldReceive('getName')->andReturn('mysql');
 
     $event = new QueryExecuted(
@@ -38,15 +40,15 @@ it('collects query data', function () {
     expect($queries[0]['connection'])->toBe('mysql');
 });
 
-it('respects query limit', function () {
+it('respects query limit', function (): void {
     Config::set('logging.channels.github.tracing.queries', ['enabled' => true, 'limit' => 2]);
 
-    $connection = Mockery::mock('Illuminate\Database\Connection');
+    $connection = Mockery::mock(Illuminate\Database\Connection::class);
     $connection->shouldReceive('getName')->andReturn('mysql');
 
     for ($i = 0; $i < 5; $i++) {
         $event = new QueryExecuted(
-            sql: "SELECT * FROM users WHERE id = {$i}",
+            sql: 'SELECT * FROM users WHERE id = '.$i,
             bindings: [],
             time: 1.0,
             connection: $connection
@@ -61,10 +63,10 @@ it('respects query limit', function () {
     expect($queries[1]['sql'])->toContain('id = 4');
 });
 
-it('does not collect when disabled', function () {
+it('does not collect when disabled', function (): void {
     Config::set('logging.channels.github.tracing.queries', ['enabled' => false]);
 
-    $connection = Mockery::mock('Illuminate\Database\Connection');
+    $connection = Mockery::mock(Illuminate\Database\Connection::class);
     $connection->shouldReceive('getName')->andReturn('mysql');
 
     $event = new QueryExecuted(

@@ -1,23 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Issues\StubLoader;
 use IvanFuhr\Essentials\Loggers\Github\Issues\TemplateRenderer;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\ContextProcessor;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->stubLoader = new StubLoader;
     $this->renderer = resolve(TemplateRenderer::class);
     $this->processor = new ContextProcessor;
     Context::flush();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('includes context data in context section not extra', function () {
+it('includes context data in context section not extra', function (): void {
     // Arrange - Add context data that is NOT excluded from context section
     // (user, request, route, etc. are excluded and go to their own sections)
     Context::add('custom_key', 'custom_value');
@@ -39,7 +41,7 @@ it('includes context data in context section not extra', function () {
     expect($rendered)->toContain('<summary>📦 Context</summary>');
 
     // Extract context section (it might be cleaned if empty, so check if it exists first)
-    if (preg_match('/<!-- context:start -->(.*?)<!-- context:end -->/s', $rendered, $contextMatches)) {
+    if (preg_match('/<!-- context:start -->(.*?)<!-- context:end -->/s', (string) $rendered, $contextMatches)) {
         $contextSection = $contextMatches[1];
         expect($contextSection)
             ->toContain('"custom_key"')
@@ -52,17 +54,17 @@ it('includes context data in context section not extra', function () {
     }
 
     // Extract extra section to verify context data is NOT there
-    preg_match('/<!-- extra:start -->(.*?)<!-- extra:end -->/s', $rendered, $extraMatches);
+    preg_match('/<!-- extra:start -->(.*?)<!-- extra:end -->/s', (string) $rendered, $extraMatches);
     $extraSection = $extraMatches[1] ?? '';
 
-    if (! empty($extraSection)) {
+    if ($extraSection !== '' && $extraSection !== '0') {
         expect($extraSection)
             ->not->toContain('"custom_key"')
             ->not->toContain('"another_key"');
     }
 });
 
-it('does not include context data in extra section', function () {
+it('does not include context data in extra section', function (): void {
     // Arrange
     Context::add('user', ['id' => 456]);
 
@@ -81,10 +83,10 @@ it('does not include context data in extra section', function () {
     $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record, 'test-sig');
 
     // Assert - Extract the extra section (if it exists)
-    preg_match('/<!-- extra:start -->(.*?)<!-- extra:end -->/s', $rendered, $extraMatches);
+    preg_match('/<!-- extra:start -->(.*?)<!-- extra:end -->/s', (string) $rendered, $extraMatches);
     $extraSection = $extraMatches[1] ?? '';
 
-    if (! empty($extraSection)) {
+    if ($extraSection !== '' && $extraSection !== '0') {
         expect($extraSection)
             ->toContain('"custom_extra": "value"')
             ->not->toContain('"user"')

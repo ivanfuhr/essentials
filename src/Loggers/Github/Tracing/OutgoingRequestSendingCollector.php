@@ -26,7 +26,7 @@ final class OutgoingRequestSendingCollector implements EventDrivenCollectorInter
         $headers = $request->headers();
         $headerBag = new \Symfony\Component\HttpFoundation\HeaderBag($headers);
 
-        Context::addHidden("outgoing_request.{$requestId}", [
+        Context::addHidden('outgoing_request.'.$requestId, [
             'url' => $request->url(),
             'method' => $request->method(),
             'headers' => $this->redactHeaders($headerBag),

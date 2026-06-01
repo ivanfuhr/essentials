@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\CommandContextCollector;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->collector = new CommandContextCollector;
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('collects command context', function () {
+it('collects command context', function (): void {
     $input = new ArrayInput([
         'arg1' => 'value1',
         '--option' => 'value2',

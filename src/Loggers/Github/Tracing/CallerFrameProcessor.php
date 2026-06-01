@@ -41,8 +41,11 @@ final class CallerFrameProcessor implements ProcessorInterface
 
         foreach ($trace as $frame) {
             $file = $frame['file'] ?? null;
+            if (! is_string($file)) {
+                continue;
+            }
 
-            if (! is_string($file) || $file === '') {
+            if ($file === '') {
                 continue;
             }
 

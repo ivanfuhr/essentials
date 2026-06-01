@@ -13,7 +13,7 @@ final class QueryCollector implements EventDrivenCollectorInterface
 {
     use RedactsData;
 
-    private const DEFAULT_LIMIT = 10;
+    private const int DEFAULT_LIMIT = 10;
 
     public function __invoke(QueryExecuted $event): void
     {

@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\Formatted;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\IssueFormatter;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->formatter = app()->make(IssueFormatter::class);
 });
 
-test('it formats basic log records', function () {
+test('it formats basic log records', function (): void {
     $record = createLogRecord('Test error message', signature: 'test-signature');
 
     $formatted = $this->formatter->format($record);
@@ -19,7 +21,7 @@ test('it formats basic log records', function () {
         ->and($formatted->body)->toContain('Test error message');
 });
 
-test('it formats exceptions with file and line information', function () {
+test('it formats exceptions with file and line information', function (): void {
     $record = createLogRecord('Error occurred', exception: new RuntimeException('Test exception'), signature: 'test-signature');
 
     $formatted = $this->formatter->format($record);
@@ -32,23 +34,23 @@ test('it formats exceptions with file and line information', function () {
         ->toContain('<summary>📋 Stack Trace</summary>');
 });
 
-test('it truncates long titles', function () {
+test('it truncates long titles', function (): void {
     $longMessage = str_repeat('a', 90);
     $record = createLogRecord($longMessage, signature: 'test-signature');
 
     $formatted = $this->formatter->format($record);
 
-    expect(mb_strlen($formatted->title))->toBeLessThanOrEqual(100);
+    expect(mb_strlen((string) $formatted->title))->toBeLessThanOrEqual(100);
 });
 
-test('it includes context data in formatted output', function () {
+test('it includes context data in formatted output', function (): void {
     $record = createLogRecord(
         'Test message',
-        exception: new RuntimeException('Test exception'),
         context: [
             'user_id' => 123,
             'action' => 'login',
         ],
+        exception: new RuntimeException('Test exception'),
         signature: 'test-signature',
     );
 
@@ -59,11 +61,10 @@ test('it includes context data in formatted output', function () {
         ->toContain('"action": "login"');
 });
 
-test('it formats stack traces with collapsible vendor frames', function () {
+test('it formats stack traces with collapsible vendor frames', function (): void {
     $exception = new Exception('Test exception');
     $reflection = new ReflectionClass($exception);
     $traceProperty = $reflection->getProperty('trace');
-    $traceProperty->setAccessible(true);
 
     // Set a custom stack trace with both vendor and application frames
     $traceProperty->setValue($exception, [

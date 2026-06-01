@@ -1,25 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\InertiaDataCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->collector = new InertiaDataCollector;
     config(['loggers.github.tracing.inertia' => true]);
     config(['logging.channels.github.tracing.inertia' => true]);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('detects inertia request via X-Inertia header', function () {
+it('detects inertia request via X-Inertia header', function (): void {
     $request = Request::create('/dashboard', 'GET');
     $request->headers->set('X-Inertia', 'true');
     $request->headers->set('X-Inertia-Version', 'abc123');
+
     app()->instance('request', $request);
 
     $response = new Response(json_encode([
@@ -39,7 +42,7 @@ it('detects inertia request via X-Inertia header', function () {
     expect($inertiaData['partial_reload'])->toBeFalse();
 });
 
-it('skips non-inertia requests', function () {
+it('skips non-inertia requests', function (): void {
     $request = Request::create('/api/users', 'GET');
     app()->instance('request', $request);
 
@@ -49,12 +52,13 @@ it('skips non-inertia requests', function () {
     expect(Context::get('inertia'))->toBeNull();
 });
 
-it('captures partial reload information', function () {
+it('captures partial reload information', function (): void {
     $request = Request::create('/dashboard', 'GET');
     $request->headers->set('X-Inertia', 'true');
     $request->headers->set('X-Inertia-Version', 'abc123');
     $request->headers->set('X-Inertia-Partial-Data', 'users,notifications');
     $request->headers->set('X-Inertia-Partial-Component', 'Dashboard/Index');
+
     app()->instance('request', $request);
 
     $response = new Response(json_encode([
@@ -72,12 +76,13 @@ it('captures partial reload information', function () {
     expect($inertiaData['partial_keys'])->toBe(['users', 'notifications']);
 });
 
-it('captures partial except keys', function () {
+it('captures partial except keys', function (): void {
     $request = Request::create('/dashboard', 'GET');
     $request->headers->set('X-Inertia', 'true');
     $request->headers->set('X-Inertia-Partial-Data', 'users');
     $request->headers->set('X-Inertia-Partial-Except', 'heavy_data,analytics');
     $request->headers->set('X-Inertia-Partial-Component', 'Dashboard/Index');
+
     app()->instance('request', $request);
 
     $response = new Response;
@@ -90,9 +95,10 @@ it('captures partial except keys', function () {
     expect($inertiaData['partial_except'])->toBe(['heavy_data', 'analytics']);
 });
 
-it('handles response without component in body', function () {
+it('handles response without component in body', function (): void {
     $request = Request::create('/dashboard', 'GET');
     $request->headers->set('X-Inertia', 'true');
+
     app()->instance('request', $request);
 
     // Response without X-Inertia header (initial page load returns HTML)
@@ -108,7 +114,7 @@ it('handles response without component in body', function () {
     expect($inertiaData)->toHaveKey('url');
 });
 
-it('returns enabled status based on config', function () {
+it('returns enabled status based on config', function (): void {
     config(['logging.channels.github.tracing.inertia' => true]);
     config(['loggers.github.tracing.inertia' => null]);
     expect($this->collector->isEnabled())->toBeTrue();
@@ -118,9 +124,10 @@ it('returns enabled status based on config', function () {
     expect($this->collector->isEnabled())->toBeFalse();
 });
 
-it('includes request url in captured data', function () {
+it('includes request url in captured data', function (): void {
     $request = Request::create('/users/123/edit', 'GET');
     $request->headers->set('X-Inertia', 'true');
+
     app()->instance('request', $request);
 
     $response = new Response;
@@ -132,9 +139,10 @@ it('includes request url in captured data', function () {
     expect($inertiaData['url'])->toContain('/users/123/edit');
 });
 
-it('handles malformed json response gracefully', function () {
+it('handles malformed json response gracefully', function (): void {
     $request = Request::create('/dashboard', 'GET');
     $request->headers->set('X-Inertia', 'true');
+
     app()->instance('request', $request);
 
     $response = new Response('not valid json');

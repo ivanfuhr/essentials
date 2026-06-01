@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use GuzzleHttp\Psr7\Request as PsrRequest;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Http\Client\Request;
@@ -8,23 +10,23 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\OutgoingRequestResponseCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Context::flush();
     $this->collector = new OutgoingRequestResponseCollector;
     Config::set('logging.channels.github.tracing.outgoing_requests', ['enabled' => true, 'limit' => 5]);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('tracks outgoing request response', function () {
+it('tracks outgoing request response', function (): void {
     $psrRequest = new PsrRequest('GET', 'https://api.example.com/test', ['Authorization' => 'Bearer token']);
     $request = new Request($psrRequest);
     $requestId = spl_object_hash($request);
 
     // Simulate request sending data
-    Context::addHidden("outgoing_request.{$requestId}", [
+    Context::addHidden('outgoing_request.'.$requestId, [
         'url' => 'https://api.example.com/test',
         'method' => 'GET',
         'headers' => [],
@@ -48,23 +50,23 @@ it('tracks outgoing request response', function () {
     expect($requests[0]['duration_ms'])->toBeNumeric();
 
     // Verify temporary request data is cleaned up
-    expect(Context::hasHidden("outgoing_request.{$requestId}"))->toBeFalse();
+    expect(Context::hasHidden('outgoing_request.'.$requestId))->toBeFalse();
 });
 
-it('respects request limit', function () {
+it('respects request limit', function (): void {
     Config::set('logging.channels.github.tracing.outgoing_requests', ['enabled' => true, 'limit' => 2]);
 
     $response = Mockery::mock(Response::class);
     $response->shouldReceive('status')->andReturn(200);
 
     for ($i = 0; $i < 5; $i++) {
-        $psrRequest = new PsrRequest('GET', "https://api.example.com/test{$i}");
+        $psrRequest = new PsrRequest('GET', 'https://api.example.com/test'.$i);
         $request = new Request($psrRequest);
         $requestId = spl_object_hash($request);
 
         // Simulate request sending data
-        Context::addHidden("outgoing_request.{$requestId}", [
-            'url' => "https://api.example.com/test{$i}",
+        Context::addHidden('outgoing_request.'.$requestId, [
+            'url' => 'https://api.example.com/test'.$i,
             'method' => 'GET',
             'headers' => [],
             'body' => [],
@@ -81,7 +83,7 @@ it('respects request limit', function () {
     expect($requests[1]['url'])->toContain('test4');
 });
 
-it('does not track when disabled', function () {
+it('does not track when disabled', function (): void {
     Config::set('logging.channels.github.tracing.outgoing_requests', ['enabled' => false]);
 
     $psrRequest = new PsrRequest('GET', 'https://api.example.com/test');
@@ -89,7 +91,7 @@ it('does not track when disabled', function () {
     $requestId = spl_object_hash($request);
 
     // Simulate request sending data
-    Context::addHidden("outgoing_request.{$requestId}", [
+    Context::addHidden('outgoing_request.'.$requestId, [
         'url' => 'https://api.example.com/test',
         'method' => 'GET',
         'headers' => [],

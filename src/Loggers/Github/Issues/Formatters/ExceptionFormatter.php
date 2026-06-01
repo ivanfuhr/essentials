@@ -10,12 +10,12 @@ use Monolog\LogRecord;
 use ReflectionClass;
 use Throwable;
 
-final class ExceptionFormatter implements FormatterInterface
+final readonly class ExceptionFormatter implements FormatterInterface
 {
-    private const TITLE_MAX_LENGTH = 100;
+    private const int TITLE_MAX_LENGTH = 100;
 
     public function __construct(
-        private readonly StackTraceFormatter $stackTraceFormatter,
+        private StackTraceFormatter $stackTraceFormatter,
     ) {}
 
     public function format(LogRecord $record): array
@@ -48,7 +48,7 @@ final class ExceptionFormatter implements FormatterInterface
 
     public function formatBatch(array $records): array
     {
-        return array_map([$this, 'format'], $records);
+        return array_map($this->format(...), $records);
     }
 
     public function formatTitle(Throwable $exception, string $level): string

@@ -11,7 +11,7 @@ final class BreadcrumbFormatter
      */
     public function format(?array $breadcrumbs): string
     {
-        if (empty($breadcrumbs)) {
+        if ($breadcrumbs === null || $breadcrumbs === []) {
             return '';
         }
 
@@ -24,7 +24,7 @@ final class BreadcrumbFormatter
             $message = $this->escapeTableCell($breadcrumb['message']);
             $metadata = $breadcrumb['metadata'];
 
-            $details = ! empty($metadata) ? $this->escapeTableCell($this->formatMetadata($metadata)) : '';
+            $details = empty($metadata) ? '' : $this->escapeTableCell($this->formatMetadata($metadata));
 
             $output .= "| {$timestamp} | {$category} | {$message} | {$details} |\n";
         }
@@ -41,7 +41,7 @@ final class BreadcrumbFormatter
     {
         $parts = [];
         foreach ($metadata as $key => $value) {
-            $parts[] = "{$key}: {$value}";
+            $parts[] = sprintf('%s: %s', $key, $value);
         }
 
         return implode(', ', $parts);

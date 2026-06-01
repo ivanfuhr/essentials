@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Issues\SectionMapping;
 
-test('it returns all sections when no replacements provided', function () {
+test('it returns all sections when no replacements provided', function (): void {
     $sections = SectionMapping::getSectionsToRemove([]);
 
     expect($sections)->toContain('stacktrace')
@@ -22,7 +24,7 @@ test('it returns all sections when no replacements provided', function () {
         ->toContain('livewire');
 });
 
-test('it returns empty sections based on empty replacements', function () {
+test('it returns empty sections based on empty replacements', function (): void {
     $replacements = [
         '{simplified_stack_trace}' => 'some content',
         '{context}' => '',
@@ -34,7 +36,7 @@ test('it returns empty sections based on empty replacements', function () {
     expect($sections)->toBe(['context']);
 });
 
-test('it returns remaining sections after removing empty ones', function () {
+test('it returns remaining sections after removing empty ones', function (): void {
     $sectionsToRemove = ['stacktrace', 'extra'];
 
     $remaining = SectionMapping::getRemainingSections($sectionsToRemove);
@@ -54,19 +56,19 @@ test('it returns remaining sections after removing empty ones', function () {
         ->toContain('livewire');
 });
 
-test('it returns correct pattern for removing section content', function () {
+test('it returns correct pattern for removing section content', function (): void {
     $pattern = SectionMapping::getSectionPattern('test', true);
 
     expect($pattern)->toBe("/<!-- test:start -->.*?<!-- test:end -->\n?/s");
 });
 
-test('it returns correct pattern for preserving section content', function () {
+test('it returns correct pattern for preserving section content', function (): void {
     $pattern = SectionMapping::getSectionPattern('test');
 
     expect($pattern)->toBe('/<!-- test:start -->\s*(.*?)\s*<!-- test:end -->/s');
 });
 
-test('it returns correct pattern for standalone flags', function () {
+test('it returns correct pattern for standalone flags', function (): void {
     $pattern = SectionMapping::getStandaloneFlagPattern();
 
     expect($pattern)->toContain('environment')
@@ -81,7 +83,7 @@ test('it returns correct pattern for standalone flags', function () {
         ->toContain('livewire');
 });
 
-test('it handles new section placeholders correctly', function () {
+test('it handles new section placeholders correctly', function (): void {
     $replacements = [
         '{environment}' => '',
         '{request}' => 'some content',
@@ -99,7 +101,7 @@ test('it handles new section placeholders correctly', function () {
         ->not->toContain('request');
 });
 
-test('it handles livewire section placeholder', function () {
+test('it handles livewire section placeholder', function (): void {
     $replacements = [
         '{livewire}' => '',
         '{route}' => 'some route',
@@ -111,7 +113,7 @@ test('it handles livewire section placeholder', function () {
         ->not->toContain('route');
 });
 
-test('it keeps livewire section when content present', function () {
+test('it keeps livewire section when content present', function (): void {
     $replacements = [
         '{livewire}' => json_encode(['component' => 'App\\Livewire\\Counter']),
     ];

@@ -8,7 +8,7 @@ final class OutgoingRequestFormatter
 {
     public function format(?array $requests): string
     {
-        if (empty($requests)) {
+        if ($requests === null || $requests === []) {
             return '';
         }
 
@@ -19,13 +19,15 @@ final class OutgoingRequestFormatter
             $status = $request['status'] ?? null;
             $duration = $request['duration_ms'] ?? null;
 
-            $output .= "{$method} {$url}";
+            $output .= sprintf('%s %s', $method, $url);
             if ($status !== null) {
-                $output .= " → {$status}";
+                $output .= ' → '.$status;
             }
+
             if ($duration !== null) {
-                $output .= " ({$duration}ms)";
+                $output .= sprintf(' (%sms)', $duration);
             }
+
             $output .= "\n";
         }
 

@@ -20,7 +20,7 @@ final class RequestDataCollector implements EventDrivenCollectorInterface
 
         try {
             $files = $this->formatFiles($request->allFiles());
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             $files = null;
         }
 
@@ -56,7 +56,7 @@ final class RequestDataCollector implements EventDrivenCollectorInterface
     private function formatFiles(array $files): array
     {
         return collect($files)
-            ->map(function ($file) {
+            ->map(function ($file): array {
                 if (is_array($file)) {
                     return $this->formatFiles($file);
                 }

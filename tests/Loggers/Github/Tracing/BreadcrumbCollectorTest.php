@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Log\Events\MessageLogged;
@@ -7,7 +9,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\BreadcrumbCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Context::flush();
     BreadcrumbCollector::reset();
     $this->collector = new BreadcrumbCollector;
@@ -15,12 +17,12 @@ beforeEach(function () {
     Config::set('logging.channels.github.tracing.breadcrumb_limit', 40);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
     BreadcrumbCollector::reset();
 });
 
-it('collects log messages as breadcrumbs', function () {
+it('collects log messages as breadcrumbs', function (): void {
     $event = new MessageLogged('info', 'User logged in', []);
 
     $this->collector->handleMessageLogged($event);
@@ -33,7 +35,7 @@ it('collects log messages as breadcrumbs', function () {
     expect($breadcrumbs[0]['message'])->toBe('[info] User logged in');
 });
 
-it('collects multiple log levels', function () {
+it('collects multiple log levels', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('debug', 'Debug message', []));
     $this->collector->handleMessageLogged(new MessageLogged('info', 'Info message', []));
     $this->collector->handleMessageLogged(new MessageLogged('notice', 'Notice message', []));
@@ -48,31 +50,31 @@ it('collects multiple log levels', function () {
     expect($breadcrumbs[3]['message'])->toBe('[warning] Warning message');
 });
 
-it('excludes error-level log messages', function () {
+it('excludes error-level log messages', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('error', 'Something broke', []));
 
     expect(BreadcrumbCollector::getBreadcrumbs())->toBeEmpty();
 });
 
-it('excludes critical-level log messages', function () {
+it('excludes critical-level log messages', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('critical', 'Critical failure', []));
 
     expect(BreadcrumbCollector::getBreadcrumbs())->toBeEmpty();
 });
 
-it('excludes alert-level log messages', function () {
+it('excludes alert-level log messages', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('alert', 'Alert!', []));
 
     expect(BreadcrumbCollector::getBreadcrumbs())->toBeEmpty();
 });
 
-it('excludes emergency-level log messages', function () {
+it('excludes emergency-level log messages', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('emergency', 'Emergency!', []));
 
     expect(BreadcrumbCollector::getBreadcrumbs())->toBeEmpty();
 });
 
-it('collects cache hit events', function () {
+it('collects cache hit events', function (): void {
     $event = new CacheHit('array', 'user.123', 'cached-value');
 
     $this->collector->handleCacheHit($event);
@@ -85,7 +87,7 @@ it('collects cache hit events', function () {
     expect($breadcrumbs[0]['metadata'])->toBe(['store' => 'array']);
 });
 
-it('collects cache missed events', function () {
+it('collects cache missed events', function (): void {
     $event = new CacheMissed('array', 'user.456');
 
     $this->collector->handleCacheMissed($event);
@@ -98,11 +100,11 @@ it('collects cache missed events', function () {
     expect($breadcrumbs[0]['metadata'])->toBe(['store' => 'array']);
 });
 
-it('caps breadcrumbs at configured limit', function () {
+it('caps breadcrumbs at configured limit', function (): void {
     Config::set('logging.channels.github.tracing.breadcrumb_limit', 5);
 
     for ($i = 0; $i < 10; $i++) {
-        $this->collector->handleMessageLogged(new MessageLogged('info', "Message {$i}", []));
+        $this->collector->handleMessageLogged(new MessageLogged('info', 'Message '.$i, []));
     }
 
     $breadcrumbs = BreadcrumbCollector::getBreadcrumbs();
@@ -113,11 +115,11 @@ it('caps breadcrumbs at configured limit', function () {
     expect($breadcrumbs[4]['message'])->toBe('[info] Message 9');
 });
 
-it('uses default limit of 40 when not configured', function () {
-    Config::set('logging.channels.github.tracing.breadcrumb_limit', null);
+it('uses default limit of 40 when not configured', function (): void {
+    Config::set('logging.channels.github.tracing.breadcrumb_limit');
 
     for ($i = 0; $i < 50; $i++) {
-        $this->collector->handleMessageLogged(new MessageLogged('info', "Message {$i}", []));
+        $this->collector->handleMessageLogged(new MessageLogged('info', 'Message '.$i, []));
     }
 
     $breadcrumbs = BreadcrumbCollector::getBreadcrumbs();
@@ -127,7 +129,7 @@ it('uses default limit of 40 when not configured', function () {
     expect($breadcrumbs[39]['message'])->toBe('[info] Message 49');
 });
 
-it('does not collect when disabled', function () {
+it('does not collect when disabled', function (): void {
     Config::set('logging.channels.github.tracing.breadcrumbs', false);
 
     $this->collector->handleMessageLogged(new MessageLogged('info', 'Should not be collected', []));
@@ -135,7 +137,7 @@ it('does not collect when disabled', function () {
     expect(BreadcrumbCollector::getBreadcrumbs())->toBeEmpty();
 });
 
-it('pushes breadcrumbs to context on collect', function () {
+it('pushes breadcrumbs to context on collect', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('info', 'Test message', []));
 
     expect(Context::hasHidden('breadcrumbs'))->toBeFalse();
@@ -147,13 +149,13 @@ it('pushes breadcrumbs to context on collect', function () {
     expect($contextBreadcrumbs[0]['message'])->toBe('[info] Test message');
 });
 
-it('does not push to context when no breadcrumbs exist', function () {
+it('does not push to context when no breadcrumbs exist', function (): void {
     $this->collector->collect();
 
     expect(Context::hasHidden('breadcrumbs'))->toBeFalse();
 });
 
-it('preserves chronological order of mixed event types', function () {
+it('preserves chronological order of mixed event types', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('info', 'First log', []));
 
     $cacheHit = new CacheHit('array', 'key1', 'value');
@@ -173,7 +175,7 @@ it('preserves chronological order of mixed event types', function () {
     expect($breadcrumbs[3]['category'])->toBe('cache');
 });
 
-it('includes timestamp in each breadcrumb', function () {
+it('includes timestamp in each breadcrumb', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('info', 'Test', []));
 
     $breadcrumbs = BreadcrumbCollector::getBreadcrumbs();

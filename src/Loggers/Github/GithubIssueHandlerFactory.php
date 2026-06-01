@@ -16,10 +16,10 @@ use IvanFuhr\Essentials\Loggers\Github\Tracing\ContextProcessor;
 use Monolog\Level;
 use Monolog\Logger;
 
-final class GithubIssueHandlerFactory
+final readonly class GithubIssueHandlerFactory
 {
     public function __construct(
-        private readonly IssueFormatter $formatter,
+        private IssueFormatter $formatter,
     ) {}
 
     public function __invoke(array $config): Logger
@@ -72,7 +72,6 @@ final class GithubIssueHandlerFactory
             );
         }
 
-        /** @var SignatureGeneratorInterface $signatureGenerator */
         $signatureGenerator = new $signatureGeneratorClass;
 
         $deduplication = Arr::get($config, 'deduplication', []);

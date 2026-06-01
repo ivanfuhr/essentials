@@ -1,29 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Tracing\CallerFrameProcessor;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->processor = new CallerFrameProcessor;
 });
 
-test('skips processing when exception is present', function () {
-    $record = createLogRecord('Test', exception: new \Exception('Test'));
+test('skips processing when exception is present', function (): void {
+    $record = createLogRecord('Test', exception: new Exception('Test'));
     $processed = ($this->processor)($record);
 
     expect($processed->extra)->not->toHaveKey('caller');
 });
 
-test('captures caller frame for message-only records', function () {
+test('captures caller frame for message-only records', function (): void {
     $record = createLogRecord('Test message');
     $processed = ($this->processor)($record);
 
     // Caller should be captured if a non-vendor frame exists
     // Note: In test environment, the caller might be from the test framework
     // So we just verify the processor runs without error
-    expect($processed)->toBeInstanceOf(\Monolog\LogRecord::class);
+    expect($processed)->toBeInstanceOf(Monolog\LogRecord::class);
 });
 
-test('normalizes file paths in caller frame', function () {
+test('normalizes file paths in caller frame', function (): void {
     // Create a mock record with a caller frame that would be normalized
     $record = createLogRecord('Test message', [], [
         'caller' => [
@@ -37,23 +39,23 @@ test('normalizes file paths in caller frame', function () {
     // the processor handles records correctly
     $processed = ($this->processor)($record);
 
-    expect($processed)->toBeInstanceOf(\Monolog\LogRecord::class);
+    expect($processed)->toBeInstanceOf(Monolog\LogRecord::class);
 });
 
-test('filters out vendor frames', function () {
+test('filters out vendor frames', function (): void {
     $record = createLogRecord('Test message');
     $processed = ($this->processor)($record);
 
     // Processor should skip vendor frames
     // In test environment, actual caller detection is hard to test
     // but we verify the processor doesn't crash
-    expect($processed)->toBeInstanceOf(\Monolog\LogRecord::class);
+    expect($processed)->toBeInstanceOf(Monolog\LogRecord::class);
 });
 
-test('filters out package frames', function () {
+test('filters out package frames', function (): void {
     $record = createLogRecord('Test message');
     $processed = ($this->processor)($record);
 
     // Processor should skip Loggers/Github package frames
-    expect($processed)->toBeInstanceOf(\Monolog\LogRecord::class);
+    expect($processed)->toBeInstanceOf(Monolog\LogRecord::class);
 });

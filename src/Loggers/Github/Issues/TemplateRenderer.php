@@ -21,7 +21,7 @@ final class TemplateRenderer
 {
     use InteractsWithLogRecord;
 
-    private const TITLE_MAX_LENGTH = 100;
+    private const int TITLE_MAX_LENGTH = 100;
 
     private string $issueStub;
 
@@ -54,7 +54,7 @@ final class TemplateRenderer
     {
         $exception = $this->getException($record);
 
-        if (! $exception) {
+        if (! $exception instanceof Throwable) {
             return Str::of('[{level}] {message}')
                 ->replace('{level}', $record->level->getName())
                 ->replace('{message}', Str::limit($record->message, self::TITLE_MAX_LENGTH))
@@ -81,7 +81,7 @@ final class TemplateRenderer
         $exceptionData = $record->context['exception'] ?? null;
 
         // If exceptionDetails is empty but record message contains stack trace, try to format it
-        if (empty($exceptionDetails) &&
+        if ($exceptionDetails === [] &&
             (str_contains($record->message, 'Stack trace:') || preg_match('/#\d+ \//', $record->message))) {
             $tempRecord = $record->with(context: array_merge($record->context, ['exception' => $record->message]));
             $exceptionDetails = $this->exceptionFormatter->format($tempRecord);
@@ -123,7 +123,7 @@ final class TemplateRenderer
     private function resolveExceptionClass(?Throwable $exception, mixed $exceptionData): string
     {
         if ($exception instanceof Throwable) {
-            return get_class($exception);
+            return $exception::class;
         }
 
         if (! is_string($exceptionData)) {
@@ -161,10 +161,10 @@ final class TemplateRenderer
             $url = $request['url'] ?? '';
 
             if ($method !== '' && $url !== '') {
-                $parsedUrl = parse_url($url);
+                $parsedUrl = parse_url((string) $url);
                 $path = $parsedUrl['path'] ?? '/';
 
-                return mb_strtoupper($method).' '.$path;
+                return mb_strtoupper((string) $method).' '.$path;
             }
         }
 
@@ -176,7 +176,7 @@ final class TemplateRenderer
             if (! empty($methods) && $uri !== '') {
                 $method = is_array($methods) ? ($methods[0] ?? '') : $methods;
                 if ($method !== '') {
-                    return mb_strtoupper($method).' /'.$uri;
+                    return mb_strtoupper((string) $method).' /'.$uri;
                 }
             }
         }
@@ -229,23 +229,20 @@ final class TemplateRenderer
     private function extractMessageFromRecord(string $message): string
     {
         // If message contains stack trace, extract just the message part
-        if (str_contains($message, 'Stack trace:') || preg_match('/#\d+ \//', $message)) {
-            // Try to extract the message before the stack trace
-            if (preg_match('/^(.*?)(?:Stack trace:|#\d+ \/)/', $message, $matches)) {
-                $extracted = mb_trim($matches[1]);
-
-                // Remove exception class prefix (e.g., "RuntimeException: ")
-                if (preg_match('/^[A-Z][a-zA-Z0-9_\\\\]+Exception: (.+)$/s', $extracted, $classMatches)) {
-                    $extracted = mb_trim($classMatches[1]);
-                }
-
-                // Remove file/line info if present (e.g., "message in /path/to/file.php:123")
-                if (preg_match('/^(.*) in \/[^\s]+(?:\.php)?(?: on line \d+)?$/s', $extracted, $fileMatches)) {
-                    return mb_trim($fileMatches[1]);
-                }
-
-                return $extracted;
+        // Try to extract the message before the stack trace
+        if ((str_contains($message, 'Stack trace:') || preg_match('/#\d+ \//', $message)) && preg_match('/^(.*?)(?:Stack trace:|#\d+ \/)/', $message, $matches)) {
+            $extracted = mb_trim($matches[1]);
+            // Remove exception class prefix (e.g., "RuntimeException: ")
+            if (preg_match('/^[A-Z][a-zA-Z0-9_\\\\]+Exception: (.+)$/s', $extracted, $classMatches)) {
+                $extracted = mb_trim($classMatches[1]);
             }
+
+            // Remove file/line info if present (e.g., "message in /path/to/file.php:123")
+            if (preg_match('/^(.*) in \/[^\s]+(?:\.php)?(?: on line \d+)?$/s', $extracted, $fileMatches)) {
+                return mb_trim($fileMatches[1]);
+            }
+
+            return $extracted;
         }
 
         return $message;

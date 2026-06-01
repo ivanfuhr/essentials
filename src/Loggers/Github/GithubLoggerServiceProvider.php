@@ -41,7 +41,7 @@ final class GithubLoggerServiceProvider extends ServiceProvider
         }
     }
 
-    protected function shouldEnableTracing(): bool
+    private function shouldEnableTracing(): bool
     {
         $packageConfig = config('loggers.github.tracing', []);
         $channelConfig = config('logging.channels.github.tracing', []);
@@ -49,7 +49,7 @@ final class GithubLoggerServiceProvider extends ServiceProvider
         return (bool) ($packageConfig['enabled'] ?? $channelConfig['enabled'] ?? false);
     }
 
-    protected function registerLoggingChannel(): void
+    private function registerLoggingChannel(): void
     {
         if (! config('loggers.github.repo') || ! config('loggers.github.token')) {
             return;
@@ -75,7 +75,7 @@ final class GithubLoggerServiceProvider extends ServiceProvider
      * @param  array<string, mixed>  $tracing
      * @return array<string, mixed>
      */
-    protected function normalizeTracingConfig(array $tracing): array
+    private function normalizeTracingConfig(array $tracing): array
     {
         if (isset($tracing['queries']) && ! is_array($tracing['queries'])) {
             $tracing['queries'] = [
@@ -98,9 +98,9 @@ final class GithubLoggerServiceProvider extends ServiceProvider
      * Register context dehydration callback to prevent large tracing data
      * from being serialized into job payloads.
      */
-    protected function registerContextDehydration(): void
+    private function registerContextDehydration(): void
     {
-        Context::dehydrating(function ($context) {
+        Context::dehydrating(function ($context): void {
             $keysToForget = [
                 'queries',
                 'outgoing_requests',

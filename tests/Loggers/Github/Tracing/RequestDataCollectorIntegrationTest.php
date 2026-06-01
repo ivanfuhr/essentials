@@ -1,29 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use Monolog\Handler\TestHandler;
-use Monolog\Level;
 use IvanFuhr\Essentials\Loggers\Github\Issues\StubLoader;
 use IvanFuhr\Essentials\Loggers\Github\Issues\TemplateRenderer;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\ContextProcessor;
+use Monolog\Handler\TestHandler;
+use Monolog\Level;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->stubLoader = new StubLoader;
     $this->renderer = resolve(TemplateRenderer::class);
     $this->processor = new ContextProcessor;
     Context::flush();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('captures route data when route throws an exception', function () {
+it('captures route data when route throws an exception', function (): void {
     // Arrange - Register a route that throws an exception
-    Route::get('/test-route/{id}', function ($id) {
-        throw new RuntimeException("Test exception for route with id: {$id}");
+    Route::get('/test-route/{id}', function (string $id): void {
+        throw new RuntimeException('Test exception for route with id: '.$id);
     })->name('test.route.show');
 
     // Create a test handler to capture log records
@@ -36,10 +38,10 @@ it('captures route data when route throws an exception', function () {
     // Act - Make a request to the route that throws an exception
     try {
         $response = $this->get('/test-route/123');
-    } catch (RuntimeException $e) {
+    } catch (RuntimeException $runtimeException) {
         // Exception is expected, manually log it to test the context
         Log::error('Test exception', [
-            'exception' => $e,
+            'exception' => $runtimeException,
         ]);
     }
 
@@ -47,7 +49,7 @@ it('captures route data when route throws an exception', function () {
     expect($testHandler->getRecords())->not->toBeEmpty();
 
     // Get the error level record
-    $errorRecords = array_filter($testHandler->getRecords(), fn ($record) => $record['level'] >= Level::Error->value);
+    $errorRecords = array_filter($testHandler->getRecords(), fn (Monolog\LogRecord $record): bool => $record['level'] >= Level::Error->value);
     expect($errorRecords)->not->toBeEmpty();
 
     $logRecord = $errorRecords[array_key_first($errorRecords)];
@@ -74,9 +76,9 @@ it('captures route data when route throws an exception', function () {
     expect($processedRecord->context['request']['url'])->toContain('/test-route/123');
 });
 
-it('captures route data for POST route that throws an exception', function () {
+it('captures route data for POST route that throws an exception', function (): void {
     // Arrange - Register a POST route that throws an exception
-    Route::post('/api/posts', function () {
+    Route::post('/api/posts', function (): void {
         throw new RuntimeException('Failed to create post');
     })->name('api.posts.store');
 
@@ -90,17 +92,17 @@ it('captures route data for POST route that throws an exception', function () {
     // Act - Make a POST request to the route that throws an exception
     try {
         $this->post('/api/posts', ['title' => 'Test Post']);
-    } catch (RuntimeException $e) {
+    } catch (RuntimeException $runtimeException) {
         // Exception is expected, manually log it to test
         Log::error('Failed to create post', [
-            'exception' => $e,
+            'exception' => $runtimeException,
         ]);
     }
 
     // Assert - Verify that a log record was created with route data
     expect($testHandler->getRecords())->not->toBeEmpty();
 
-    $errorRecords = array_filter($testHandler->getRecords(), fn ($record) => $record['level'] >= Level::Error->value);
+    $errorRecords = array_filter($testHandler->getRecords(), fn (Monolog\LogRecord $record): bool => $record['level'] >= Level::Error->value);
     expect($errorRecords)->not->toBeEmpty();
 
     $logRecord = $errorRecords[array_key_first($errorRecords)];

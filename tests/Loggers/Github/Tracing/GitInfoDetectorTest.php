@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 use IvanFuhr\Essentials\Loggers\Github\Tracing\GitInfoDetector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     GitInfoDetector::resetCache();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     GitInfoDetector::resetCache();
 });
 
-it('detects git information from current repository', function () {
+it('detects git information from current repository', function (): void {
     $detector = new GitInfoDetector;
     $info = $detector->detect();
 
@@ -24,7 +26,7 @@ it('detects git information from current repository', function () {
     expect($info['git_dirty'])->toBeBool();
 });
 
-it('caches results across multiple calls', function () {
+it('caches results across multiple calls', function (): void {
     $detector = new GitInfoDetector;
     $first = $detector->detect();
     $second = $detector->detect();
@@ -32,7 +34,7 @@ it('caches results across multiple calls', function () {
     expect($first)->toBe($second);
 });
 
-it('resets cache when resetCache is called', function () {
+it('resets cache when resetCache is called', function (): void {
     $detector = new GitInfoDetector;
     $first = $detector->detect();
 
@@ -44,11 +46,11 @@ it('resets cache when resetCache is called', function () {
     expect($first)->toBe($second);
 });
 
-it('returns short hash format', function () {
+it('returns short hash format', function (): void {
     $detector = new GitInfoDetector;
     $info = $detector->detect();
 
     // Short hash is typically 7-12 characters
-    expect(strlen($info['git_hash']))->toBeLessThanOrEqual(12);
-    expect(strlen($info['git_hash']))->toBeGreaterThanOrEqual(7);
+    expect(mb_strlen($info['git_hash']))->toBeLessThanOrEqual(12);
+    expect(mb_strlen($info['git_hash']))->toBeGreaterThanOrEqual(7);
 });

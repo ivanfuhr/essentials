@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Loggers\Github\Issues\Formatters;
 
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\StackTraceFormatter;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->formatter = new StackTraceFormatter;
 });
 
-test('it formats stack trace', function () {
+test('it formats stack trace', function (): void {
     $stackTrace = <<<'TRACE'
 #0 /app/Http/Controllers/TestController.php(25): TestController->testMethod()
 #1 /vendor/laravel/framework/src/Testing.php(50): VendorClass->vendorMethod()
@@ -26,7 +28,7 @@ TRACE;
         ->not->toContain('/vendor/another/package/src/File.php');
 });
 
-test('it collapses consecutive vendor frames', function () {
+test('it collapses consecutive vendor frames', function (): void {
     $stackTrace = <<<'TRACE'
 #0 /vendor/package1/src/File1.php(10): Method1()
 #1 /vendor/package1/src/File2.php(20): Method2()
@@ -40,10 +42,10 @@ TRACE;
         ->not->toContain('/vendor/package1/src/File1.php')
         ->not->toContain('/vendor/package2/src/File3.php')
         // Should only appear once even though there are multiple vendor frames
-        ->and(substr_count($formatted, '[Vendor frames]'))->toBe(1);
+        ->and(mb_substr_count((string) $formatted, '[Vendor frames]'))->toBe(1);
 });
 
-test('it preserves non-vendor frames', function () {
+test('it preserves non-vendor frames', function (): void {
     $stackTrace = <<<'TRACE'
 #0 /app/Http/Controllers/TestController.php(25): TestController->testMethod()
 #1 /app/Services/TestService.php(30): TestService->serviceMethod()
@@ -57,7 +59,7 @@ TRACE;
         ->not->toContain('[Vendor frames]');
 });
 
-test('it replaces base path in stack traces', function () {
+test('it replaces base path in stack traces', function (): void {
     $formatter = new StackTraceFormatter;
     $basePath = base_path();
 
@@ -85,7 +87,7 @@ TRACE
         );
 });
 
-test('it handles empty base path correctly', function () {
+test('it handles empty base path correctly', function (): void {
     $formatter = new StackTraceFormatter;
 
     $stackTrace = <<<'TRACE'
@@ -103,7 +105,7 @@ TRACE
         );
 });
 
-test('it preserves non-stack-trace lines', function () {
+test('it preserves non-stack-trace lines', function (): void {
     $formatter = new StackTraceFormatter;
 
     $stackTrace = <<<'TRACE'
@@ -123,7 +125,7 @@ TRACE
         );
 });
 
-test('it recognizes artisan lines as vendor frames', function () {
+test('it recognizes artisan lines as vendor frames', function (): void {
     $formatter = new StackTraceFormatter;
     $basePath = base_path();
 
@@ -151,7 +153,7 @@ TRACE
         );
 });
 
-test('it collapses multiple artisan lines into single vendor frame', function () {
+test('it collapses multiple artisan lines into single vendor frame', function (): void {
     $formatter = new StackTraceFormatter;
 
     $stackTrace = <<<'TRACE'

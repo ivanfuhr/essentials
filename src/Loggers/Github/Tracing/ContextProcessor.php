@@ -38,7 +38,7 @@ final class ContextProcessor implements ProcessorInterface
 
         $contextData = array_merge(Context::all(), Context::allHidden());
 
-        if (empty($contextData)) {
+        if ($contextData === []) {
             return $record;
         }
 

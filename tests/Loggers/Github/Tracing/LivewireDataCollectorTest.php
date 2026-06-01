@@ -1,22 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\LivewireDataCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->collector = new LivewireDataCollector;
     config(['loggers.github.tracing.livewire' => true]);
     config(['logging.channels.github.tracing.livewire' => true]);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('detects livewire request via X-Livewire header', function () {
+it('detects livewire request via X-Livewire header', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -58,7 +60,7 @@ it('detects livewire request via X-Livewire header', function () {
     expect($livewireData['components'][0]['updates'])->toBe(['name' => 'John Doe']);
 });
 
-it('detects livewire request via path containing livewire/update', function () {
+it('detects livewire request via path containing livewire/update', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('Content-Type', 'application/json');
 
@@ -86,7 +88,7 @@ it('detects livewire request via path containing livewire/update', function () {
     expect($livewireData['components'][0]['name'])->toBe('counter');
 });
 
-it('skips non-livewire requests', function () {
+it('skips non-livewire requests', function (): void {
     $request = Request::create('/api/users', 'GET');
     app()->instance('request', $request);
 
@@ -96,7 +98,7 @@ it('skips non-livewire requests', function () {
     expect(Context::get('livewire'))->toBeNull();
 });
 
-it('stores originating page from snapshot memo', function () {
+it('stores originating page from snapshot memo', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -127,7 +129,7 @@ it('stores originating page from snapshot memo', function () {
     expect($livewireData['originating_page'])->toBe('/dashboard/settings');
 });
 
-it('falls back to referer header for originating page', function () {
+it('falls back to referer header for originating page', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -156,12 +158,13 @@ it('falls back to referer header for originating page', function () {
     expect(Context::get('livewire_originating_page'))->toBe('/users?page=2');
 });
 
-it('handles empty component payload gracefully', function () {
+it('handles empty component payload gracefully', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
 
     $request->merge(['components' => []]);
+
     app()->instance('request', $request);
 
     $event = new RequestHandled($request, new Response);
@@ -171,7 +174,7 @@ it('handles empty component payload gracefully', function () {
     expect(Context::get('livewire'))->toBeNull();
 });
 
-it('returns enabled status based on config', function () {
+it('returns enabled status based on config', function (): void {
     config(['logging.channels.github.tracing.livewire' => true]);
     config(['loggers.github.tracing.livewire' => null]);
     expect($this->collector->isEnabled())->toBeTrue();
@@ -181,7 +184,7 @@ it('returns enabled status based on config', function () {
     expect($this->collector->isEnabled())->toBeFalse();
 });
 
-it('captures component state from snapshot data', function () {
+it('captures component state from snapshot data', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -223,7 +226,7 @@ it('captures component state from snapshot data', function () {
     ]);
 });
 
-it('captures component state from non-encoded snapshot', function () {
+it('captures component state from non-encoded snapshot', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -258,7 +261,7 @@ it('captures component state from non-encoded snapshot', function () {
     ]);
 });
 
-it('does not include state key when snapshot has no data', function () {
+it('does not include state key when snapshot has no data', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -286,7 +289,7 @@ it('does not include state key when snapshot has no data', function () {
     expect($livewireData['components'][0])->not->toHaveKey('state');
 });
 
-it('truncates state when it exceeds maximum number of keys', function () {
+it('truncates state when it exceeds maximum number of keys', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -294,7 +297,7 @@ it('truncates state when it exceeds maximum number of keys', function () {
     // Generate state with more than 50 keys
     $largeState = [];
     for ($i = 0; $i < 60; $i++) {
-        $largeState["property_{$i}"] = "value_{$i}";
+        $largeState['property_'.$i] = 'value_'.$i;
     }
 
     $payload = [
@@ -326,7 +329,7 @@ it('truncates state when it exceeds maximum number of keys', function () {
     expect($state['__truncated'])->toContain('50 of 60');
 });
 
-it('truncates state when serialized size exceeds maximum', function () {
+it('truncates state when serialized size exceeds maximum', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -334,7 +337,7 @@ it('truncates state when serialized size exceeds maximum', function () {
     // Generate state with large values that exceed 8192 bytes
     $largeState = [];
     for ($i = 0; $i < 10; $i++) {
-        $largeState["field_{$i}"] = str_repeat('x', 1000);
+        $largeState['field_'.$i] = str_repeat('x', 1000);
     }
 
     $payload = [
@@ -363,10 +366,10 @@ it('truncates state when serialized size exceeds maximum', function () {
     expect($state)->toHaveKey('__truncated');
     expect($state['__truncated'])->toContain('truncated from');
     // The truncated state should be smaller than the original
-    expect(strlen(json_encode($state)))->toBeLessThanOrEqual(8192 + 200); // some margin for truncation message
+    expect(mb_strlen(json_encode($state)))->toBeLessThanOrEqual(8192 + 200); // some margin for truncation message
 });
 
-it('redacts sensitive values in component state', function () {
+it('redacts sensitive values in component state', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -406,7 +409,7 @@ it('redacts sensitive values in component state', function () {
     expect($state['remember'])->toBeTrue();
 });
 
-it('redacts sensitive data in component updates', function () {
+it('redacts sensitive data in component updates', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -440,7 +443,7 @@ it('redacts sensitive data in component updates', function () {
     expect($livewireData['components'][0]['updates']['password'])->toBe('[9 bytes redacted]');
 });
 
-it('captures method call parameters', function () {
+it('captures method call parameters', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -475,7 +478,7 @@ it('captures method call parameters', function () {
     ]);
 });
 
-it('captures update values alongside keys', function () {
+it('captures update values alongside keys', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -512,7 +515,7 @@ it('captures update values alongside keys', function () {
     ]);
 });
 
-it('redacts sensitive data in method params', function () {
+it('redacts sensitive data in method params', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');
@@ -544,7 +547,7 @@ it('redacts sensitive data in method params', function () {
     expect($livewireData['components'][0]['methods'][0]['params']['password'])->toBe('[12 bytes redacted]');
 });
 
-it('defaults to empty params array when calls have no params key', function () {
+it('defaults to empty params array when calls have no params key', function (): void {
     $request = Request::create('/livewire/update', 'POST');
     $request->headers->set('X-Livewire', 'true');
     $request->headers->set('Content-Type', 'application/json');

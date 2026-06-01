@@ -18,7 +18,7 @@ final class UserDataCollector implements DataCollectorInterface, EventDrivenColl
 {
     use ResolvesTracingConfig;
 
-    private static $userDataResolver = null;
+    private static $userDataResolver;
 
     /**
      * Remember the user even after logout for exception context.
@@ -84,14 +84,14 @@ final class UserDataCollector implements DataCollectorInterface, EventDrivenColl
     {
         // First, try to get user from Auth (if guards have been resolved)
         $user = $this->tryGetAuthenticatedUser();
-        if ($user !== null) {
+        if ($user instanceof Authenticatable) {
             $this->addUserToContext($user);
 
             return;
         }
 
         // Fall back to remembered user (e.g., user who just logged out)
-        if (self::$rememberedUser !== null) {
+        if (self::$rememberedUser instanceof Authenticatable) {
             $this->addUserToContext(self::$rememberedUser);
 
             return;
@@ -103,7 +103,7 @@ final class UserDataCollector implements DataCollectorInterface, EventDrivenColl
 
     public function getUserDataResolver(): callable
     {
-        return self::$userDataResolver ?? fn (Authenticatable $user) => [
+        return self::$userDataResolver ?? fn (Authenticatable $user): array => [
             'id' => $user->getAuthIdentifier(),
             'authenticated' => true,
             'name' => $user->name ?? null,
@@ -116,7 +116,7 @@ final class UserDataCollector implements DataCollectorInterface, EventDrivenColl
      *
      * @return array<string, mixed>
      */
-    protected function resolveUserDetails(Authenticatable $user): array
+    private function resolveUserDetails(Authenticatable $user): array
     {
         // Return cached details if available
         if (self::$resolvedDetails !== null) {
@@ -156,7 +156,7 @@ final class UserDataCollector implements DataCollectorInterface, EventDrivenColl
     /**
      * Add user data to context.
      */
-    protected function addUserToContext(Authenticatable $user): void
+    private function addUserToContext(Authenticatable $user): void
     {
         Context::add('user', $this->resolveUserDetails($user));
     }

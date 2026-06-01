@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Events\RouteMatched;
@@ -11,7 +13,7 @@ use IvanFuhr\Essentials\Loggers\Github\Tracing\ContextProcessor;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\RequestDataCollector;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\RouteDataCollector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->stubLoader = new StubLoader;
     $this->renderer = resolve(TemplateRenderer::class);
     $this->processor = new ContextProcessor;
@@ -20,11 +22,11 @@ beforeEach(function () {
     Context::flush();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     Context::flush();
 });
 
-it('includes request route information in context section', function () {
+it('includes request route information in context section', function (): void {
     // Arrange - Simulate route matched and request handled events
     $request = Request::create('https://example.com/api/users', 'GET');
     $route = Mockery::mock(Route::class);
@@ -38,7 +40,7 @@ it('includes request route information in context section', function () {
     $routeEvent = new RouteMatched($route, $request);
     ($this->routeCollector)($routeEvent);
 
-    $requestEvent = new RequestHandled($request, Mockery::mock('Illuminate\Http\Response'));
+    $requestEvent = new RequestHandled($request, Mockery::mock(Illuminate\Http\Response::class));
     ($this->requestCollector)($requestEvent);
 
     // Verify route and request data are in Context
@@ -64,7 +66,7 @@ it('includes request route information in context section', function () {
         ->toContain('"method": "GET"');
 });
 
-it('includes both user and request data in context section', function () {
+it('includes both user and request data in context section', function (): void {
     // Arrange
     Context::add('user', ['id' => 123, 'email' => 'user@example.com']);
 
@@ -80,7 +82,7 @@ it('includes both user and request data in context section', function () {
     $routeEvent = new RouteMatched($route, $request);
     ($this->routeCollector)($routeEvent);
 
-    $requestEvent = new RequestHandled($request, Mockery::mock('Illuminate\Http\Response'));
+    $requestEvent = new RequestHandled($request, Mockery::mock(Illuminate\Http\Response::class));
     ($this->requestCollector)($requestEvent);
 
     // Verify both user, route and request data are in Context

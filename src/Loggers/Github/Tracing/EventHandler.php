@@ -34,7 +34,7 @@ final class EventHandler
             return;
         }
 
-        foreach (self::getCollectors() as $eventClass => $collectors) {
+        foreach ($this->getCollectors() as $eventClass => $collectors) {
             // Normalize to array for consistent handling
             $collectors = is_array($collectors) ? $collectors : [$collectors];
 
@@ -43,7 +43,7 @@ final class EventHandler
                 $collector = new $collectorClass;
 
                 if ($collector->isEnabled()) {
-                    $events->listen($eventClass, function ($event) use ($collectorClass) {
+                    $events->listen($eventClass, function ($event) use ($collectorClass): void {
                         /** @var EventDrivenCollectorInterface $collectorInstance */
                         $collectorInstance = new $collectorClass;
 
@@ -56,7 +56,7 @@ final class EventHandler
         // Register logout listener to remember user before logout
         $userCollector = new UserDataCollector;
         if ($userCollector->isEnabled()) {
-            $events->listen(Logout::class, function (Logout $event) {
+            $events->listen(Logout::class, function (Logout $event): void {
                 rescue(fn () => (new UserDataCollector)->handleLogout($event));
             });
         }
@@ -64,15 +64,15 @@ final class EventHandler
         // Register breadcrumb listeners for log and cache events
         $breadcrumbCollector = new BreadcrumbCollector;
         if ($breadcrumbCollector->isEnabled()) {
-            $events->listen(MessageLogged::class, function (MessageLogged $event) {
+            $events->listen(MessageLogged::class, function (MessageLogged $event): void {
                 rescue(fn () => (new BreadcrumbCollector)->handleMessageLogged($event));
             });
 
-            $events->listen(CacheHit::class, function (CacheHit $event) {
+            $events->listen(CacheHit::class, function (CacheHit $event): void {
                 rescue(fn () => (new BreadcrumbCollector)->handleCacheHit($event));
             });
 
-            $events->listen(CacheMissed::class, function (CacheMissed $event) {
+            $events->listen(CacheMissed::class, function (CacheMissed $event): void {
                 rescue(fn () => (new BreadcrumbCollector)->handleCacheMissed($event));
             });
         }
@@ -86,7 +86,7 @@ final class EventHandler
      *
      * @return array<string, class-string|array<class-string>>
      */
-    private static function getCollectors(): array
+    private function getCollectors(): array
     {
         return [
             RequestHandled::class => [

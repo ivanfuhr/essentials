@@ -13,7 +13,7 @@ final class EnvironmentCollector implements DataCollectorInterface
     use ResolvesTracingConfig;
 
     public function __construct(
-        protected ?GitInfoDetector $gitInfoDetector = null,
+        private ?GitInfoDetector $gitInfoDetector = null,
     ) {
         $this->gitInfoDetector ??= new GitInfoDetector;
     }
@@ -48,7 +48,7 @@ final class EnvironmentCollector implements DataCollectorInterface
      *
      * @return array<string, string|bool|null>
      */
-    protected function collectGitInfo(): array
+    private function collectGitInfo(): array
     {
         if (! $this->getTracingConfig('git', true)) {
             return ['git_commit' => config('app.git_commit')];

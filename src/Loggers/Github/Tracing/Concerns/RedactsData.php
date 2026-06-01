@@ -83,12 +83,10 @@ trait RedactsData
      */
     protected function redactHeaderValue(string $key, array $values): array
     {
-        return array_map(function ($value) use ($key) {
-            return match (mb_strtolower($key)) {
-                'authorization', 'proxy-authorization' => $this->redactAuthorizationHeaderValue((string) $value),
-                'cookie' => $this->redactCookieHeaderValue((string) $value),
-                default => $this->redactValue((string) $value),
-            };
+        return array_map(fn (string $value) => match (mb_strtolower($key)) {
+            'authorization', 'proxy-authorization' => $this->redactAuthorizationHeaderValue($value),
+            'cookie' => $this->redactCookieHeaderValue($value),
+            default => $this->redactValue($value),
         }, $values);
     }
 
@@ -124,7 +122,7 @@ trait RedactsData
         $cookies = explode(';', $value);
 
         try {
-            $result = implode('; ', array_map(function ($cookie) {
+            return implode('; ', array_map(function ($cookie): string {
                 if (! str_contains($cookie, '=')) {
                     throw new RuntimeException('Invalid cookie format.');
                 }
@@ -133,8 +131,6 @@ trait RedactsData
 
                 return mb_trim($name).'='.$this->redactValue($cookieValue);
             }, $cookies));
-
-            return $result;
         } catch (Throwable) {
             return $this->redactValue($value);
         }

@@ -16,7 +16,7 @@ final class BreadcrumbCollector implements DataCollectorInterface
 {
     use ResolvesTracingConfig;
 
-    private const DEFAULT_LIMIT = 40;
+    private const int DEFAULT_LIMIT = 40;
 
     /**
      * @var array<int, array{timestamp: string, category: string, message: string, metadata: array<string, mixed>}>
@@ -60,7 +60,7 @@ final class BreadcrumbCollector implements DataCollectorInterface
             return;
         }
 
-        $this->addBreadcrumb('log', "[{$event->level}] {$event->message}");
+        $this->addBreadcrumb('log', sprintf('[%s] %s', $event->level, $event->message));
     }
 
     /**
@@ -72,7 +72,7 @@ final class BreadcrumbCollector implements DataCollectorInterface
             return;
         }
 
-        $this->addBreadcrumb('cache', "Cache hit: {$event->key}", [
+        $this->addBreadcrumb('cache', 'Cache hit: '.$event->key, [
             'store' => $event->storeName ?? 'default',
         ]);
     }
@@ -86,7 +86,7 @@ final class BreadcrumbCollector implements DataCollectorInterface
             return;
         }
 
-        $this->addBreadcrumb('cache', "Cache miss: {$event->key}", [
+        $this->addBreadcrumb('cache', 'Cache miss: '.$event->key, [
             'store' => $event->storeName ?? 'default',
         ]);
     }
@@ -96,7 +96,7 @@ final class BreadcrumbCollector implements DataCollectorInterface
      */
     public function collect(): void
     {
-        if (empty(self::$breadcrumbs)) {
+        if (self::$breadcrumbs === []) {
             return;
         }
 

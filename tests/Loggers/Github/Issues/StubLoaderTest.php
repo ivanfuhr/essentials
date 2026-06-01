@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 use IvanFuhr\Essentials\Loggers\Github\Issues\StubLoader;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->loader = new StubLoader;
     File::partialMock();
 });
 
-test('it loads stub from published path if it exists', function () {
+test('it loads stub from published path if it exists', function (): void {
     $publishedPath = resource_path('views/vendor/essentials/github/issue.md');
     $packagePath = __DIR__.'/../../../../resources/loggers/github/views/issue.md';
     $expectedContent = file_get_contents($packagePath);
@@ -24,7 +26,7 @@ test('it loads stub from published path if it exists', function () {
     expect($this->loader->load('issue'))->toBe($expectedContent);
 });
 
-test('it falls back to package stub if published stub does not exist', function () {
+test('it falls back to package stub if published stub does not exist', function (): void {
     $publishedPath = resource_path('views/vendor/essentials/github/issue.md');
     $packagePath = __DIR__.'/../../../../resources/loggers/github/views/issue.md';
     $expectedContent = file_get_contents($packagePath);
@@ -42,7 +44,7 @@ test('it falls back to package stub if published stub does not exist', function 
     expect($this->loader->load('issue'))->toBe($expectedContent);
 });
 
-test('it throws exception if stub does not exist', function () {
+test('it throws exception if stub does not exist', function (): void {
     $publishedPath = resource_path('views/vendor/essentials/github/nonexistent.md');
     $packagePath = __DIR__.'/../../../../resources/loggers/github/views/nonexistent.md';
 

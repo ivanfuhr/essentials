@@ -11,15 +11,15 @@ final class StubLoader
 {
     public function load(string $name): string
     {
-        $publishedPath = resource_path("views/vendor/essentials/github/{$name}.md");
-        $packagePath = __DIR__."/../../../../resources/loggers/github/views/{$name}.md";
+        $publishedPath = resource_path(sprintf('views/vendor/essentials/github/%s.md', $name));
+        $packagePath = __DIR__.sprintf('/../../../../resources/loggers/github/views/%s.md', $name);
 
         if (File::exists($publishedPath)) {
             return (string) File::get($publishedPath);
         }
 
         if (! File::exists($packagePath)) {
-            throw new FileNotFoundException("Package stub not found: {$packagePath}");
+            throw new FileNotFoundException('Package stub not found: '.$packagePath);
         }
 
         return (string) File::get($packagePath);

@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Loggers\Github\Deduplication;
 
 use IvanFuhr\Essentials\Loggers\Github\Deduplication\VendorFrameDetector;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->detector = new VendorFrameDetector;
 });
 
-test('it detects vendor frames from file path', function () {
+test('it detects vendor frames from file path', function (): void {
     $frame = [
         'file' => '/path/to/vendor/laravel/framework/src/File.php',
         'line' => 123,
@@ -18,7 +20,7 @@ test('it detects vendor frames from file path', function () {
     expect($this->detector->isVendorFrame($frame))->toBeTrue();
 });
 
-test('it detects vendor frames from artisan path', function () {
+test('it detects vendor frames from artisan path', function (): void {
     $frame = [
         'file' => '/path/to/artisan',
         'line' => 13,
@@ -28,7 +30,7 @@ test('it detects vendor frames from artisan path', function () {
     expect($this->detector->isVendorFrame($frame))->toBeTrue();
 });
 
-test('it detects vendor frames from main function', function () {
+test('it detects vendor frames from main function', function (): void {
     $frame = [
         'file' => '/path/to/index.php',
         'line' => 1,
@@ -38,7 +40,7 @@ test('it detects vendor frames from main function', function () {
     expect($this->detector->isVendorFrame($frame))->toBeTrue();
 });
 
-test('it does not detect app frames as vendor frames', function () {
+test('it does not detect app frames as vendor frames', function (): void {
     $frame = [
         'file' => '/path/to/app/Services/Service.php',
         'line' => 25,
@@ -48,7 +50,7 @@ test('it does not detect app frames as vendor frames', function () {
     expect($this->detector->isVendorFrame($frame))->toBeFalse();
 });
 
-test('it does not detect BoundMethod calling app code as vendor frame', function () {
+test('it does not detect BoundMethod calling app code as vendor frame', function (): void {
     $frame = [
         'file' => '/path/to/vendor/laravel/framework/src/Support/BoundMethod.php',
         'line' => 123,
@@ -60,7 +62,7 @@ test('it does not detect BoundMethod calling app code as vendor frame', function
     expect($this->detector->isVendorFrame($frame))->toBeFalse();
 });
 
-test('it detects BoundMethod not calling app code as vendor frame', function () {
+test('it detects BoundMethod not calling app code as vendor frame', function (): void {
     $frame = [
         'file' => '/path/to/vendor/laravel/framework/src/Support/BoundMethod.php',
         'line' => 123,
@@ -72,7 +74,7 @@ test('it detects BoundMethod not calling app code as vendor frame', function () 
     expect($this->detector->isVendorFrame($frame))->toBeTrue();
 });
 
-test('it handles frames without file', function () {
+test('it handles frames without file', function (): void {
     $frame = [
         'line' => 123,
         'function' => 'someMethod',
@@ -81,37 +83,37 @@ test('it handles frames without file', function () {
     expect($this->detector->isVendorFrame($frame))->toBeFalse();
 });
 
-test('it detects vendor frames from stack trace line', function () {
+test('it detects vendor frames from stack trace line', function (): void {
     $line = '#0 /path/to/vendor/laravel/framework/src/File.php(123): SomeClass->method()';
 
     expect($this->detector->isVendorFrameLine($line))->toBeTrue();
 });
 
-test('it detects artisan frames from stack trace line', function () {
+test('it detects artisan frames from stack trace line', function (): void {
     $line = '#0 /path/to/artisan(13): Illuminate\\Foundation\\Application->run()';
 
     expect($this->detector->isVendorFrameLine($line))->toBeTrue();
 });
 
-test('it detects main function from stack trace line', function () {
+test('it detects main function from stack trace line', function (): void {
     $line = '#105 {main}';
 
     expect($this->detector->isVendorFrameLine($line))->toBeTrue();
 });
 
-test('it does not detect app frames from stack trace line', function () {
+test('it does not detect app frames from stack trace line', function (): void {
     $line = '#0 /path/to/app/Services/Service.php(25): App\\Services\\Service->handle()';
 
     expect($this->detector->isVendorFrameLine($line))->toBeFalse();
 });
 
-test('it does not detect BoundMethod calling app code from stack trace line', function () {
+test('it does not detect BoundMethod calling app code from stack trace line', function (): void {
     $line = '#0 /path/to/vendor/laravel/framework/src/Support/BoundMethod.php(123): App\\Services\\Service::handle()';
 
     expect($this->detector->isVendorFrameLine($line))->toBeFalse();
 });
 
-test('it detects BoundMethod not calling app code from stack trace line', function () {
+test('it detects BoundMethod not calling app code from stack trace line', function (): void {
     $line = '#0 /path/to/vendor/laravel/framework/src/Support/BoundMethod.php(123): Vendor\\Class::method()';
 
     expect($this->detector->isVendorFrameLine($line))->toBeTrue();

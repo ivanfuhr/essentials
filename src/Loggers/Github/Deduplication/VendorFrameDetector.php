@@ -41,11 +41,8 @@ final class VendorFrameDetector
 
         // Check for {main} function
         $function = $frame['function'] ?? '';
-        if ($function === '{main}') {
-            return true;
-        }
 
-        return false;
+        return $function === '{main}';
     }
 
     /**
@@ -53,8 +50,14 @@ final class VendorFrameDetector
      */
     public function isVendorFrameLine(string $line): bool
     {
-        return str_contains($line, '/vendor/') && ! Str::isMatch("/BoundMethod\.php\([0-9]+\): App/", $line)
-            || str_contains($line, '/artisan')
-            || str_ends_with($line, '{main}');
+        if (str_contains($line, '/vendor/') && ! Str::isMatch('/BoundMethod\\.php\\(\\d+\\): App/', $line)) {
+            return true;
+        }
+
+        if (str_contains($line, '/artisan')) {
+            return true;
+        }
+
+        return str_ends_with($line, '{main}');
     }
 }

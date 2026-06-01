@@ -40,7 +40,7 @@ final class InertiaDataCollector implements EventDrivenCollectorInterface
     /**
      * Detect if the current request is an Inertia request.
      */
-    protected function isInertiaRequest(Request $request): bool
+    private function isInertiaRequest(Request $request): bool
     {
         return $request->hasHeader('X-Inertia');
     }
@@ -50,7 +50,7 @@ final class InertiaDataCollector implements EventDrivenCollectorInterface
      *
      * @param  \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response  $response
      */
-    protected function captureFromRequest(Request $request, $response): void
+    private function captureFromRequest(Request $request, $response): void
     {
         $data = [
             'version' => $request->header('X-Inertia-Version'),
@@ -78,7 +78,7 @@ final class InertiaDataCollector implements EventDrivenCollectorInterface
         $data['url'] = $request->fullUrl();
 
         // Filter nulls but keep false values (like partial_reload = false)
-        Context::add('inertia', array_filter($data, fn ($value) => $value !== null));
+        Context::add('inertia', array_filter($data, fn ($value): bool => $value !== null));
     }
 
     /**
@@ -86,13 +86,13 @@ final class InertiaDataCollector implements EventDrivenCollectorInterface
      *
      * @return array<string>|null
      */
-    protected function parsePartialKeys(?string $keys): ?array
+    private function parsePartialKeys(?string $keys): ?array
     {
         if ($keys === null || $keys === '') {
             return null;
         }
 
-        return array_map('trim', explode(',', $keys));
+        return array_map(trim(...), explode(',', $keys));
     }
 
     /**
@@ -100,7 +100,7 @@ final class InertiaDataCollector implements EventDrivenCollectorInterface
      *
      * @param  \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response  $response
      */
-    protected function extractComponentFromResponse($response): ?string
+    private function extractComponentFromResponse($response): ?string
     {
         // Check X-Inertia header in response
         if (! $response->headers->has('X-Inertia')) {
