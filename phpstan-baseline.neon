@@ -181,36 +181,6 @@ parameters:
 			path: src/Loggers/Github/GithubLoggerServiceProvider.php
 
 		-
-			message: '#^Cannot call method all\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Loggers/Github/GithubLoggerServiceProvider.php
-
-		-
-			message: '#^Cannot call method forget\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: src/Loggers/Github/GithubLoggerServiceProvider.php
-
-		-
-			message: '#^Cannot call method has\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Loggers/Github/GithubLoggerServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_keys expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Loggers/Github/GithubLoggerServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$haystack of function str_starts_with expects string, int\|string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Loggers/Github/GithubLoggerServiceProvider.php
-
-		-
 			message: '#^Parameter \#1 \$tracing of method IvanFuhr\\Essentials\\Loggers\\Github\\GithubLoggerServiceProvider\:\:normalizeTracingConfig\(\) expects array\<string, mixed\>, mixed given\.$#'
 			identifier: argument.type
 			count: 1

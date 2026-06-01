@@ -6,13 +6,14 @@ namespace Tests\Issues;
 
 use DateTimeImmutable;
 use Illuminate\Http\Client\Request;
-use RuntimeException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\IssueFormatter;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Handler;
 use Monolog\Level;
 use Monolog\LogRecord;
+use ReflectionClass;
+use RuntimeException;
 
 function createHandler(): Handler
 {
@@ -127,10 +128,9 @@ test('it throws when the record is not formatted', function (): void {
     $handler = createHandler();
     $record = createRecord();
 
-    $write = (new \ReflectionClass($handler))->getMethod('write');
-    $write->setAccessible(true);
+    $write = (new ReflectionClass($handler))->getMethod('write');
 
-    expect(fn () => $write->invoke($handler, $record))
+    expect(fn (): mixed => $write->invoke($handler, $record))
         ->toThrow(RuntimeException::class, 'Record must be formatted with');
 });
 
@@ -138,10 +138,9 @@ test('it throws when github issue signature is missing during search', function 
     $handler = createHandler();
     $record = createRecord()->with(extra: []);
 
-    $findExistingIssue = (new \ReflectionClass($handler))->getMethod('findExistingIssue');
-    $findExistingIssue->setAccessible(true);
+    $findExistingIssue = (new ReflectionClass($handler))->getMethod('findExistingIssue');
 
-    expect(fn () => $findExistingIssue->invoke($handler, $record))
+    expect(fn (): mixed => $findExistingIssue->invoke($handler, $record))
         ->toThrow(RuntimeException::class, 'Record is missing github_issue_signature');
 });
 

@@ -193,7 +193,6 @@ it('selects a backup interactively when none is provided', function (): void {
 
     $command = app(DatabaseRestoreCommand::class);
     $method = new ReflectionMethod($command, 'selectBackup');
-    $method->setAccessible(true);
 
     expect($method->invoke($command, DatabaseBackup::forConfiguredDisk()))->toBe('testing.dump');
 });
@@ -204,7 +203,6 @@ it('skips the safety backup when confirmation is declined', function (): void {
 
     $command = app(DatabaseRestoreCommand::class);
     $method = new ReflectionMethod($command, 'runSafetyBackup');
-    $method->setAccessible(true);
 
     expect($method->invoke($command, null))->toBeTrue();
 });

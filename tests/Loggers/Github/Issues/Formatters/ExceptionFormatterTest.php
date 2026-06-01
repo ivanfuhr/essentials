@@ -182,7 +182,6 @@ test('it handles string exceptions without stack trace markers', function (): vo
 
 test('it handles malformed string exceptions via the fallback formatter', function (): void {
     $method = (new ReflectionClass($this->formatter))->getMethod('formatExceptionString');
-    $method->setAccessible(true);
 
     $result = $method->invoke($this->formatter, 'Broken trace format');
 

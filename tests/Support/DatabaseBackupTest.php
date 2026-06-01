@@ -94,7 +94,7 @@ it('throws when the configured disk is not a filesystem adapter', function (): v
     Storage::partialMock()
         ->shouldReceive('disk')
         ->with('invalid')
-        ->andReturn(Mockery::mock(\Illuminate\Contracts\Filesystem\Filesystem::class));
+        ->andReturn(Mockery::mock(Illuminate\Contracts\Filesystem\Filesystem::class));
 
     DatabaseBackup::forConfiguredDisk();
 })->throws(InvalidArgumentException::class, 'Disk "invalid" is not a filesystem adapter.');

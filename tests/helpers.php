@@ -116,7 +116,7 @@ function createFailingPgRestoreScript(): string
     return $path;
 }
 
-function backupDisk(): \Illuminate\Contracts\Filesystem\Filesystem
+function backupDisk(): Illuminate\Contracts\Filesystem\Filesystem
 {
     $diskName = config('essentials.backup.disk');
 
@@ -175,11 +175,9 @@ function resetPromptFallbacks(): void
         $reflection = new ReflectionClass($promptClass);
 
         $shouldFallback = $reflection->getProperty('shouldFallback');
-        $shouldFallback->setAccessible(true);
         $shouldFallback->setValue(null, false);
 
         $fallbacks = $reflection->getProperty('fallbacks');
-        $fallbacks->setAccessible(true);
         $fallbacks->setValue(null, []);
     }
 }

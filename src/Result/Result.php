@@ -47,7 +47,7 @@ final class Result
 
     public function valueOr(mixed $default): mixed
     {
-        if ($this->successful()) {
+        if ($this->success) {
             return $this->payload;
         }
 
@@ -56,7 +56,7 @@ final class Result
 
     public function failure(): UnitEnum
     {
-        if ($this->successful()) {
+        if ($this->success) {
             throw new LogicException('Cannot get the failure from a successful result. Check failed() first or use whenFailed().');
         }
 
@@ -71,7 +71,7 @@ final class Result
      */
     public function whenSuccessful(callable $callback): self
     {
-        if ($this->successful() && ! $this->handled) {
+        if ($this->success && ! $this->handled) {
             $callback($this->value());
             $this->handled = true;
         }

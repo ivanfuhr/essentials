@@ -12,7 +12,7 @@ if (! function_exists('success')) {
 }
 
 if (! function_exists('fail')) {
-    function fail(\UnitEnum $failure): Result
+    function fail(UnitEnum $failure): Result
     {
         return Result::fail($failure);
     }

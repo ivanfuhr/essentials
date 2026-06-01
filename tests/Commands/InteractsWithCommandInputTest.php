@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Storage;
 use IvanFuhr\Essentials\Commands\DatabaseRestoreCommand;
 use IvanFuhr\Essentials\Support\DatabaseBackup;
 use Laravel\Prompts\SelectPrompt;
@@ -34,16 +33,13 @@ it('treats an empty backup argument as missing', function (): void {
     ], $command->getDefinition());
 
     $inputProperty = new ReflectionProperty($command, 'input');
-    $inputProperty->setAccessible(true);
     $inputProperty->setValue($command, $input);
 
     $method = new ReflectionMethod($command, 'optionalStringArgument');
-    $method->setAccessible(true);
 
     expect($method->invoke($command, 'backup'))->toBeNull();
 
     $selectMethod = new ReflectionMethod($command, 'selectBackup');
-    $selectMethod->setAccessible(true);
 
     expect($selectMethod->invoke($command, DatabaseBackup::forConfiguredDisk()))->toBe('testing.dump');
 });

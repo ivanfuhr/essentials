@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use IvanFuhr\Essentials\Loggers\Github\Tracing\GitInfoDetector;
 use Illuminate\Support\Facades\Process;
+use IvanFuhr\Essentials\Loggers\Github\Tracing\GitInfoDetector;
 
 beforeEach(function (): void {
     GitInfoDetector::resetCache();

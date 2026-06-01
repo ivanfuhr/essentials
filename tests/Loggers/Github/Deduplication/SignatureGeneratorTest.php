@@ -558,7 +558,6 @@ test('returns null vendor frame when exception trace has only in-app frames', fu
 
     $generator = new DefaultSignatureGenerator;
     $method = (new ReflectionClass($generator))->getMethod('firstVendorFrameBeforeInApp');
-    $method->setAccessible(true);
 
     expect($method->invoke($generator, $exception))->toBeNull();
 });

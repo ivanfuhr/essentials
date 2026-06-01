@@ -133,7 +133,7 @@ it('chains handlers like the expected service usage', function (): void {
     $handle = function (Result $result) use (&$outcome): void {
         $result
             ->whenSuccessful(function (string $user) use (&$outcome): void {
-                $outcome = "created:{$user}";
+                $outcome = 'created:'.$user;
             })
             ->whenFailed(CreateUserError::InvalidEmail, function () use (&$outcome): void {
                 $outcome = 'invalid-email';

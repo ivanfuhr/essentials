@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IvanFuhr\Essentials\Loggers\Github;
 
+use Illuminate\Log\Context\Repository as ContextRepository;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -96,7 +97,7 @@ final class GithubLoggerServiceProvider extends ServiceProvider
      */
     private function registerContextDehydration(): void
     {
-        Context::dehydrating(function ($context): void {
+        Context::dehydrating(function (ContextRepository $context): void {
             $keysToForget = [
                 'queries',
                 'outgoing_requests',

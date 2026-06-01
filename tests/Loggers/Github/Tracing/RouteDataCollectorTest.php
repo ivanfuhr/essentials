@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Routing\Route;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\RouteDataCollector;
 
@@ -27,7 +27,7 @@ it('collects route data', function (): void {
     $route->shouldReceive('gatherMiddleware')->once()->andReturn(['web', 'auth']);
     $route->shouldReceive('methods')->once()->andReturn(['GET', 'HEAD']);
 
-    $request = Mockery::mock(Illuminate\Http\Request::class);
+    $request = Mockery::mock(Request::class);
     $event = new RouteMatched($route, $request);
 
     ($this->collector)($event);
@@ -52,7 +52,7 @@ it('handles route without name', function (): void {
     $route->shouldReceive('gatherMiddleware')->once()->andReturn([]);
     $route->shouldReceive('methods')->once()->andReturn(['GET']);
 
-    $request = Mockery::mock(Illuminate\Http\Request::class);
+    $request = Mockery::mock(Request::class);
     $event = new RouteMatched($route, $request);
 
     ($this->collector)($event);
@@ -72,7 +72,7 @@ it('sets route_summary for normal routes', function (): void {
     $route->shouldReceive('gatherMiddleware')->once()->andReturn([]);
     $route->shouldReceive('methods')->once()->andReturn(['GET']);
 
-    $request = Mockery::mock(Illuminate\Http\Request::class);
+    $request = Mockery::mock(Request::class);
     $event = new RouteMatched($route, $request);
 
     ($this->collector)($event);
@@ -93,7 +93,7 @@ it('uses originating page for livewire routes', function (): void {
     $route->shouldReceive('gatherMiddleware')->once()->andReturn([]);
     $route->shouldReceive('methods')->once()->andReturn(['POST']);
 
-    $request = Mockery::mock(Illuminate\Http\Request::class);
+    $request = Mockery::mock(Request::class);
     $event = new RouteMatched($route, $request);
 
     ($this->collector)($event);
@@ -111,7 +111,7 @@ it('identifies livewire message routes', function (): void {
     $route->shouldReceive('gatherMiddleware')->once()->andReturn([]);
     $route->shouldReceive('methods')->once()->andReturn(['POST']);
 
-    $request = Mockery::mock(Illuminate\Http\Request::class);
+    $request = Mockery::mock(Request::class);
     $event = new RouteMatched($route, $request);
 
     ($this->collector)($event);
@@ -131,7 +131,7 @@ it('identifies livewire update routes', function (): void {
     $route->shouldReceive('gatherMiddleware')->once()->andReturn([]);
     $route->shouldReceive('methods')->once()->andReturn(['POST']);
 
-    $request = Mockery::mock(Illuminate\Http\Request::class);
+    $request = Mockery::mock(Request::class);
     $event = new RouteMatched($route, $request);
 
     ($this->collector)($event);
@@ -152,6 +152,7 @@ it('falls back to the referer for livewire routes without originating page conte
 
     $request = Request::create('/livewire/message/counter', 'POST');
     $request->headers->set('referer', 'https://example.com/dashboard?tab=1');
+
     app()->instance('request', $request);
 
     $event = new RouteMatched($route, $request);

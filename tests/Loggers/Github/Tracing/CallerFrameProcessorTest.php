@@ -47,7 +47,6 @@ test('returns the original record when no caller frame is found', function (): v
 
 test('handles empty caller paths gracefully', function (): void {
     $normalizePath = (new ReflectionClass($this->processor))->getMethod('normalizePath');
-    $normalizePath->setAccessible(true);
 
     expect($normalizePath->invoke($this->processor, ''))->toBe('');
 });

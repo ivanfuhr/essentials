@@ -6,6 +6,7 @@ namespace Tests\Support;
 
 use IvanFuhr\Essentials\Loggers\Github\Tracing\CallerFrameProcessor;
 use Monolog\LogRecord;
+use ReflectionClass;
 
 function processLogRecordThroughCallerProbe(CallerFrameProcessor $processor, LogRecord $record): LogRecord
 {
@@ -17,8 +18,7 @@ function processLogRecordThroughCallerProbe(CallerFrameProcessor $processor, Log
  */
 function findCallerFrameThroughProbe(CallerFrameProcessor $processor): ?array
 {
-    $method = (new \ReflectionClass($processor))->getMethod('findCallerFrame');
-    $method->setAccessible(true);
+    $method = (new ReflectionClass($processor))->getMethod('findCallerFrame');
 
     return $method->invoke($processor);
 }
