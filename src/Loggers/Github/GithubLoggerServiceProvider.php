@@ -11,7 +11,7 @@ use IvanFuhr\Essentials\Loggers\Github\Tracing\EventHandler;
 
 final class GithubLoggerServiceProvider extends ServiceProvider
 {
-    private const CONFIG_KEY = 'essentials.loggers.github';
+    private const string CONFIG_KEY = 'essentials.loggers.github';
 
     public function register(): void
     {
