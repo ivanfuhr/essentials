@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Routing\Route;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\RouteDataCollector;
 
@@ -138,4 +139,23 @@ it('identifies livewire update routes', function (): void {
     // Livewire update route should be identified
     $routeData = Context::get('route');
     expect($routeData['uri'])->toBe('livewire/update');
+});
+
+it('falls back to the referer for livewire routes without originating page context', function (): void {
+    $route = Mockery::mock(Route::class);
+    $route->shouldReceive('getName')->andReturn(null);
+    $route->shouldReceive('uri')->andReturn('livewire/message/counter');
+    $route->shouldReceive('parameters')->once()->andReturn([]);
+    $route->shouldReceive('getAction')->once()->andReturn([]);
+    $route->shouldReceive('gatherMiddleware')->once()->andReturn([]);
+    $route->shouldReceive('methods')->once()->andReturn(['POST']);
+
+    $request = Request::create('/livewire/message/counter', 'POST');
+    $request->headers->set('referer', 'https://example.com/dashboard?tab=1');
+    app()->instance('request', $request);
+
+    $event = new RouteMatched($route, $request);
+    ($this->collector)($event);
+
+    expect(Context::get('route_summary'))->toBe('/dashboard?tab=1');
 });

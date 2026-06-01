@@ -8,6 +8,12 @@ beforeEach(function (): void {
     $this->formatter = resolve(PreviousExceptionFormatter::class);
 });
 
+test('it returns empty string when exception is not a throwable', function (): void {
+    $record = createLogRecord('Test message', ['exception' => 'not-a-throwable']);
+
+    expect($this->formatter->format($record))->toBe('');
+});
+
 test('it returns empty string when no previous exception', function (): void {
     $record = createLogRecord('Test message', exception: new RuntimeException('Test exception'));
 

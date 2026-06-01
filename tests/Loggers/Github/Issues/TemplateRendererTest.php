@@ -446,3 +446,34 @@ test('triage header renders correctly with missing optional data', function (): 
         ->toContain('**User:** Unauthenticated')
         ->toContain('**Message:** Test message');
 });
+
+test('it resolves exception class names from string context', function (): void {
+    $record = createLogRecord('RuntimeException: Something failed', [
+        'exception' => 'RuntimeException: Something failed in /app/test.php:1',
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)->toContain('RuntimeException');
+});
+
+test('it renders route summary from precomputed route summary and request method', function (): void {
+    $record = createLogRecord('Test message', [
+        'route_summary' => '/reports/monthly',
+        'request' => ['method' => 'get'],
+    ]);
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)->toContain('**Route:** GET /reports/monthly');
+});
+
+test('it extracts clean messages from record messages containing stack traces', function (): void {
+    $record = createLogRecord('RuntimeException: Broken input in /app/Models/User.php:10
+Stack trace:
+#0 /app/Services/UserService.php(25): save()');
+
+    $rendered = $this->renderer->render($this->stubLoader->load('issue'), $record);
+
+    expect($rendered)->toContain('**Message:** Broken input');
+});

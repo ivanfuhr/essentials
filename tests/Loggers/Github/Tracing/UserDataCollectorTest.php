@@ -153,3 +153,44 @@ it('caches resolved user details', function (): void {
     $userData = Context::get('user');
     expect($userData['id'])->toBe(1);
 });
+
+it('exposes the default user data resolver', function (): void {
+    $user = Mockery::mock(Authenticatable::class);
+    $user->shouldReceive('getAuthIdentifier')->andReturn(5);
+    $user->name = 'Default User';
+    $user->email = 'default@example.com';
+
+    $resolver = $this->collector->getUserDataResolver();
+    $data = $resolver($user);
+
+    expect($data)->toMatchArray([
+        'id' => 5,
+        'authenticated' => true,
+        'name' => 'Default User',
+        'email' => 'default@example.com',
+    ]);
+});
+
+it('falls back when custom resolver throws', function (): void {
+    $user = Mockery::mock(Authenticatable::class);
+    $user->shouldReceive('getAuthIdentifier')->andReturn(9);
+
+    UserDataCollector::setUserDataResolver(fn (): array => throw new RuntimeException('Resolver failed'));
+    UserDataCollector::rememberUser($user);
+
+    Auth::shouldReceive('check')->andReturn(false);
+    $this->collector->collect();
+
+    expect(Context::get('user'))->toBe([
+        'authenticated' => true,
+        'id' => 9,
+    ]);
+});
+
+it('handles auth facade failures during collection', function (): void {
+    Auth::shouldReceive('check')->andThrow(new RuntimeException('Auth unavailable'));
+
+    $this->collector->collect();
+
+    expect(Context::get('user'))->toBe(['authenticated' => false]);
+});

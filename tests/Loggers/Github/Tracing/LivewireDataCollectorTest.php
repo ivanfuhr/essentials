@@ -579,3 +579,36 @@ it('defaults to empty params array when calls have no params key', function (): 
         ['method' => 'increment', 'params' => []],
     ]);
 });
+
+it('uses legacy fingerprint path when snapshot path is unavailable', function (): void {
+    $payload = [
+        'fingerprint' => ['path' => '/legacy/dashboard'],
+        'components' => [
+            [
+                'snapshot' => json_encode([
+                    'memo' => [
+                        'name' => 'counter',
+                        'id' => 'cnt123',
+                    ],
+                ]),
+            ],
+        ],
+    ];
+
+    $request = Request::create(
+        '/livewire/update',
+        'POST',
+        server: [
+            'HTTP_X_Livewire' => 'true',
+            'CONTENT_TYPE' => 'application/json',
+        ],
+        content: json_encode($payload),
+    );
+
+    app()->instance('request', $request);
+
+    $event = new RequestHandled($request, new Response);
+    $this->collector->__invoke($event);
+
+    expect(Context::get('livewire_originating_page'))->toBe('/legacy/dashboard');
+});

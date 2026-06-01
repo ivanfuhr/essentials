@@ -115,7 +115,7 @@ final class DatabaseRestoreCommand extends Command
         }
 
         $tempPath = $this->temporaryPath(basename($remotePath));
-        $target = fopen($tempPath, 'w');
+        $target = @fopen($tempPath, 'w');
 
         if ($target === false) {
             fclose($stream);

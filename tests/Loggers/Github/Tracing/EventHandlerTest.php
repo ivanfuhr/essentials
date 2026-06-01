@@ -186,6 +186,56 @@ it('does not register collectors when tracing is disabled', function (): void {
     expect(true)->toBeTrue();
 });
 
+it('does not register collectors when package tracing is disabled', function (): void {
+    Config::set('essentials.loggers.github.tracing.enabled', false);
+    Config::set('logging.channels.github.tracing.enabled', false);
+
+    $handler = new EventHandler;
+    $handler->subscribe(Event::getFacadeRoot());
+
+    $connection = Mockery::mock(Illuminate\Database\Connection::class);
+    $connection->shouldReceive('getName')->andReturn('mysql');
+
+    Event::dispatch(new QueryExecuted(
+        sql: 'SELECT 1',
+        bindings: [],
+        time: 1.0,
+        connection: $connection
+    ));
+
+    expect(Context::getHidden('queries') ?? [])->toBeEmpty();
+});
+
+it('registers breadcrumb listeners when enabled', function (): void {
+    Config::set('logging.channels.github.tracing.breadcrumbs', true);
+    IvanFuhr\Essentials\Loggers\Github\Tracing\BreadcrumbCollector::reset();
+
+    $handler = new EventHandler;
+    $handler->subscribe(Event::getFacadeRoot());
+
+    Event::dispatch(new Illuminate\Log\Events\MessageLogged('info', 'Breadcrumb message', []));
+    Event::dispatch(new Illuminate\Cache\Events\CacheHit('array', 'cache-key', 'value'));
+    Event::dispatch(new Illuminate\Cache\Events\CacheMissed('array', 'missing-key'));
+
+    expect(IvanFuhr\Essentials\Loggers\Github\Tracing\BreadcrumbCollector::getBreadcrumbs())->toHaveCount(3);
+});
+
+it('registers logout listener to remember user data', function (): void {
+    $handler = new EventHandler;
+    $handler->subscribe(Event::getFacadeRoot());
+
+    $user = Mockery::mock(Authenticatable::class);
+    $user->shouldReceive('getAuthIdentifier')->andReturn(77);
+
+    Event::dispatch(new Illuminate\Auth\Events\Logout('web', $user));
+
+    Auth::shouldReceive('check')->andReturn(false);
+    Context::flush();
+    (new IvanFuhr\Essentials\Loggers\Github\Tracing\UserDataCollector)->collect();
+
+    expect(Context::get('user')['id'])->toBe(77);
+});
+
 it('does not register individual collectors when disabled', function (): void {
     Config::set('logging.channels.github.tracing', [
         'enabled' => true,

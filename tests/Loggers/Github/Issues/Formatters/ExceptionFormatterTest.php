@@ -157,3 +157,47 @@ Stack trace:
         ->toContain('[stacktrace]')
         ->not->toContain('Stack trace:');
 });
+
+test('it formats batches of records', function (): void {
+    $records = [
+        createLogRecord('First', exception: new RuntimeException('One')),
+        createLogRecord('Second'),
+    ];
+
+    expect($this->formatter->formatBatch($records))->toHaveCount(2);
+});
+
+test('it strips exception class prefixes from messages', function (): void {
+    $exception = new RuntimeException('RuntimeException: Something went wrong');
+    $record = createLogRecord('Test', exception: $exception);
+
+    expect($this->formatter->format($record)['message'])->toBe('Something went wrong');
+});
+
+test('it handles string exceptions without stack trace markers', function (): void {
+    $record = createLogRecord('Test message', ['exception' => 'Plain failure message']);
+
+    expect($this->formatter->format($record))->toBe([]);
+});
+
+test('it handles malformed string exceptions via the fallback formatter', function (): void {
+    $method = (new ReflectionClass($this->formatter))->getMethod('formatExceptionString');
+    $method->setAccessible(true);
+
+    $result = $method->invoke($this->formatter, 'Broken trace format');
+
+    expect($result['message'])->toBe('Broken trace format')
+        ->and($result['simplified_stack_trace'])->toContain('Broken trace format');
+});
+
+test('it extracts hash-prefixed stack traces from string exceptions', function (): void {
+    $exceptionString = 'Failure happened
+#0 /app/Services/Service.php(25): App\\Services\\Service->handle()
+#1 /vendor/package/src/File.php(10): App\\Services\\Service->process()';
+
+    $record = createLogRecord('Test message', ['exception' => $exceptionString]);
+    $result = $this->formatter->format($record);
+
+    expect($result['message'])->toBe('Failure happened')
+        ->and($result['simplified_stack_trace'])->toContain('App\\Services\\Service->handle()');
+});

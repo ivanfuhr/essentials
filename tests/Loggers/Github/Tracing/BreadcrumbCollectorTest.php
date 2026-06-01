@@ -137,6 +137,22 @@ it('does not collect when disabled', function (): void {
     expect(BreadcrumbCollector::getBreadcrumbs())->toBeEmpty();
 });
 
+it('does not collect cache hits when disabled', function (): void {
+    Config::set('logging.channels.github.tracing.breadcrumbs', false);
+
+    $this->collector->handleCacheHit(new CacheHit('array', 'user.123', 'cached-value'));
+
+    expect(BreadcrumbCollector::getBreadcrumbs())->toBeEmpty();
+});
+
+it('does not collect cache misses when disabled', function (): void {
+    Config::set('logging.channels.github.tracing.breadcrumbs', false);
+
+    $this->collector->handleCacheMissed(new CacheMissed('array', 'user.456'));
+
+    expect(BreadcrumbCollector::getBreadcrumbs())->toBeEmpty();
+});
+
 it('pushes breadcrumbs to context on collect', function (): void {
     $this->collector->handleMessageLogged(new MessageLogged('info', 'Test message', []));
 

@@ -58,7 +58,7 @@ final class DatabaseBackupCommand extends Command
             return self::FAILURE;
         }
 
-        $handle = fopen($tempPath, 'r');
+        $handle = @fopen($tempPath, 'r');
 
         if ($handle === false) {
             $this->error('Failed to open temporary file for upload.');

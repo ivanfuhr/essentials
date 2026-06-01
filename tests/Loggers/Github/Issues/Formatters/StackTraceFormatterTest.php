@@ -165,3 +165,26 @@ TRACE;
     expect($formatter->format($stackTrace, true))
         ->toBe('[Vendor frames]');
 });
+
+test('it handles json exception lines and closing braces', function (): void {
+    $stackTrace = <<<'TRACE'
+Some leading context
+{"exception":"[object] (RuntimeException(code: 0): Error at /app/test.php:1)
+#0 /app/Services/Service.php(25): handle()
+"}
+TRACE;
+
+    expect($this->formatter->format($stackTrace, false))
+        ->toContain('Some leading context')
+        ->toContain('RuntimeException(code: 0): Error at /app/test.php:1');
+});
+
+test('it treats standalone closing brace lines as empty', function (): void {
+    $stackTrace = <<<'TRACE'
+#0 /app/Services/Service.php(25): handle()
+"}
+TRACE;
+
+    expect($this->formatter->format($stackTrace, true))
+        ->toContain('#00 /app/Services/Service.php(25): handle()');
+});

@@ -7,7 +7,7 @@
     <a href="https://packagist.org/packages/ivanfuhr/essentials"><img src="https://img.shields.io/packagist/l/ivanfuhr/essentials" alt="License"></a>
 </p>
 
-Essentials provide **better defaults** for your Laravel applications including strict models, automatically eagerly loaded relationships, immutable dates, and more! 
+Essentials provide **better defaults** for your Laravel applications including strict models, automatically eagerly loaded relationships, immutable dates, a lightweight `Result` type for service outcomes, and more! 
 
 > **Requires [PHP 8.3+](https://php.net/releases/)**, **[Laravel 11+](https://laravel.com/docs/11.x/)**.
 
@@ -40,6 +40,7 @@ php artisan vendor:publish --tag=essentials-config
 - [Safe Console](#-safe-console)
 - [Prevent Stray Requests](#-prevent-stray-requests)
 - [Fake Sleep](#-fake-sleep)
+- [Result](#-result)
 - [Artisan Commands](#-artisan-commands)
   - [make:action](#makeaction)
   - [Database Backups](#database-backups)
@@ -113,6 +114,132 @@ Configures Laravel Http Facade to prevent stray requests.
 Configures Laravel Sleep Facade to be faked.
 
 **Why:** Avoid unexpected sleep during testing cases.
+
+---
+
+### 📦 Result
+
+A small, framework-agnostic **success/failure** wrapper for service and action outcomes. Expected business failures are modeled as **PHP enums**, not thrown exceptions — so invalid email, duplicate records, and similar cases stay explicit and easy to branch on.
+
+**Namespace:** `IvanFuhr\Essentials\Result\Result`
+
+No configuration or service provider setup is required. Composer autoloads the class and registers global helpers immediately (no service provider).
+
+#### Defining failure enums
+
+```php
+enum CreateUserError
+{
+    case InvalidEmail;
+    case EmailAlreadyExists;
+}
+```
+
+Use a dedicated enum per use case (or domain area). Backed enums (`string` or `int`) work well when you need stable codes for APIs or translations.
+
+#### Creating results
+
+Global helpers are available as soon as the package is installed:
+
+```php
+// Success with a value (any type)
+$result = success($user);
+
+// Failure with an enum case
+$result = fail(CreateUserError::InvalidEmail);
+```
+
+You can also use the class directly:
+
+```php
+use IvanFuhr\Essentials\Result\Result;
+
+$result = Result::success($user);
+$result = Result::fail(CreateUserError::InvalidEmail);
+```
+
+> **Note:** The `fail()` helper and `Result::fail()` factory exist because PHP does not allow a static `failure()` factory and an instance `failure()` getter on the same class. The getter returns the enum case: `$result->failure()`.
+
+#### Checking state
+
+| Method | Description |
+|--------|-------------|
+| `successful()` | `true` when the result holds a success value |
+| `failed()` | `true` when the result holds a failure enum |
+| `value()` | Returns the success value (call only when `successful()` is `true`) |
+| `valueOr($default)` | Returns the success value, or `$default` on failure |
+| `failure()` | Returns the failure `UnitEnum` (call only when `failed()` is `true`) |
+
+Prefer `whenSuccessful()` / `whenFailed()` for branching. Use `value()` and `failure()` after checking state, or `valueOr()` when a default is enough.
+
+```php
+if ($result->successful()) {
+    $user = $result->value();
+}
+
+$guest = $result->valueOr(null);
+
+if ($result->failed()) {
+    $error = $result->failure(); // CreateUserError enum case
+}
+```
+
+#### Fluent handling
+
+Chain handlers on the same result. Only the **first matching** handler runs; later handlers are skipped until you start a new chain.
+
+| Method | Description |
+|--------|-------------|
+| `whenSuccessful(callable $callback)` | Runs only on success; receives the value |
+| `whenFailed(UnitEnum $expectedFailure, callable $callback)` | Runs only when the failure enum equals `$expectedFailure` (`===`) |
+| `otherwise(callable $callback)` | Runs only if no earlier handler matched |
+
+Typical usage in a controller or action:
+
+```php
+enum CreateUserError
+{
+    case InvalidEmail;
+    case EmailAlreadyExists;
+}
+
+return $this->createUser->handle($email)
+    ->whenSuccessful(fn (User $user) => redirect()->route('users.show', $user))
+    ->whenFailed(CreateUserError::InvalidEmail, fn () => back()->withErrors(['email' => 'Invalid email.']))
+    ->whenFailed(CreateUserError::EmailAlreadyExists, fn () => back()->withErrors(['email' => 'Email already in use.']))
+    ->otherwise(fn () => abort(500));
+```
+
+Service returning a `Result`:
+
+```php
+final readonly class CreateUser
+{
+    public function handle(string $email): Result
+    {
+        if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return fail(CreateUserError::InvalidEmail);
+        }
+
+        if (User::query()->where('email', $email)->exists()) {
+            return fail(CreateUserError::EmailAlreadyExists);
+        }
+
+        return success(User::create(['email' => $email]));
+    }
+}
+```
+
+**Why:** Keeps happy paths and expected failures explicit, improves testability, and avoids `try/catch` for business rules that are not exceptional.
+
+**Tips:**
+
+- `Result::fail()` only accepts `UnitEnum` — define one enum per operation or bounded context.
+- `whenFailed()` compares enum cases with `===`; pass the same case you used in `Result::fail()`.
+- Use `otherwise()` for unhandled enum cases (e.g. a new case you have not mapped yet).
+- Handlers are for side effects (redirects, logging, mapping to HTTP). Use `value()` / `failure()` when you need the payload after checking `successful()` / `failed()`.
+
+---
 
 ### 🏗️ Artisan Commands
 

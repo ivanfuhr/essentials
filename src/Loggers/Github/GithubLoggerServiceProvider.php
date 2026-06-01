@@ -112,11 +112,21 @@ final class GithubLoggerServiceProvider extends ServiceProvider
                 if ($context->has($key)) {
                     $context->forget($key);
                 }
+
+                if ($context->hasHidden($key)) {
+                    $context->forgetHidden($key);
+                }
             }
 
             foreach (array_keys($context->all()) as $key) {
                 if (str_starts_with($key, 'outgoing_request.')) {
                     $context->forget($key);
+                }
+            }
+
+            foreach (array_keys($context->allHidden()) as $key) {
+                if (str_starts_with($key, 'outgoing_request.')) {
+                    $context->forgetHidden($key);
                 }
             }
         });

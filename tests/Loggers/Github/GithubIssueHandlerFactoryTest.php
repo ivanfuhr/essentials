@@ -184,3 +184,13 @@ test('it throws exception for invalid deduplication time', function (): void {
         ],
     ]))->toThrow(InvalidArgumentException::class, 'Deduplication time must be a positive integer');
 });
+
+test('it throws exception for invalid signature generator class', function (): void {
+    expect(fn () => ($this->factory)([
+        ...$this->config,
+        'signature_generator' => stdClass::class,
+    ]))->toThrow(
+        InvalidArgumentException::class,
+        sprintf('Signature generator class [%s] must implement', stdClass::class)
+    );
+});

@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Facades\Session;
+use IvanFuhr\Essentials\Loggers\Github\Tracing\BreadcrumbCollector;
 use IvanFuhr\Essentials\Loggers\Github\Tracing\ContextProcessor;
 use Monolog\Level;
 
@@ -110,4 +112,28 @@ it('collects user data on demand when enabled', function (): void {
     $processed = ($this->processor)($record);
 
     expect($processed->context)->toHaveKey('user');
+});
+
+it('collects session data when enabled', function (): void {
+    Config::set('logging.channels.github.tracing.session', true);
+
+    Session::start();
+    Session::put('user_id', 123);
+
+    $record = createLogRecord('Test message', [], [], Level::Error);
+    $processed = ($this->processor)($record);
+
+    expect($processed->context)->toHaveKey('session');
+});
+
+it('collects breadcrumbs when enabled', function (): void {
+    Config::set('logging.channels.github.tracing.breadcrumbs', true);
+
+    BreadcrumbCollector::reset();
+    (new BreadcrumbCollector)->handleMessageLogged(new Illuminate\Log\Events\MessageLogged('info', 'Cached breadcrumb', []));
+
+    $record = createLogRecord('Test message', [], [], Level::Error);
+    $processed = ($this->processor)($record);
+
+    expect($processed->context)->toHaveKey('breadcrumbs');
 });

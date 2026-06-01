@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use IvanFuhr\Essentials\Loggers\Github\Tracing\GitInfoDetector;
+use Illuminate\Support\Facades\Process;
 
 beforeEach(function (): void {
     GitInfoDetector::resetCache();
@@ -53,4 +54,43 @@ it('returns short hash format', function (): void {
     // Short hash is typically 7-12 characters
     expect(mb_strlen($info['git_hash']))->toBeLessThanOrEqual(12);
     expect(mb_strlen($info['git_hash']))->toBeGreaterThanOrEqual(7);
+});
+
+it('includes git tag when available', function (): void {
+    Process::fake([
+        'git log --pretty="%h" -n1 HEAD' => Process::result('abc1234'),
+        'git rev-parse --abbrev-ref HEAD' => Process::result('main'),
+        'git describe --tags --abbrev=0 2>/dev/null' => Process::result('v1.0.0'),
+        'git status --porcelain' => Process::result(''),
+    ]);
+
+    GitInfoDetector::resetCache();
+
+    $info = (new GitInfoDetector)->detect();
+
+    expect($info)->toHaveKey('git_tag')
+        ->and($info['git_tag'])->toBe('v1.0.0');
+});
+
+it('returns empty git data when commands fail', function (): void {
+    Process::fake([
+        'git log --pretty="%h" -n1 HEAD' => Process::result('', '', 1),
+        'git rev-parse --abbrev-ref HEAD' => Process::result('', '', 1),
+        'git describe --tags --abbrev=0 2>/dev/null' => Process::result('', '', 1),
+        'git status --porcelain' => Process::result('', '', 1),
+    ]);
+
+    GitInfoDetector::resetCache();
+
+    expect((new GitInfoDetector)->detect())->toBe([]);
+});
+
+it('handles process exceptions gracefully', function (): void {
+    Process::fake(function (): never {
+        throw new RuntimeException('Process unavailable');
+    });
+
+    GitInfoDetector::resetCache();
+
+    expect((new GitInfoDetector)->detect())->toBe([]);
 });

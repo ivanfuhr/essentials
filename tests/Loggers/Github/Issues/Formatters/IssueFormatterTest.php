@@ -103,3 +103,23 @@ test('it formats stack traces with collapsible vendor frames', function (): void
         ->toContain('app/Services/TestService.php')
         ->toContain('[Vendor frames]');
 });
+
+test('it throws when github issue signature is missing', function (): void {
+    $record = createLogRecord('Test message');
+
+    expect(fn () => $this->formatter->format($record))
+        ->toThrow(RuntimeException::class, 'Record is missing github_issue_signature');
+});
+
+test('it formats batches of records', function (): void {
+    $records = [
+        createLogRecord('First message', signature: 'sig-1'),
+        createLogRecord('Second message', signature: 'sig-2'),
+    ];
+
+    $formatted = $this->formatter->formatBatch($records);
+
+    expect($formatted)->toHaveCount(2)
+        ->and($formatted[0])->toBeInstanceOf(Formatted::class)
+        ->and($formatted[1])->toBeInstanceOf(Formatted::class);
+});

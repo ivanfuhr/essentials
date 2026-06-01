@@ -6,18 +6,11 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function (): void {
-    config([
-        'essentials.backup.disk' => 'local',
-        'essentials.backup.directory' => 'backups',
-        'essentials.backup.retention_days' => 7,
-        'filesystems.default' => 'local',
-        'filesystems.disks.local' => [
-            'driver' => 'local',
-            'root' => storage_path('app'),
-        ],
-    ]);
+    configurePgsqlBackup();
 
-    Storage::fake('local');
+    config([
+        'essentials.backup.retention_days' => 7,
+    ]);
 });
 
 it('reports when no backups are found', function (): void {
@@ -28,17 +21,17 @@ it('reports when no backups are found', function (): void {
 });
 
 it('does not prune when retention is zero or negative', function (): void {
-    Storage::disk('local')->put('backups/old.dump', 'backup');
+    backupDisk()->put('backups/old.dump', 'backup');
 
     $exitCode = Artisan::call('db:backups:prune', ['--days' => 0]);
 
     expect($exitCode)->toBe(0)
         ->and(Artisan::output())->toContain('No backups will be removed because retention is zero or negative.')
-        ->and(Storage::disk('local')->exists('backups/old.dump'))->toBeTrue();
+        ->and(backupDisk()->exists('backups/old.dump'))->toBeTrue();
 });
 
 it('removes backups older than the retention period', function (): void {
-    $disk = Storage::disk('local');
+    $disk = backupDisk();
     $disk->put('backups/old.dump', 'old');
     $disk->put('backups/recent.dump', 'recent');
 

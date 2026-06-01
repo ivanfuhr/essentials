@@ -517,3 +517,48 @@ test('groups errors from same vendor class with different methods', function ():
     expect($signature2)->toBe($signature1);
     expect($signature3)->toBe($signature1);
 });
+
+test('includes caller frame data in message signatures', function (): void {
+    $record = createLogRecord('Test message', extra: [
+        'caller' => [
+            'file' => base_path('app/Services/PaymentService.php'),
+            'func' => 'App\\Services\\PaymentService->charge',
+        ],
+    ]);
+
+    expect($this->generator->generate($record))->toBeString()->not->toBeEmpty();
+});
+
+test('respects zero max frame limit for exception signatures', function (): void {
+    $generator = new DefaultSignatureGenerator(maxFrames: 0, maxExceptionChainDepth: 1);
+    $exception = new Exception('Test exception');
+    $record = createLogRecord('Test', exception: $exception);
+
+    expect($generator->generate($record))->toBeString()->not->toBeEmpty();
+});
+
+test('respects zero max exception chain depth', function (): void {
+    $generator = new DefaultSignatureGenerator(maxExceptionChainDepth: 0);
+    $exception = new Exception('Test exception', previous: new RuntimeException('Previous'));
+    $record = createLogRecord('Test', exception: $exception);
+
+    expect($generator->generate($record))->toBeString()->not->toBeEmpty();
+});
+
+test('returns null vendor frame when exception trace has only in-app frames', function (): void {
+    $exception = new Exception('Test exception');
+    $reflection = new ReflectionClass($exception);
+    $reflection->getProperty('trace')->setValue($exception, [[
+        'file' => '/var/www/app/Http/Controllers/TestController.php',
+        'line' => 10,
+        'function' => 'handle',
+        'class' => 'App\\Http\\Controllers\\TestController',
+        'type' => '->',
+    ]]);
+
+    $generator = new DefaultSignatureGenerator;
+    $method = (new ReflectionClass($generator))->getMethod('firstVendorFrameBeforeInApp');
+    $method->setAccessible(true);
+
+    expect($method->invoke($generator, $exception))->toBeNull();
+});

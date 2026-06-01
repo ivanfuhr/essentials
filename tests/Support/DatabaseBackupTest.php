@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Storage;
 use IvanFuhr\Essentials\Support\DatabaseBackup;
 
 beforeEach(function (): void {
+    $diskName = 'local-'.getmypid();
+    $diskRoot = storage_path('framework/testing/disks/'.$diskName);
+
     config([
         'database.default' => 'pgsql',
         'database.connections.pgsql' => [
@@ -16,16 +19,16 @@ beforeEach(function (): void {
             'username' => 'postgres',
             'password' => 'secret',
         ],
-        'essentials.backup.disk' => 'local',
+        'essentials.backup.disk' => $diskName,
         'essentials.backup.directory' => 'backups',
-        'filesystems.default' => 'local',
-        'filesystems.disks.local' => [
+        'filesystems.default' => $diskName,
+        'filesystems.disks.'.$diskName => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => $diskRoot,
         ],
     ]);
 
-    Storage::fake('local');
+    Storage::fake($diskName, ['root' => $diskRoot]);
 });
 
 it('resolves a pgsql connection', function (): void {
@@ -56,7 +59,7 @@ it('throws when the connection does not exist', function (): void {
 it('creates the backup directory on the configured disk', function (): void {
     $backup = DatabaseBackup::forConfiguredDisk();
 
-    expect(Storage::disk('local')->exists('backups'))->toBeTrue()
+    expect(backupDisk()->exists('backups'))->toBeTrue()
         ->and($backup->directory())->toBe('backups')
         ->and($backup->remotePath('test.dump'))->toBe('backups/test.dump');
 });
@@ -66,7 +69,7 @@ it('uses the default filesystem disk when backup disk is not configured', functi
 
     $backup = DatabaseBackup::forConfiguredDisk();
 
-    expect($backup->disk())->toBe(Storage::disk('local'));
+    expect($backup->disk()->path('probe'))->toBe(backupDisk()->path('probe'));
 });
 
 it('resolves the local path for a backup file', function (): void {
@@ -78,9 +81,20 @@ it('resolves the local path for a backup file', function (): void {
 });
 
 it('lists backup files from the configured directory', function (): void {
-    Storage::disk('local')->put('backups/recent.dump', 'backup');
+    backupDisk()->put('backups/recent.dump', 'backup');
 
     $backup = DatabaseBackup::forConfiguredDisk();
 
     expect($backup->files())->toBe(['backups/recent.dump']);
 });
+
+it('throws when the configured disk is not a filesystem adapter', function (): void {
+    config(['essentials.backup.disk' => 'invalid']);
+
+    Storage::partialMock()
+        ->shouldReceive('disk')
+        ->with('invalid')
+        ->andReturn(Mockery::mock(\Illuminate\Contracts\Filesystem\Filesystem::class));
+
+    DatabaseBackup::forConfiguredDisk();
+})->throws(InvalidArgumentException::class, 'Disk "invalid" is not a filesystem adapter.');

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 use IvanFuhr\Essentials\Loggers\Github\Tracing\CallerFrameProcessor;
 
+require __DIR__.'/../../../Support/caller_probe.php';
+
+use function Tests\Support\findCallerFrameThroughProbe;
+use function Tests\Support\processLogRecordThroughCallerProbe;
+
 beforeEach(function (): void {
     $this->processor = new CallerFrameProcessor;
 });
@@ -17,45 +22,37 @@ test('skips processing when exception is present', function (): void {
 
 test('captures caller frame for message-only records', function (): void {
     $record = createLogRecord('Test message');
-    $processed = ($this->processor)($record);
+    $processed = processLogRecordThroughCallerProbe($this->processor, $record);
 
-    // Caller should be captured if a non-vendor frame exists
-    // Note: In test environment, the caller might be from the test framework
-    // So we just verify the processor runs without error
-    expect($processed)->toBeInstanceOf(Monolog\LogRecord::class);
+    expect($processed->extra)
+        ->toHaveKey('caller')
+        ->and($processed->extra['caller']['file'])->toContain('tests/Support/caller_probe.php');
 });
 
 test('normalizes file paths in caller frame', function (): void {
-    // Create a mock record with a caller frame that would be normalized
-    $record = createLogRecord('Test message', [], [
-        'caller' => [
-            'file' => base_path('app/Services/TestService.php'),
-            'func' => 'App\\Services\\TestService->testMethod',
-        ],
-    ]);
+    $record = createLogRecord('Test message');
+    $processed = processLogRecordThroughCallerProbe($this->processor, $record);
 
-    // The processor should normalize paths if it processes the record
-    // Since we can't easily control debug_backtrace in tests, we verify
-    // the processor handles records correctly
-    $processed = ($this->processor)($record);
-
-    expect($processed)->toBeInstanceOf(Monolog\LogRecord::class);
+    expect($processed->extra['caller']['file'])
+        ->not->toStartWith(base_path())
+        ->toContain('tests/Support/caller_probe.php');
 });
 
-test('filters out vendor frames', function (): void {
+test('returns the original record when no caller frame is found', function (): void {
     $record = createLogRecord('Test message');
     $processed = ($this->processor)($record);
 
-    // Processor should skip vendor frames
-    // In test environment, actual caller detection is hard to test
-    // but we verify the processor doesn't crash
-    expect($processed)->toBeInstanceOf(Monolog\LogRecord::class);
+    expect($processed->extra)->not->toHaveKey('caller');
 });
 
-test('filters out package frames', function (): void {
-    $record = createLogRecord('Test message');
-    $processed = ($this->processor)($record);
+test('handles empty caller paths gracefully', function (): void {
+    $normalizePath = (new ReflectionClass($this->processor))->getMethod('normalizePath');
+    $normalizePath->setAccessible(true);
 
-    // Processor should skip Loggers/Github package frames
-    expect($processed)->toBeInstanceOf(Monolog\LogRecord::class);
+    expect($normalizePath->invoke($this->processor, ''))->toBe('');
+});
+
+test('finds caller frames outside vendor and package code', function (): void {
+    expect(findCallerFrameThroughProbe($this->processor))->toBeArray()
+        ->toHaveKeys(['file', 'func']);
 });

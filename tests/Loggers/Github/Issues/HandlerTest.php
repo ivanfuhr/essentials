@@ -6,6 +6,7 @@ namespace Tests\Issues;
 
 use DateTimeImmutable;
 use Illuminate\Http\Client\Request;
+use RuntimeException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use IvanFuhr\Essentials\Loggers\Github\Issues\Formatters\IssueFormatter;
@@ -121,6 +122,28 @@ test('it throws exception when comment creation fails', function (): void {
 
     $handler->handle($record);
 })->throws(RequestException::class, exceptionCode: 500);
+
+test('it throws when the record is not formatted', function (): void {
+    $handler = createHandler();
+    $record = createRecord();
+
+    $write = (new \ReflectionClass($handler))->getMethod('write');
+    $write->setAccessible(true);
+
+    expect(fn () => $write->invoke($handler, $record))
+        ->toThrow(RuntimeException::class, 'Record must be formatted with');
+});
+
+test('it throws when github issue signature is missing during search', function (): void {
+    $handler = createHandler();
+    $record = createRecord()->with(extra: []);
+
+    $findExistingIssue = (new \ReflectionClass($handler))->getMethod('findExistingIssue');
+    $findExistingIssue->setAccessible(true);
+
+    expect(fn () => $findExistingIssue->invoke($handler, $record))
+        ->toThrow(RuntimeException::class, 'Record is missing github_issue_signature');
+});
 
 test('it creates fallback issue when 4xx error occurs', function (): void {
     $errorMessage = 'Validation failed for the issue';

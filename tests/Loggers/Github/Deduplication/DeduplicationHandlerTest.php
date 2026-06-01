@@ -163,3 +163,15 @@ test('occurrence count is not added when tracking is disabled', function (): voi
     expect($records)->toHaveCount(1);
     expect($records[0]->extra)->not->toHaveKey('github_occurrence_count');
 });
+
+test('flush returns early when the buffer is empty', function (): void {
+    $handler = new DeduplicationHandler(
+        handler: $this->testHandler,
+        signatureGenerator: new DefaultSignatureGenerator,
+        store: 'array',
+    );
+
+    $handler->flush();
+
+    expect($this->testHandler->getRecords())->toBeEmpty();
+});

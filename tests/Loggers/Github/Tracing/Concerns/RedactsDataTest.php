@@ -143,6 +143,34 @@ it('uses config for sensitive payload fields', function (): void {
     expect($result['public_field'])->toBe('public-value');
 });
 
+it('redacts sensitive query binding values', function (): void {
+    $result = $this->trait->testRedactBindings(['password']);
+
+    expect($result[0])->toContain('bytes redacted');
+});
+
+it('redacts authorization headers without a scheme separator', function (): void {
+    $headers = new HeaderBag([
+        'authorization' => ['secret-token-without-scheme'],
+    ]);
+
+    $result = $this->trait->testRedactHeaders($headers);
+
+    expect($result['authorization'][0])->toContain('bytes redacted')
+        ->and($result['authorization'][0])->not->toContain('secret-token-without-scheme');
+});
+
+it('redacts unknown authorization schemes as a whole value', function (): void {
+    $headers = new HeaderBag([
+        'authorization' => ['CustomScheme secret-token-value'],
+    ]);
+
+    $result = $this->trait->testRedactHeaders($headers);
+
+    expect($result['authorization'][0])->toContain('bytes redacted')
+        ->and($result['authorization'][0])->not->toContain('secret-token-value');
+});
+
 it('handles empty arrays', function (): void {
     expect($this->trait->testRedactPayload([]))->toBe([]);
     expect($this->trait->testRedactBindings([]))->toBe([]);
