@@ -214,9 +214,9 @@ Publish and configure:
 Configure in `config/essentials.php` under `loggers.github` (publish with `php artisan vendor:publish --tag=essentials-config` if needed).
 
 ```env
-GITHUB_MONOLOG_ENABLED=true
-GITHUB_MONOLOG_REPO=your-org/your-repo
-GITHUB_MONOLOG_TOKEN=ghp_...
+GITHUB_LOGGER_ENABLED=true
+GITHUB_LOGGER_REPO=your-org/your-repo
+GITHUB_LOGGER_TOKEN=ghp_...
 ```
 
 When enabled, Essentials registers the `github` log channel automatically. Use it as `LOG_CHANNEL`, in a stack, or explicitly:
@@ -240,7 +240,7 @@ This package is maintained by **[Ivan Führ](https://github.com/ivanfuhr)**.
 It builds on ideas and code from these projects:
 
 - **[nunomaduro/essentials](https://github.com/nunomaduro/essentials)** — [Nuno Maduro](https://github.com/nunomaduro)
-- **[laravel-github-monolog](https://github.com/Naoray/laravel-github-monolog)** — Krishan Koenig and [contributors](https://github.com/Naoray/laravel-github-monolog/graphs/contributors)
+- **[GitHub issues logger for Laravel](https://github.com/Naoray/laravel-github-monolog)** — Krishan Koenig and [contributors](https://github.com/Naoray/laravel-github-monolog/graphs/contributors)
 
 Thank you to everyone who made the upstream work possible.
 

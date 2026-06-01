@@ -121,9 +121,9 @@ final class Handler extends AbstractProcessingHandler
     {
         $this->client
             ->post(sprintf('/repos/%s/issues', $this->repo), [
-                'title' => '[GitHub Monolog Error] '.$formatted->title,
+                'title' => '[GitHub Issue Error] '.$formatted->title,
                 'body' => "**Original Error Message:**\n{$formatted->body}\n\n**Integration Error:**\n{$errorMessage}",
-                'labels' => array_merge($this->labels, ['monolog-integration-error']),
+                'labels' => array_merge($this->labels, ['github-integration-error']),
             ])
             ->throw();
     }

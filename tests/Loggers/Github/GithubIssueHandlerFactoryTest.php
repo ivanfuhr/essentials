@@ -122,7 +122,7 @@ test('it uses default cache configuration', function (): void {
     $ttl = (new ReflectionProperty($cacheManager, 'ttl'))->getValue($cacheManager);
 
     expect($store)->toBe(config('cache.default'))
-        ->and($prefix)->toBe('github-monolog:')
+        ->and($prefix)->toBe('essentials-github:')
         ->and($ttl)->toBe(60);
 });
 

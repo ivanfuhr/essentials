@@ -80,7 +80,7 @@ final readonly class GithubIssueHandlerFactory
             handler: $handler,
             signatureGenerator: $signatureGenerator,
             store: Arr::get($deduplication, 'store', config('cache.default')),
-            prefix: Arr::get($deduplication, 'prefix', 'github-monolog:'),
+            prefix: Arr::get($deduplication, 'prefix', 'essentials-github:'),
             ttl: $this->getDeduplicationTime($config),
             level: Arr::get($config, 'level', Level::Error),
             bufferLimit: Arr::get($config, 'buffer.limit', 0),

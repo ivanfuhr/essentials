@@ -18,7 +18,7 @@ final class DeduplicationHandler extends BufferHandler
         HandlerInterface $handler,
         private readonly SignatureGeneratorInterface $signatureGenerator,
         ?string $store = 'default',
-        string $prefix = 'github-monolog:dedup:',
+        string $prefix = 'essentials-github:dedup:',
         int $ttl = 60,
         int|string|Level $level = Level::Error,
         int $bufferLimit = 0,

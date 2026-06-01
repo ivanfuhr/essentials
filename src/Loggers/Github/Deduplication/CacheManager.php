@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 
 final readonly class CacheManager
 {
-    private const string KEY_PREFIX = 'github-monolog';
+    private const string KEY_PREFIX = 'essentials-github';
 
     private const string KEY_SEPARATOR = ':';
 

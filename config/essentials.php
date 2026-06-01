@@ -84,14 +84,14 @@ return [
 
     'loggers' => [
         'github' => [
-            'enabled' => env('GITHUB_MONOLOG_ENABLED', false),
-            'repo' => env('GITHUB_MONOLOG_REPO'),
-            'token' => env('GITHUB_MONOLOG_TOKEN'),
+            'enabled' => env('GITHUB_LOGGER_ENABLED', false),
+            'repo' => env('GITHUB_LOGGER_REPO'),
+            'token' => env('GITHUB_LOGGER_TOKEN'),
             'labels' => [],
-            'level' => env('GITHUB_MONOLOG_LEVEL', 'error'),
+            'level' => env('GITHUB_LOGGER_LEVEL', 'error'),
             'deduplication' => [
                 'store' => null,
-                'prefix' => 'github-monolog:',
+                'prefix' => 'essentials-github:',
                 'time' => 3600,
                 'track_occurrences' => true,
             ],

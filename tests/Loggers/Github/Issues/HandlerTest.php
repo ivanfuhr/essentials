@@ -138,10 +138,10 @@ test('it creates fallback issue when 4xx error occurs', function (): void {
     $handler->handle($record);
 
     Http::assertSent(fn ($request): bool => str($request->url())->endsWith('/repos/test/repo/issues')
-        && ! str_contains((string) $request->data()['title'], '[GitHub Monolog Error]'));
+        && ! str_contains((string) $request->data()['title'], '[GitHub Issue Error]'));
 
     Http::assertSent(fn ($request): bool => str($request->url())->endsWith('/repos/test/repo/issues')
-        && str_contains((string) $request->data()['title'], '[GitHub Monolog Error]')
+        && str_contains((string) $request->data()['title'], '[GitHub Issue Error]')
         && str_contains((string) $request->data()['body'], $errorMessage)
-        && in_array('monolog-integration-error', $request->data()['labels']));
+        && in_array('github-integration-error', $request->data()['labels']));
 });
