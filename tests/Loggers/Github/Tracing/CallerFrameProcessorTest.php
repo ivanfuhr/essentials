@@ -66,7 +66,7 @@ test('skips empty, vendor, package, and artisan frames when resolving caller', f
         ['file' => '', 'function' => 'emptyFile'],
         ['file' => base_path('vendor/laravel/framework/src/Kernel.php'), 'function' => 'handle'],
         ['file' => base_path('vendor/ivanfuhr/essentials/src/Loggers/Github/Tracing/CallerFrameProcessor.php'), 'function' => 'invoke'],
-        ['file' => base_path('artisan'), 'function' => 'run'],
+        ['file' => sys_get_temp_dir().'/testing-app/artisan', 'function' => 'run'],
         [
             'file' => $appFile,
             'class' => 'Tests\\Support\\CallerProbe',
@@ -84,8 +84,8 @@ test('returns no caller when trace only contains artisan and malformed function 
     $findCallerFrameFromTrace = (new ReflectionClass($processor))->getMethod('findCallerFrameFromTrace');
 
     expect($findCallerFrameFromTrace->invoke($processor, [
-        ['file' => base_path('artisan'), 'function' => 'run'],
-        ['file' => base_path('app/Jobs/ImportUsers.php'), 'function' => null],
+        ['file' => sys_get_temp_dir().'/testing-app/artisan', 'function' => 'run'],
+        ['file' => sys_get_temp_dir().'/testing-app/app/Jobs/ImportUsers.php', 'function' => null],
     ]))->toBeNull();
 });
 
