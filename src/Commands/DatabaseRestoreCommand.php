@@ -141,7 +141,7 @@ final class DatabaseRestoreCommand extends Command
         $tempDir = storage_path('app/tmp');
 
         if (! is_dir($tempDir)) {
-            mkdir($tempDir, 0755, true);
+            @mkdir($tempDir, 0755, true);
         }
 
         return $tempDir.DIRECTORY_SEPARATOR.getmypid().'-'.$filename;

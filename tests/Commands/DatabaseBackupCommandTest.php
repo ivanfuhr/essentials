@@ -12,7 +12,7 @@ beforeEach(function (): void {
 afterEach(function (): void {
     resetPromptFallbacks();
 
-    foreach (glob(storage_path('app/tmp/testing-*.dump')) ?: [] as $file) {
+    foreach (glob(storage_path('app/tmp/*-testing-*.dump')) ?: [] as $file) {
         @chmod($file, 0644);
         @unlink($file);
     }
