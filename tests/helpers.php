@@ -7,11 +7,24 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\SelectPrompt;
 
+function ensureTestingDirectoryExists(string $path): void
+{
+    if (is_dir($path)) {
+        return;
+    }
+
+    @mkdir($path, 0755, true);
+
+    if (! is_dir($path)) {
+        throw new RuntimeException(sprintf('Failed to create testing directory: %s', $path));
+    }
+}
+
 function createFakePgDumpScript(): string
 {
-    $path = storage_path('app/tmp/fake-pg-dump-'.getmypid().'.sh');
+    $path = storage_path('framework/testing/bin-'.getmypid().'/fake-pg-dump.sh');
 
-    File::ensureDirectoryExists(dirname($path));
+    ensureTestingDirectoryExists(dirname($path));
 
     File::put($path, <<<'BASH'
         #!/usr/bin/env bash
@@ -30,9 +43,9 @@ function createFakePgDumpScript(): string
 
 function createFakePgRestoreScript(): string
 {
-    $path = storage_path('app/tmp/fake-pg-restore-'.getmypid().'.sh');
+    $path = storage_path('framework/testing/bin-'.getmypid().'/fake-pg-restore.sh');
 
-    File::ensureDirectoryExists(dirname($path));
+    ensureTestingDirectoryExists(dirname($path));
 
     File::put($path, <<<'BASH'
         #!/usr/bin/env bash
@@ -46,9 +59,9 @@ function createFakePgRestoreScript(): string
 
 function createFailingPgDumpScript(): string
 {
-    $path = storage_path('app/tmp/failing-pg-dump-'.getmypid().'.sh');
+    $path = storage_path('framework/testing/bin-'.getmypid().'/failing-pg-dump.sh');
 
-    File::ensureDirectoryExists(dirname($path));
+    ensureTestingDirectoryExists(dirname($path));
 
     File::put($path, <<<'BASH'
         #!/usr/bin/env bash
@@ -63,9 +76,9 @@ function createFailingPgDumpScript(): string
 
 function createUnreadablePgDumpScript(): string
 {
-    $path = storage_path('app/tmp/unreadable-pg-dump-'.getmypid().'.sh');
+    $path = storage_path('framework/testing/bin-'.getmypid().'/unreadable-pg-dump.sh');
 
-    File::ensureDirectoryExists(dirname($path));
+    ensureTestingDirectoryExists(dirname($path));
 
     File::put($path, <<<'BASH'
         #!/usr/bin/env bash
@@ -84,9 +97,9 @@ function createUnreadablePgDumpScript(): string
 
 function createUnsupportedVersionPgRestoreScript(): string
 {
-    $path = storage_path('app/tmp/unsupported-pg-restore-'.getmypid().'.sh');
+    $path = storage_path('framework/testing/bin-'.getmypid().'/unsupported-pg-restore.sh');
 
-    File::ensureDirectoryExists(dirname($path));
+    ensureTestingDirectoryExists(dirname($path));
 
     File::put($path, <<<'BASH'
         #!/usr/bin/env bash
@@ -101,9 +114,9 @@ function createUnsupportedVersionPgRestoreScript(): string
 
 function createFailingPgRestoreScript(): string
 {
-    $path = storage_path('app/tmp/failing-pg-restore-'.getmypid().'.sh');
+    $path = storage_path('framework/testing/bin-'.getmypid().'/failing-pg-restore.sh');
 
-    File::ensureDirectoryExists(dirname($path));
+    ensureTestingDirectoryExists(dirname($path));
 
     File::put($path, <<<'BASH'
         #!/usr/bin/env bash
