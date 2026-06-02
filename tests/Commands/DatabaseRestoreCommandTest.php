@@ -65,18 +65,22 @@ it('restores a backup from the configured disk', function (): void {
 });
 
 it('restores a backup from an absolute path', function (): void {
-    $absolutePath = storage_path('app/tmp/absolute-testing-'.getmypid().'.dump');
+    $absolutePath = storage_path('framework/testing/absolute-'.getmypid().'/testing.dump');
     File::ensureDirectoryExists(dirname($absolutePath));
     File::put($absolutePath, 'backup');
 
-    $exitCode = Artisan::call('db:restore', [
-        'backup' => $absolutePath,
-        '--force' => true,
-    ]);
+    try {
+        $exitCode = Artisan::call('db:restore', [
+            'backup' => $absolutePath,
+            '--force' => true,
+        ]);
 
-    expect($exitCode)->toBe(0)
-        ->and(Artisan::output())->toContain('Restore completed successfully.')
-        ->and(File::exists($absolutePath))->toBeTrue();
+        expect($exitCode)->toBe(0)
+            ->and(Artisan::output())->toContain('Restore completed successfully.')
+            ->and(File::exists($absolutePath))->toBeTrue();
+    } finally {
+        File::deleteDirectory(dirname($absolutePath));
+    }
 });
 
 it('lists available backups when the requested file is missing', function (): void {
