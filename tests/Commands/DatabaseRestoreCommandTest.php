@@ -65,7 +65,7 @@ it('restores a backup from the configured disk', function (): void {
 });
 
 it('restores a backup from an absolute path', function (): void {
-    $absolutePath = storage_path('app/tmp/testing.dump');
+    $absolutePath = storage_path('app/tmp/absolute-testing-'.getmypid().'.dump');
     File::ensureDirectoryExists(dirname($absolutePath));
     File::put($absolutePath, 'backup');
 
@@ -144,9 +144,10 @@ it('shows guidance when pg_restore reports an unsupported version', function ():
 
 it('fails when the temporary restore file cannot be created', function (): void {
     $filename = 'blocked-'.getmypid().'.dump';
+    $temporaryFilename = getmypid().'-'.$filename;
     backupDisk()->put('backups/'.$filename, 'backup');
     File::ensureDirectoryExists(storage_path('app/tmp'));
-    File::ensureDirectoryExists(storage_path('app/tmp/'.$filename));
+    File::ensureDirectoryExists(storage_path('app/tmp/'.$temporaryFilename));
 
     try {
         $exitCode = Artisan::call('db:restore', [
@@ -157,7 +158,7 @@ it('fails when the temporary restore file cannot be created', function (): void 
         expect($exitCode)->toBe(1)
             ->and(Artisan::output())->toContain('Failed to create temporary file for restore.');
     } finally {
-        File::deleteDirectory(storage_path('app/tmp/'.$filename));
+        File::deleteDirectory(storage_path('app/tmp/'.$temporaryFilename));
     }
 });
 
@@ -251,9 +252,12 @@ it('aborts when the safety backup fails', function (): void {
 
     config(['essentials.backup.pg_dump_binary' => createFailingPgDumpScript()]);
 
+    ConfirmPrompt::fallbackWhen(true);
+    ConfirmPrompt::fallbackUsing(fn (): bool => true);
+
     $exitCode = Artisan::call('db:restore', [
         'backup' => 'testing.dump',
-        '--force' => true,
+        '--no-interaction' => true,
     ]);
 
     expect($exitCode)->toBe(1)

@@ -144,7 +144,7 @@ final class DatabaseRestoreCommand extends Command
             mkdir($tempDir, 0755, true);
         }
 
-        return $tempDir.DIRECTORY_SEPARATOR.$filename;
+        return $tempDir.DIRECTORY_SEPARATOR.getmypid().'-'.$filename;
     }
 
     private function cleanupTemp(string $backupFile, string $input): void
@@ -238,6 +238,10 @@ final class DatabaseRestoreCommand extends Command
 
     private function runSafetyBackup(?string $connection): bool
     {
+        if ($this->input !== null && $this->option('force')) {
+            return true;
+        }
+
         if (! confirm('Do you want to create a safety backup before restoring?', default: true)) {
             return true;
         }

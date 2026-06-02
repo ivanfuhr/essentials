@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Illuminate\Support\Facades\Storage;
 use IvanFuhr\Essentials\EssentialsServiceProvider;
+use Mockery;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -18,5 +20,13 @@ class TestCase extends \Orchestra\Testbench\TestCase
         return [
             EssentialsServiceProvider::class,
         ];
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        Storage::clearResolvedInstances();
+
+        parent::tearDown();
     }
 }
