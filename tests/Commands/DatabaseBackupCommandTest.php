@@ -49,6 +49,8 @@ it('creates a backup on the configured disk', function (): void {
 });
 
 it('creates the temporary directory when it does not exist', function (): void {
+    File::deleteDirectory(storage_path('app/tmp'));
+
     config(['essentials.backup.pg_dump_binary' => createFakePgDumpScript()]);
 
     $exitCode = Artisan::call('db:backup');

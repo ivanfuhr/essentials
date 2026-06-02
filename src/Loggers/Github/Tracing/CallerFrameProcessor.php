@@ -37,8 +37,15 @@ final class CallerFrameProcessor implements ProcessorInterface
      */
     private function findCallerFrame(): ?array
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20);
+        return $this->findCallerFrameFromTrace(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20));
+    }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $trace
+     * @return array{file: string, func: string}|null
+     */
+    private function findCallerFrameFromTrace(array $trace): ?array
+    {
         foreach ($trace as $frame) {
             $file = $frame['file'] ?? null;
             if (! is_string($file)) {
@@ -65,7 +72,15 @@ final class CallerFrameProcessor implements ProcessorInterface
             }
 
             // Found a non-vendor, non-package frame
-            $func = ($frame['class'] ?? '').($frame['type'] ?? '').$frame['function'];
+            $function = $frame['function'] ?? null;
+
+            if (! is_string($function)) {
+                continue;
+            }
+
+            $class = $frame['class'] ?? '';
+            $type = $frame['type'] ?? '';
+            $func = (is_string($class) ? $class : '').(is_string($type) ? $type : '').$function;
 
             return [
                 'file' => $this->normalizePath($file),

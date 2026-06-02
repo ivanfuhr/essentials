@@ -468,6 +468,30 @@ test('it renders route summary from precomputed route summary and request method
     expect($rendered)->toContain('**Route:** GET /reports/monthly');
 });
 
+test('it returns an empty method when request context is not an array', function (): void {
+    $method = (new ReflectionClass($this->renderer))->getMethod('extractMethodFromRequest');
+    $record = createLogRecord('Test message', ['request' => 'invalid']);
+
+    expect($method->invoke($this->renderer, $record))->toBe('');
+});
+
+test('it formats precomputed route summary without a request method', function (): void {
+    $method = (new ReflectionClass($this->renderer))->getMethod('formatRouteSummary');
+    $record = createLogRecord('Test message', [
+        'route_summary' => '/reports/monthly',
+        'request' => 'invalid',
+    ]);
+
+    expect($method->invoke($this->renderer, $record))->toBe('/reports/monthly');
+});
+
+test('it extracts clean messages from hash formatted stack traces in record messages', function (): void {
+    $method = (new ReflectionClass($this->renderer))->getMethod('extractMessageFromRecord');
+    $message = 'RuntimeException: Broken input in /app/Models/User.php:10 #0 /app/Services/UserService.php(25): save()';
+
+    expect($method->invoke($this->renderer, $message))->toBe('Broken input');
+});
+
 test('it extracts clean messages from record messages containing stack traces', function (): void {
     $record = createLogRecord('RuntimeException: Broken input in /app/Models/User.php:10
 Stack trace:

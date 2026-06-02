@@ -171,6 +171,8 @@ it('fails when no backups exist for interactive selection', function (): void {
 it('creates the temporary directory when restoring from disk', function (): void {
     backupDisk()->put('backups/testing.dump', 'backup');
 
+    File::deleteDirectory(storage_path('app/tmp'));
+
     config([
         'essentials.backup.pg_restore_binary' => createFakePgRestoreScript(),
         'essentials.backup.pg_dump_binary' => createFakePgDumpScript(),
@@ -183,6 +185,43 @@ it('creates the temporary directory when restoring from disk', function (): void
 
     expect($exitCode)->toBe(0)
         ->and(File::isDirectory(storage_path('app/tmp')))->toBeTrue();
+});
+
+it('cancels restore when confirmation is declined', function (): void {
+    backupDisk()->put('backups/testing.dump', 'backup');
+
+    ConfirmPrompt::fallbackWhen(true);
+    ConfirmPrompt::fallbackUsing(fn (): bool => false);
+
+    $exitCode = Artisan::call('db:restore', [
+        'backup' => 'testing.dump',
+        '--no-interaction' => true,
+    ]);
+
+    expect($exitCode)->toBe(0)
+        ->and(Artisan::output())->toContain('Restore cancelled.');
+});
+
+it('fails when the backup stream cannot be read from disk', function (): void {
+    backupDisk()->put('backups/testing.dump', 'backup');
+
+    $diskName = config('essentials.backup.disk');
+    $filesystem = Mockery::mock(backupDisk())->makePartial();
+    $filesystem->shouldReceive('exists')->with('backups/testing.dump')->andReturn(true);
+    $filesystem->shouldReceive('readStream')->with('backups/testing.dump')->andReturn(false);
+
+    Storage::partialMock()
+        ->shouldReceive('disk')
+        ->with($diskName)
+        ->andReturn($filesystem);
+
+    $exitCode = Artisan::call('db:restore', [
+        'backup' => 'testing.dump',
+        '--force' => true,
+    ]);
+
+    expect($exitCode)->toBe(1)
+        ->and(Artisan::output())->toContain('Failed to read backup file from disk.');
 });
 
 it('selects a backup interactively when none is provided', function (): void {

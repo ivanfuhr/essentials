@@ -545,6 +545,38 @@ test('respects zero max exception chain depth', function (): void {
     expect($generator->generate($record))->toBeString()->not->toBeEmpty();
 });
 
+test('limits in-app frames collected from exception traces', function (): void {
+    $exception = new Exception('Test exception');
+    $traceProperty = (new ReflectionClass($exception))->getProperty('trace');
+    $traceProperty->setValue($exception, [
+        [
+            'file' => '/var/www/app/One.php',
+            'line' => 1,
+            'function' => 'first',
+            'class' => 'App\\One',
+            'type' => '->',
+        ],
+        [
+            'file' => '/var/www/app/Two.php',
+            'line' => 2,
+            'function' => 'second',
+            'class' => 'App\\Two',
+            'type' => '->',
+        ],
+        [
+            'file' => '/var/www/app/Three.php',
+            'line' => 3,
+            'function' => 'third',
+            'class' => 'App\\Three',
+            'type' => '->',
+        ],
+    ]);
+
+    $method = (new ReflectionClass($this->generator))->getMethod('inAppFrames');
+
+    expect($method->invoke($this->generator, $exception, 2))->toHaveCount(2);
+});
+
 test('returns null vendor frame when exception trace has only in-app frames', function (): void {
     $exception = new Exception('Test exception');
     $reflection = new ReflectionClass($exception);

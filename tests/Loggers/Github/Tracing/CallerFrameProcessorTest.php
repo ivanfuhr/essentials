@@ -55,3 +55,33 @@ test('finds caller frames outside vendor and package code', function (): void {
     expect(findCallerFrameThroughProbe($this->processor))->toBeArray()
         ->toHaveKeys(['file', 'func']);
 });
+
+test('skips empty, vendor, package, and artisan frames when resolving caller', function (): void {
+    $processor = $this->processor;
+    $findCallerFrameFromTrace = (new ReflectionClass($processor))->getMethod('findCallerFrameFromTrace');
+    $normalizePath = (new ReflectionClass($processor))->getMethod('normalizePath');
+    $appFile = realpath(__DIR__.'/../../../Support/caller_probe.php');
+
+    expect($findCallerFrameFromTrace->invoke($processor, [
+        ['file' => '', 'function' => 'emptyFile'],
+        ['file' => base_path('vendor/laravel/framework/src/Kernel.php'), 'function' => 'handle'],
+        ['file' => base_path('vendor/ivanfuhr/essentials/src/Loggers/Github/Tracing/CallerFrameProcessor.php'), 'function' => 'invoke'],
+        ['file' => base_path('artisan'), 'function' => 'run'],
+        [
+            'file' => $appFile,
+            'class' => 'Tests\\Support\\CallerProbe',
+            'type' => '::',
+            'function' => 'run',
+        ],
+    ]))->toBe([
+        'file' => $normalizePath->invoke($processor, $appFile),
+        'func' => 'Tests\\Support\\CallerProbe::run',
+    ]);
+});
+
+test('strips the application base path when normalizing caller files', function (): void {
+    $method = (new ReflectionClass($this->processor))->getMethod('normalizePath');
+
+    expect($method->invoke($this->processor, base_path('app/Services/PaymentService.php')))
+        ->toBe('app/Services/PaymentService.php');
+});

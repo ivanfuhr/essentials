@@ -132,6 +132,7 @@ it('dehydrates tracing context keys before job serialization', function (): void
 
     Context::flush();
     Context::add('queries', [['sql' => 'select 1']]);
+    Context::add('outgoing_request.visible123', ['url' => 'https://example.com']);
     Context::addHidden('breadcrumbs', [['message' => 'test']]);
     Context::addHidden('outgoing_request.abc123', ['url' => 'https://example.com']);
     Context::add('safe', 'keep');
@@ -141,6 +142,7 @@ it('dehydrates tracing context keys before job serialization', function (): void
     expect($dehydrated)->not->toBeNull()
         ->and($dehydrated['data'])->toHaveKey('safe')
         ->and($dehydrated['data'])->not->toHaveKey('queries')
+        ->and($dehydrated['data'])->not->toHaveKey('outgoing_request.visible123')
         ->and($dehydrated['hidden'])->not->toHaveKey('breadcrumbs')
         ->and($dehydrated['hidden'])->not->toHaveKey('outgoing_request.abc123');
 });

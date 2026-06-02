@@ -78,3 +78,16 @@ test('it adds truncation note when there are more exceptions than max limit', fu
         ->toContain('Previous Exception #3')
         ->toContain('Additional previous exceptions were truncated');
 });
+
+test('it returns an empty string when previous exception formatting produces no output', function (): void {
+    $formatter = resolve(PreviousExceptionFormatter::class);
+    $property = new ReflectionProperty($formatter, 'previousExceptionStub');
+    $property->setValue($formatter, '');
+
+    $record = createLogRecord('Test message', exception: new RuntimeException(
+        'Test exception',
+        previous: new RuntimeException('Previous exception')
+    ));
+
+    expect($formatter->format($record))->toBe('');
+});

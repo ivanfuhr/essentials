@@ -136,8 +136,6 @@ final readonly class ExceptionFormatter implements FormatterInterface
             $stackTrace = mb_ltrim($stackTrace, " \t\n\r\0\x0B");
         } elseif (preg_match('/#\d+ \//', $exceptionString, $traceMatches, PREG_OFFSET_CAPTURE)) {
             $stackTrace = mb_substr($exceptionString, $traceMatches[0][1]);
-        } else {
-            $stackTrace = '';
         }
 
         $header = sprintf(
