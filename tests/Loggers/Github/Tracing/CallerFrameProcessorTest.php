@@ -79,6 +79,16 @@ test('skips empty, vendor, package, and artisan frames when resolving caller', f
     ]);
 });
 
+test('returns no caller when trace only contains artisan and malformed function frames', function (): void {
+    $processor = $this->processor;
+    $findCallerFrameFromTrace = (new ReflectionClass($processor))->getMethod('findCallerFrameFromTrace');
+
+    expect($findCallerFrameFromTrace->invoke($processor, [
+        ['file' => base_path('artisan'), 'function' => 'run'],
+        ['file' => base_path('app/Jobs/ImportUsers.php'), 'function' => null],
+    ]))->toBeNull();
+});
+
 test('strips the application base path when normalizing caller files', function (): void {
     $method = (new ReflectionClass($this->processor))->getMethod('normalizePath');
 

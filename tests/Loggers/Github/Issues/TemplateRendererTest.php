@@ -192,6 +192,15 @@ Stack trace:
         ->toContain('App\\Service->method()');
 });
 
+test('it returns extracted stack trace message when no file suffix is present', function (): void {
+    $method = (new ReflectionClass($this->renderer))->getMethod('extractMessageFromRecord');
+
+    $message = 'RuntimeException: Error message without file suffix Stack trace:
+#0 /path/to/app/Service.php(45): App\\Service->method()';
+
+    expect($method->invoke($this->renderer, $message))->toBe('Error message without file suffix');
+});
+
 test('it formats timestamp placeholder correctly', function (): void {
     $record = createLogRecord('Test message');
 
