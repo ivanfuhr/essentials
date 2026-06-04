@@ -125,6 +125,8 @@ A small, framework-agnostic **success/failure** wrapper for service and action o
 
 No configuration or service provider setup is required. Composer autoloads the class and registers global helpers immediately (no service provider).
 
+**PHPStan generics:** annotate actions with `@return Result<YourModel, YourFailureEnum>` (or the native return type stays `Result` and the PHPDoc carries the types). After `successful()` / `failed()`, `value()` and `failure()` are narrowed to the success value and failure enum respectively.
+
 #### Defining failure enums
 
 ```php

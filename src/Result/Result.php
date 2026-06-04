@@ -7,6 +7,10 @@ namespace IvanFuhr\Essentials\Result;
 use LogicException;
 use UnitEnum;
 
+/**
+ * @template-covariant TValue
+ * @template-covariant TFailure of UnitEnum
+ */
 final class Result
 {
     private bool $handled = false;
@@ -16,26 +20,53 @@ final class Result
         private readonly mixed $payload,
     ) {}
 
+    /**
+     * @template TSuccessValue
+     *
+     * @param  TSuccessValue  $value
+     * @return self<TSuccessValue, never>
+     */
     public static function success(mixed $value): self
     {
-        return new self(true, $value);
+        /** @var self<TSuccessValue, never> $result */
+        $result = new self(true, $value);
+
+        return $result;
     }
 
+    /**
+     * @template TFailValue of UnitEnum
+     *
+     * @param  TFailValue  $failure
+     * @return self<never, TFailValue>
+     */
     public static function fail(UnitEnum $failure): self
     {
-        return new self(false, $failure);
+        /** @var self<never, TFailValue> $result */
+        $result = new self(false, $failure);
+
+        return $result;
     }
 
+    /**
+     * @phpstan-assert-if-true true $this->success
+     */
     public function successful(): bool
     {
         return $this->success;
     }
 
+    /**
+     * @phpstan-assert-if-true false $this->success
+     */
     public function failed(): bool
     {
         return ! $this->success;
     }
 
+    /**
+     * @return TValue
+     */
     public function value(): mixed
     {
         if ($this->failed()) {
@@ -45,6 +76,12 @@ final class Result
         return $this->payload;
     }
 
+    /**
+     * @template TDefault
+     *
+     * @param  TDefault  $default
+     * @return TValue|TDefault
+     */
     public function valueOr(mixed $default): mixed
     {
         if ($this->success) {
@@ -54,20 +91,24 @@ final class Result
         return $default;
     }
 
+    /**
+     * @return TFailure
+     */
     public function failure(): UnitEnum
     {
         if ($this->success) {
             throw new LogicException('Cannot get the failure from a successful result. Check failed() first or use whenFailed().');
         }
 
-        /** @var UnitEnum $failure */
+        /** @var TFailure $failure */
         $failure = $this->payload;
 
         return $failure;
     }
 
     /**
-     * @param  callable(mixed): void  $callback
+     * @param  callable(TValue): void  $callback
+     * @return self<TValue, TFailure>
      */
     public function whenSuccessful(callable $callback): self
     {
@@ -80,7 +121,11 @@ final class Result
     }
 
     /**
+     * @template TExpectedFailure of UnitEnum
+     *
+     * @param  TExpectedFailure  $expectedFailure
      * @param  callable(): void  $callback
+     * @return self<TValue, TFailure>
      */
     public function whenFailed(UnitEnum $expectedFailure, callable $callback): self
     {
@@ -94,6 +139,7 @@ final class Result
 
     /**
      * @param  callable(): void  $callback
+     * @return self<TValue, TFailure>
      */
     public function otherwise(callable $callback): self
     {
