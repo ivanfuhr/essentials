@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\PhpStan;
 
 use IvanFuhr\Essentials\Result\Result;
+use RuntimeException;
 
 enum CreateProjectFailure
 {
@@ -59,7 +60,7 @@ final class ResultGenericsConsumer
     public function consumeTyped(Result $result): Project
     {
         if ($result->failed()) {
-            throw new \RuntimeException('failed');
+            throw new RuntimeException('failed');
         }
 
         return $result->value();
